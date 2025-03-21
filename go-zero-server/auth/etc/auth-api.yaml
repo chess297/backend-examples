@@ -1,0 +1,9 @@
+Name: auth-api
+Host: 0.0.0.0
+Port: 8080
+MySqlDatabase: spiritchess
+MySqlPassword: spiritchess
+RedisConf:
+  Host: 127.0.0.1:6379
+  Pass: spiritchess
+  Type: node
