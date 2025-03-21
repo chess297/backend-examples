@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+
+
+option go_package = "go-kratos-server/api/user/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.user.v1";
+option java_outer_classname = "UserProtoV1";
+
+import "google/api/annotations.proto";
+
+service Auth {
+
+	rpc Ping (PingRequest) returns (PingReply){
+		option (google.api.http) = {
+			get: "/api/v1/ping"
+		};
+	};
+
+
+	rpc Register (RegisterRequest) returns (RegisterReply){
+		option (google.api.http) = {
+			post: "/api/v1/register"
+			body: "*"
+		};
+	};
+	rpc Login (LoginRequest) returns (LoginReply){
+		option (google.api.http) = {
+			post: "/api/v1/login"
+			body: "*"
+		};
+	};
+
+	rpc CreateAuth (CreateAuthRequest) returns (CreateAuthReply);
+	rpc UpdateAuth (UpdateAuthRequest) returns (UpdateAuthReply);
+	rpc DeleteAuth (DeleteAuthRequest) returns (DeleteAuthReply);
+	rpc GetAuth (GetAuthRequest) returns (GetAuthReply);
+	rpc ListAuth (ListAuthRequest) returns (ListAuthReply);
+}
+
+message PingRequest {}
+
+message PingReply {
+	string message = 1;
+}
+
+message RegisterRequest {
+	string username = 1;
+	string password = 2;
+}
+
+message RegisterReply {
+	string message =1;
+
+}
+
+message LoginRequest {
+	string username = 1;
+	string password = 2;
+}
+
+message LoginReply {
+	string token =1;
+
+}
+
+message CreateAuthRequest {}
+message CreateAuthReply {}
+
+message UpdateAuthRequest {}
+message UpdateAuthReply {}
+
+message DeleteAuthRequest {}
+message DeleteAuthReply {}
+
+message GetAuthRequest {}
+message GetAuthReply {}
+
+message ListAuthRequest {}
+message ListAuthReply {}

@@ -3,10 +3,57 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
+    /api/v1/login:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.LoginReply'
+    /api/v1/ping:
+        get:
+            tags:
+                - Auth
+            operationId: Auth_Ping
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.PingReply'
+    /api/v1/register:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.RegisterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.RegisterReply'
     /helloworld/{name}:
         get:
             tags:
@@ -28,6 +75,35 @@ paths:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
 components:
     schemas:
+        api.user.v1.LoginReply:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.user.v1.LoginRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+        api.user.v1.PingReply:
+            type: object
+            properties:
+                message:
+                    type: string
+        api.user.v1.RegisterReply:
+            type: object
+            properties:
+                message:
+                    type: string
+        api.user.v1.RegisterRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -35,4 +111,6 @@ components:
                     type: string
             description: The response message containing the greetings
 tags:
+    - name: Auth
     - name: Greeter
+      description: The greeting service definition.
