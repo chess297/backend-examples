@@ -3,14 +3,14 @@ package services
 import "github.com/gin-gonic/gin"
 
 type HelloRes struct {
-	
+	Message string `json:"message"`
 }
 
+func (c *CmsApp) Hello(ctx *gin.Context) {
 
-func(c *CmsApp) Hello(ctx *gin.Context) {
-	
 	ctx.JSON(200, gin.H{
-		"message": "Hello world!",
-		"data": HelloRes{},
+		"data": HelloRes{
+			Message: "Hello world!",
+		},
 	})
 }
