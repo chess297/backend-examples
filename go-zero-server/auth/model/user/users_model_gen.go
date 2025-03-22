@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -39,8 +40,8 @@ type (
 		Id         int64        `db:"id"`          // Primary Key
 		Username   string       `db:"username"`    // 用户名
 		Password   string       `db:"password"`    // 密码
-		CreateTime sql.NullTime `db:"create_time"` // Create Time
-		UpdateTime sql.NullTime `db:"update_time"` // Update Time
+		CreateTime time.Time `db:"create_time"` // Create Time
+		UpdateTime time.Time `db:"update_time"` // Update Time
 	}
 )
 

@@ -12,6 +12,10 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+type PingResponse struct {
+	Message string `json:"message"`
+}
+
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

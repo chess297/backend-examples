@@ -18,12 +18,16 @@ type LoginResponse {
 	Token string `json:"token"`
 }
 
+type PingResponse {
+	Message string `json:"message"`
+}
+
 @server (
 	prefix: /api/v1
 )
 service auth-api {
 	@handler Ping
-	get /ping returns (string)
+	get /ping returns (PingResponse)
 
 	@handler Register
 	post /register (RegisterRequest) returns (RegisterResponse)

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"auth/internal/svc"
+	"auth/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -22,7 +23,8 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 	}
 }
 
-func (l *PingLogic) Ping() error {
-	l.WithContext(l.ctx).Info("pong")
-	return nil
+func (l *PingLogic) Ping() (*types.PingResponse, error) {
+	return &types.PingResponse{
+		Message: "pong",
+	}, nil
 }

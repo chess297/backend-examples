@@ -2,9 +2,11 @@ package logic
 
 import (
 	"context"
+	"time"
 
 	"auth/internal/svc"
 	"auth/internal/types"
+	"auth/model/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +26,30 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.RegisterResponse, err error) {
-	// todo: add your logic here and delete this line
+	model := user.NewUsersModel(l.svcCtx.Mysql)
+	// 查看用户是否已经存在
+	u, err := model.FindOneByUsername(l.ctx, req.Username)
+	if err != nil {
+		return &types.RegisterResponse{
+			Message: "查询用户失败",
+		}, err
+	}
+	if u != nil {
+		return &types.RegisterResponse{
+			Message: "用户已经存在",
+		}, err
+	}
 
-	return
+	// 插入用户
+	now := time.Now()
+	_, err = model.Insert(l.ctx, &user.Users{
+		Username:   req.Username,
+		Password:   req.Password,
+		CreateTime: now,
+		UpdateTime: now,
+	})
+	return &types.RegisterResponse{
+		// Username: req.Username,
+		Message: "注册成功",
+	}, err
 }
