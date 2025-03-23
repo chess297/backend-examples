@@ -12,9 +12,9 @@ const (
 
 func RegisterRoutes(r gin.IRouter) {
 	cmsApp := services.New()
-	noAuthGroup :=r.Group(RootPath)
+	noAuthGroup := r.Group(RootPath)
 	{
-		noAuthGroup.GET("/ping", cmsApp.Hello)
+		noAuthGroup.GET("/hello", cmsApp.Hello)
 		noAuthGroup.POST("/register", cmsApp.Register)
 		noAuthGroup.POST("/login", cmsApp.Login)
 	}
