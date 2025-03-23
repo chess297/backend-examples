@@ -12,7 +12,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginLogic struct {
@@ -35,16 +34,13 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		return nil, err
 	}
 
-	hashedPassword, err := encryptPassword(req.Password)
-	fmt.Println(hashedPassword)
-	fmt.Println(u.Password)
-	if err != nil {
+	if err := utils.ComparePassword(u.Password, req.Password); err != nil {
 		return &types.LoginResponse{
-			Token: "用户名或密码错误1",
+			BaseResponse: types.BaseResponse{
+				Code: 1,
+				Msg:  "用户名或密码错误",
+			},
 		}, err
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(u.Password)); err != nil {
-		return nil, err
 	}
 	// 生成token
 	token, err := l.generateToken(req.Username)
@@ -53,17 +49,16 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 	}
 
 	return &types.LoginResponse{
-		Token: token,
-	}, nil
-}
-
-func encryptPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Printf("bcrypt generate from password error  = %v", err)
-		return "", err
-	}
-	return string(hashedPassword), err
+		BaseResponse: types.BaseResponse{
+			Code: 0,
+			Msg:  "success",
+		},
+		Data: struct {
+			Token string `json:"token"`
+		}{
+			Token: token,
+		},
+	}, err
 }
 
 func (l *LoginLogic) generateToken(userID string) (string, error) {

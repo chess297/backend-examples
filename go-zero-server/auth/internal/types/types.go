@@ -3,17 +3,32 @@
 
 package types
 
+type BaseResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+type HelloRequest struct {
+	Name string `json:"message"`
+}
+
+type HelloResponse struct {
+	BaseResponse
+	Data struct {
+		Message string `json:"message"`
+	}
+}
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
-}
-
-type PingResponse struct {
-	Message string `json:"message"`
+	BaseResponse
+	Data struct {
+		Token string `json:"token"`
+	}
 }
 
 type RegisterRequest struct {
@@ -22,5 +37,8 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	Message string `json:"message"`
+	BaseResponse
+	Data struct {
+		Message string `json:"message"`
+	}
 }

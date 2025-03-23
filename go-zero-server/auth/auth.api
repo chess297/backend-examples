@@ -1,33 +1,54 @@
 syntax = "v1"
 
-type RegisterRequest {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type BaseResponse {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
-type RegisterResponse {
-	Message string `json:"message"`
-}
+type (
+	RegisterRequest {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	RegisterResponse {
+		BaseResponse
+		Data {
+			Message string `json:"message"`
+		}
+	}
+)
 
-type LoginRequest {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
+type (
+	LoginRequest {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	LoginResponse {
+		BaseResponse
+		Data {
+			Token string `json:"token"`
+		}
+	}
+)
 
-type LoginResponse {
-	Token string `json:"token"`
-}
-
-type PingResponse {
-	Message string `json:"message"`
-}
+type (
+	HelloRequest {
+		name string `json:"message"`
+	}
+	HelloResponse {
+		BaseResponse
+		Data {
+			Message string `json:"message"`
+		}
+	}
+)
 
 @server (
 	prefix: /api/v1
 )
 service auth-api {
-	@handler Ping
-	get /ping returns (PingResponse)
+	@handler Hello
+	get /hello returns (HelloResponse)
 
 	@handler Register
 	post /register (RegisterRequest) returns (RegisterResponse)

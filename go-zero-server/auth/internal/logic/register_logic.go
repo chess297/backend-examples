@@ -30,13 +30,19 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 	// 查看用户是否已经存在
 	u, err := model.FindOneByUsername(l.ctx, req.Username)
 	if err != nil {
-		return &types.RegisterResponse{
-			Message: "查询用户失败",
-		}, err
+		return &types.RegisterResponse{}, err
 	}
 	if u != nil {
 		return &types.RegisterResponse{
-			Message: "用户已经存在",
+			BaseResponse: types.BaseResponse{
+				Code: 1,
+				Msg:  "error",
+			},
+			Data: struct {
+				Message string `json:"message"`
+			}{
+				Message: "用户已经存在",
+			},
 		}, err
 	}
 
@@ -49,7 +55,14 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 		UpdateTime: now,
 	})
 	return &types.RegisterResponse{
-		// Username: req.Username,
-		Message: "注册成功",
+		BaseResponse: types.BaseResponse{
+			Code: 0,
+			Msg:  "success",
+		},
+		Data: struct {
+			Message string `json:"message"`
+		}{
+			Message: "注册成功",
+		},
 	}, err
 }
