@@ -21,22 +21,22 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger,db *gorm.DB,rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{
 		DataBase: db,
-		Redis: rdb,
+		Redis:    rdb,
 	}, cleanup, nil
 }
 
 func NewDataBase(c *conf.Data) *gorm.DB {
-	db,err :=gorm.Open(mysql.Open(c.GetDatabase().GetSource()))
+	db, err := gorm.Open(mysql.Open(c.GetDatabase().GetSource()))
 	if err != nil {
 		panic(err)
 	}
-	sqlDB,err:=db.DB()
+	sqlDB, err := db.DB()
 	if err != nil {
 		panic(err)
 	}
@@ -52,10 +52,10 @@ func NewRedis(c *conf.Data) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "spiritchess", // no password set
-		DB:       0,  // use default DB
+		DB:       0,             // use default DB
 	})
-	_,err:=rdb.Ping(context.Background()).Result()
-	if err!= nil {
+	_, err := rdb.Ping(context.Background()).Result()
+	if err != nil {
 		panic(err)
 	}
 	return rdb

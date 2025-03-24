@@ -30,18 +30,18 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 func (r *userRepo) Save(ctx context.Context, g *biz.User) (*biz.User, error) {
 	hashedPassword, err := encryptPassword(g.Password)
 	fmt.Println(hashedPassword)
-	if err!= nil {
+	if err != nil {
 		panic(err)
 	}
 	g.Password = hashedPassword
-	now:= time.Now()
+	now := time.Now()
 	result := r.data.DataBase.Create(&biz.User{
-		Username: g.Username,
-		Password: hashedPassword,
+		Username:   g.Username,
+		Password:   hashedPassword,
 		CreateTime: now,
 		UpdateTime: now,
 	})
-	if result.Error!= nil {
+	if result.Error != nil {
 		return nil, result.Error
 	}
 	return g, nil
@@ -49,7 +49,7 @@ func (r *userRepo) Save(ctx context.Context, g *biz.User) (*biz.User, error) {
 
 func (r *userRepo) SaveToken(ctx context.Context, g *biz.User) (string, error) {
 	token, err := r.generateToken(ctx, g.Username)
-	if err!= nil {
+	if err != nil {
 		panic(err)
 	}
 	// g.Token = token
@@ -64,35 +64,34 @@ func (r *userRepo) FindByID(context.Context, int64) (*biz.User, error) {
 	return nil, nil
 }
 
-/// 判断用户是否存在
+// / 判断用户是否存在
 func (r *userRepo) IsExist(username string) (bool, error) {
 	var user biz.User
 	result := r.data.DataBase.Where("username = ?", username).First(&user)
-	fmt.Println(result.Error!= nil && result.Error == gorm.ErrRecordNotFound)
+	fmt.Println(result.Error != nil && result.Error == gorm.ErrRecordNotFound)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			fmt.Println("用户不存在")
 			return false, nil
-		}else{
+		} else {
 			panic(result.Error)
 		}
 	}
-	
+
 	return true, nil
-	
+
 }
 
-func (r *userRepo) FindByUsername(c context.Context,username string) (*biz.User, error) {
+func (r *userRepo) FindByUsername(c context.Context, username string) (*biz.User, error) {
 	var user biz.User
 	fmt.Println(username)
 	result := r.data.DataBase.Where("username = ?", username).First(&user)
-	if result.Error!= nil   {
+	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return &user, nil
 }
-
 
 func (r *userRepo) ListByHello(context.Context, string) ([]*biz.User, error) {
 	return nil, nil
@@ -101,7 +100,6 @@ func (r *userRepo) ListByHello(context.Context, string) ([]*biz.User, error) {
 func (r *userRepo) ListAll(context.Context) ([]*biz.User, error) {
 	return nil, nil
 }
-
 
 func (r *userRepo) generateToken(ctx context.Context, userID string) (string, error) {
 	token := uuid.New().String()
@@ -120,7 +118,6 @@ func (r *userRepo) generateToken(ctx context.Context, userID string) (string, er
 	}
 	return token, nil
 }
-
 
 func encryptPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

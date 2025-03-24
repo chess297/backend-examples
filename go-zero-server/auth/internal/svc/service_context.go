@@ -9,14 +9,14 @@ import (
 
 type ServiceContext struct {
 	Config config.Config
-	Mysql sqlx.SqlConn
-	Redis *redis.Redis
+	Mysql  sqlx.SqlConn
+	Redis  *redis.Redis
 }
 
-func NewServiceContext(c config.Config,m sqlx.SqlConn,r * redis.Redis) *ServiceContext {
+func NewServiceContext(c config.Config, m sqlx.SqlConn, r *redis.Redis) *ServiceContext {
 	return &ServiceContext{
 		Config: c,
-		Mysql:m,
-		Redis: r,
+		Mysql:  m,
+		Redis:  r,
 	}
 }

@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	rest.RestConf
-	MySqlDatabase 	string
-	MySqlPassword   string
-	RedisConf redis.RedisConf
+	MySqlDatabase string
+	MySqlPassword string
+	RedisConf     redis.RedisConf
 }

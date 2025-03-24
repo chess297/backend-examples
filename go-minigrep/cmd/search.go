@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	query string
-	filePath string
+	query      string
+	filePath   string
 	ignoreCase bool
 )
 
@@ -27,69 +27,67 @@ var rootCmd = &cobra.Command{
 		}
 		var result []string
 		if ignoreCase {
-			result,err = searchCaseInsensitive(contents,query)
-			if err!= nil {
+			result, err = searchCaseInsensitive(contents, query)
+			if err != nil {
 				log.Fatal(err)
 			}
-		}else {
-			result,err = search(contents, query)
-			if err!= nil {
+		} else {
+			result, err = search(contents, query)
+			if err != nil {
 				log.Fatal(err)
 			}
 		}
 		log.Println(result)
 	},
-	
 }
 
- func Execute()  {
+func Execute() {
 	rootCmd.Flags().StringVarP(&query, "query", "q", "", "query string")
 	rootCmd.Flags().StringVarP(&filePath, "file-path", "f", "", "file path")
 	rootCmd.Flags().BoolVarP(&ignoreCase, "ignore-case", "i", false, "ignore case")
-	if err:= rootCmd.Execute(); err!= nil {
+	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func search(contents []string, query string) ([]string,error) {
+func search(contents []string, query string) ([]string, error) {
 	result := []string{}
 	for i := 0; i < len(contents); i++ {
 		if strings.Contains(contents[i], query) {
 			result = append(result, contents[i])
 		}
 	}
-	return result,nil
+	return result, nil
 }
 
-func searchCaseInsensitive(contents []string, query string) ([]string,error) {
+func searchCaseInsensitive(contents []string, query string) ([]string, error) {
 	result := []string{}
 	for i := 0; i < len(contents); i++ {
 		if strings.Contains(strings.ToLower(contents[i]), strings.ToLower(query)) {
 			result = append(result, contents[i])
 		}
 	}
-	return result,nil
+	return result, nil
 }
 
-
 func readFile(filePath string) ([]string, error) {
-	file,err:= os.Open(filePath)
-	if err!= nil {
-		return nil,err
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
 	}
 	defer file.Close()
 	var contents []string
-	r:= bufio.NewReader(file)
+	r := bufio.NewReader(file)
 	for {
-		line,_,err := r.ReadLine()
+		line, _, err := r.ReadLine()
 		if err == io.EOF {
 			break
 		}
-		if err!= nil {
-			return contents,err
+		if err != nil {
+			return contents, err
 		}
 		contents = append(contents, string(line))
 	}
-	return contents,nil
+	return contents, nil
 
 }

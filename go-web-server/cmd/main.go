@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	r:= gin.Default()
+	r := gin.Default()
 	api.RegisterRoutes(r)
-	err:=r.Run()
+	err := r.Run()
 	if err != nil {
 		fmt.Printf("r run error = %v", err)
 		return

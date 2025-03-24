@@ -37,9 +37,9 @@ type (
 	}
 
 	Users struct {
-		Id         int64        `db:"id"`          // Primary Key
-		Username   string       `db:"username"`    // 用户名
-		Password   string       `db:"password"`    // 密码
+		Id         int64     `db:"id"`          // Primary Key
+		Username   string    `db:"username"`    // 用户名
+		Password   string    `db:"password"`    // 密码
 		CreateTime time.Time `db:"create_time"` // Create Time
 		UpdateTime time.Time `db:"update_time"` // Update Time
 	}

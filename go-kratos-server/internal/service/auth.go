@@ -10,7 +10,6 @@ import (
 type AuthService struct {
 	pb.UnimplementedAuthServer
 	uc *biz.UserUsecase
-
 }
 
 func NewAuthService(uc *biz.UserUsecase) *AuthService {
@@ -20,11 +19,11 @@ func NewAuthService(uc *biz.UserUsecase) *AuthService {
 }
 
 func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterReply, error) {
-	err:= s.uc.Register(ctx, &biz.User{
+	err := s.uc.Register(ctx, &biz.User{
 		Username: req.Username,
 		Password: req.Password,
 	})
-	if err!= nil {
+	if err != nil {
 		return &pb.RegisterReply{
 			Message: "fail",
 		}, err
@@ -36,19 +35,18 @@ func (s *AuthService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 }
 func (s *AuthService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginReply, error) {
 	// s.uc.(ctx, &biz.User{})
-	token,err:= s.uc.Login(ctx, &biz.User{
+	token, err := s.uc.Login(ctx, &biz.User{
 		Username: req.Username,
 		Password: req.Password,
 	})
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &pb.LoginReply{
 		Token: token,
-	},nil
-	
-	
+	}, nil
+
 }
 
 func (s *AuthService) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingReply, error) {

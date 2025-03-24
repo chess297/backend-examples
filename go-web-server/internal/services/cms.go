@@ -8,13 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type CmsApp struct{
-	db *gorm.DB
+type CmsApp struct {
+	db    *gorm.DB
 	redis *redis.Client
 }
 
 func New() *CmsApp {
-	app:=&CmsApp{}
+	app := &CmsApp{}
 	connectMySql(app)
 	connectRedis(app)
 	return app
@@ -27,11 +27,11 @@ type Res struct {
 }
 
 func connectMySql(app *CmsApp) {
-	db,err:=gorm.Open(mysql.Open("root:spiritchess@tcp(localhost:3306)/?charset=utf8mb4&parseTime=True&loc=Local"))
+	db, err := gorm.Open(mysql.Open("root:spiritchess@tcp(localhost:3306)/?charset=utf8mb4&parseTime=True&loc=Local"))
 	if err != nil {
 		panic(err)
 	}
-	sqlDB,err:=db.DB()
+	sqlDB, err := db.DB()
 	if err != nil {
 		panic(err)
 	}
@@ -46,10 +46,10 @@ func connectRedis(app *CmsApp) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "spiritchess", // no password set
-		DB:       0,  // use default DB
+		DB:       0,             // use default DB
 	})
-	_,err:=rdb.Ping(context.Background()).Result()
-	if err!= nil {
+	_, err := rdb.Ping(context.Background()).Result()
+	if err != nil {
 		panic(err)
 	}
 	app.redis = rdb
