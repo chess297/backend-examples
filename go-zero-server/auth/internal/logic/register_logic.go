@@ -38,9 +38,7 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 				Code: 1,
 				Msg:  "error",
 			},
-			Data: struct {
-				Message string `json:"message"`
-			}{
+			Data: types.RegisterResponseData{
 				Message: "用户已经存在",
 			},
 		}, err
@@ -59,9 +57,7 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 			Code: 0,
 			Msg:  "success",
 		},
-		Data: struct {
-			Message string `json:"message"`
-		}{
+		Data: types.RegisterResponseData{
 			Message: "注册成功",
 		},
 	}, err

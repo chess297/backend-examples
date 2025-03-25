@@ -1,20 +1,20 @@
 syntax = "v1"
 
-type BaseResponse {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-}
+import (
+	"./base.api"
+)
 
 type (
 	RegisterRequest {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
+	RegisterResponseData {
+		Message string `json:"message"`
+	}
 	RegisterResponse {
 		BaseResponse
-		Data {
-			Message string `json:"message"`
-		}
+		Data RegisterResponseData `json:"data"`
 	}
 )
 
@@ -23,11 +23,12 @@ type (
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
+	LoginResponseData {
+		Token string `json:"token"`
+	}
 	LoginResponse {
 		BaseResponse
-		Data {
-			Token string `json:"token"`
-		}
+		Data LoginResponseData `json:"data"`
 	}
 )
 
@@ -35,18 +36,19 @@ type (
 	HelloRequest {
 		name string `json:"message"`
 	}
+	HelloResponseData {
+		Message string `json:"message"`
+	}
 	HelloResponse {
 		BaseResponse
-		Data {
-			Message string `json:"message"`
-		}
+		Data HelloResponseData `json:"data"`
 	}
 )
 
 @server (
 	prefix: /api/v1
 )
-service auth-api {
+service auth {
 	@handler Hello
 	get /hello returns (HelloResponse)
 
@@ -55,5 +57,32 @@ service auth-api {
 
 	@handler Login
 	post /login (LoginRequest) returns (LoginResponse)
+}
+
+type (
+	GetUserRequest {
+		Id int `path:"id"`
+	}
+	GetUserResponseData {
+		Id       int    `json:"id"`
+		Username string `json:"username"`
+	}
+	GetUserResponse {
+		BaseResponse
+		Data GetUserResponseData `json:"data"`
+	}
+)
+
+@server (
+	prefix: /api/v1
+	group:  user
+	jwt:    Auth
+)
+service auth {
+	@handler GetUser
+	get /user/:id (GetUserRequest) returns (GetUserResponse)
+
+	@handler GetUserProfile
+	get /user/profile returns (GetUserResponse)
 }
 

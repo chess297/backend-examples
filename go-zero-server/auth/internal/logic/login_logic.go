@@ -2,15 +2,14 @@ package logic
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"auth/internal/svc"
 	"auth/internal/types"
 	"auth/internal/utils"
+	"auth/internal/utils/token"
 	"auth/model/user"
 
-	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -43,7 +42,10 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		}, err
 	}
 	// 生成token
-	token, err := l.generateToken(req.Username)
+	token, err := token.GenJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), time.Now().Unix()+l.svcCtx.Config.Auth.AccessExpire, token.JwtTokenPayload{
+		UserID:   u.Id,
+		UserName: u.Username,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -53,28 +55,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 			Code: 0,
 			Msg:  "success",
 		},
-		Data: struct {
-			Token string `json:"token"`
-		}{
+		Data: types.LoginResponseData{
 			Token: token,
 		},
 	}, err
-}
-
-func (l *LoginLogic) generateToken(userID string) (string, error) {
-	token := uuid.New().String()
-	// key : session_id:{user_id} val : session_id  20s
-	sessionKey := utils.GetSessionKey(userID)
-	err := l.svcCtx.Redis.Set(sessionKey, token)
-	if err != nil {
-		fmt.Printf("rdb set error = %v \n", err)
-		return "", err
-	}
-	authKey := utils.GetAuthKey(token)
-	err = l.svcCtx.Redis.Set(authKey, time.Now().String())
-	if err != nil {
-		fmt.Printf("rdb set error = %v \n", err)
-		return "", err
-	}
-	return token, nil
 }

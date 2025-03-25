@@ -31,9 +31,7 @@ func (l *HelloLogic) Hello() (resp *types.HelloResponse, err error) {
 				Code: 0,
 				Msg:  "success",
 			},
-			Data: struct {
-				Message string `json:"message"`
-			}{
+			Data: types.HelloResponseData{
 				Message: name.(string),
 			},
 		}, nil
@@ -43,9 +41,7 @@ func (l *HelloLogic) Hello() (resp *types.HelloResponse, err error) {
 			Code: 1,
 			Msg:  "error",
 		},
-		Data: struct {
-			Message string `json:"message"`
-		}{
+		Data: types.HelloResponseData{
 			Message: "error",
 		},
 	}, nil

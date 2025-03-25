@@ -8,15 +8,31 @@ type BaseResponse struct {
 	Msg  string `json:"msg"`
 }
 
+type GetUserRequest struct {
+	Id int `path:"id"`
+}
+
+type GetUserResponse struct {
+	BaseResponse
+	Data GetUserResponseData `json:"data"`
+}
+
+type GetUserResponseData struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+}
+
 type HelloRequest struct {
 	Name string `json:"message"`
 }
 
 type HelloResponse struct {
 	BaseResponse
-	Data struct {
-		Message string `json:"message"`
-	}
+	Data HelloResponseData `json:"data"`
+}
+
+type HelloResponseData struct {
+	Message string `json:"message"`
 }
 
 type LoginRequest struct {
@@ -26,9 +42,11 @@ type LoginRequest struct {
 
 type LoginResponse struct {
 	BaseResponse
-	Data struct {
-		Token string `json:"token"`
-	}
+	Data LoginResponseData `json:"data"`
+}
+
+type LoginResponseData struct {
+	Token string `json:"token"`
 }
 
 type RegisterRequest struct {
@@ -38,7 +56,9 @@ type RegisterRequest struct {
 
 type RegisterResponse struct {
 	BaseResponse
-	Data struct {
-		Message string `json:"message"`
-	}
+	Data RegisterResponseData `json:"data"`
+}
+
+type RegisterResponseData struct {
+	Message string `json:"message"`
 }

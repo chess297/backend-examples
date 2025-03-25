@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	user "auth/internal/handler/user"
 	"auth/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -30,6 +31,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: RegisterHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/:id",
+				Handler: user.GetUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/profile",
+				Handler: user.GetUserProfileHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1"),
 	)
 }

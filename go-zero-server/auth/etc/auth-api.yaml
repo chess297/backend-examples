@@ -7,3 +7,6 @@ RedisConf:
   Host: 127.0.0.1:6379
   Pass: spiritchess
   Type: node
+Auth:
+  AccessSecret: "1234567890"
+  AccessExpire: 3600
