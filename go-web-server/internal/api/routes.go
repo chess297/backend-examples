@@ -17,5 +17,7 @@ func RegisterRoutes(r gin.IRouter) {
 		noAuthGroup.GET("/hello", cmsApp.Hello)
 		noAuthGroup.POST("/register", cmsApp.Register)
 		noAuthGroup.POST("/login", cmsApp.Login)
+		noAuthGroup.POST("/user/info", cmsApp.GetUserInfo)
 	}
+	// noAuthGroup:= r.Group(RootPath)
 }

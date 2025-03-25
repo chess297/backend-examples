@@ -1,6 +1,7 @@
 package services
 
 import (
+	constants "go-server-constants"
 	"go-web-server/internal/dao"
 	"go-web-server/internal/model"
 	"go-web-server/internal/utils"
@@ -93,7 +94,7 @@ func (c *CmsApp) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, model.BaseRes{
-		Code: model.CodeOk,
+		Code: constants.StatusOK,
 		Msg:  model.MsgOk,
 		Data: LoginRes{
 			Token:   token,
