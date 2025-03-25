@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	auth "auth/internal/handler/auth"
 	user "auth/internal/handler/user"
 	"auth/internal/svc"
 
@@ -18,17 +19,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodGet,
 				Path:    "/hello",
-				Handler: HelloHandler(serverCtx),
+				Handler: auth.HelloHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/login",
-				Handler: LoginHandler(serverCtx),
+				Handler: auth.LoginHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/register",
-				Handler: RegisterHandler(serverCtx),
+				Handler: auth.RegisterHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api/v1"),

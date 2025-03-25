@@ -24,6 +24,5 @@ func NewServiceContext(c config.Config, m sqlx.SqlConn, r *redis.Redis) *Service
 		Config: c,
 		Mysql:  m,
 		Redis:  r,
-		// Auth: c.,
 	}
 }

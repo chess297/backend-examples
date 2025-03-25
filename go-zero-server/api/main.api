@@ -47,8 +47,9 @@ type (
 
 @server (
 	prefix: /api/v1
+	group:  auth
 )
-service auth {
+service main {
 	@handler Hello
 	get /hello returns (HelloResponse)
 
@@ -78,7 +79,7 @@ type (
 	group:  user
 	jwt:    Auth
 )
-service auth {
+service main {
 	@handler GetUser
 	get /user/:id (GetUserRequest) returns (GetUserResponse)
 
