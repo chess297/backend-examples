@@ -103,7 +103,6 @@ func (r *userRepo) ListAll(context.Context) ([]*biz.User, error) {
 
 func (r *userRepo) generateToken(ctx context.Context, userID string) (string, error) {
 	token := uuid.New().String()
-	// key : session_id:{user_id} val : session_id  20s
 	sessionKey := utils.GetSessionKey(userID)
 	err := r.data.Redis.Set(ctx, sessionKey, token, time.Hour*8).Err()
 	if err != nil {

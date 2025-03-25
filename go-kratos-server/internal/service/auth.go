@@ -9,10 +9,10 @@ import (
 
 type AuthService struct {
 	pb.UnimplementedAuthServer
-	uc *biz.UserUsecase
+	uc *biz.UserUseCase
 }
 
-func NewAuthService(uc *biz.UserUsecase) *AuthService {
+func NewAuthService(uc *biz.UserUseCase) *AuthService {
 	return &AuthService{
 		uc: uc,
 	}

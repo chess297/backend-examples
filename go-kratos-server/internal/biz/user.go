@@ -35,19 +35,19 @@ type UserRepo interface {
 	ListAll(context.Context) ([]*User, error)
 }
 
-// UserUsecase is a Auth usecase.
-type UserUsecase struct {
+// UserUseCase is a Auth usecase.
+type UserUseCase struct {
 	repo UserRepo
 	log  *log.Helper
 }
 
-// NewUserUsecase new a Auth usecase.
-func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
+// NewUserUseCase new a Auth usecase.
+func NewUserUseCase(repo UserRepo, logger log.Logger) *UserUseCase {
+	return &UserUseCase{repo: repo, log: log.NewHelper(logger)}
 }
 
 // CreateAuth creates a Auth, and returns the new Auth.
-func (uc *UserUsecase) Login(ctx context.Context, g *User) (string, error) {
+func (uc *UserUseCase) Login(ctx context.Context, g *User) (string, error) {
 	u, err := uc.repo.FindByUsername(ctx, g.Username)
 
 	if err != nil {
@@ -66,7 +66,7 @@ func (uc *UserUsecase) Login(ctx context.Context, g *User) (string, error) {
 	return token, nil
 }
 
-func (uc *UserUsecase) Register(ctx context.Context, g *User) error {
+func (uc *UserUseCase) Register(ctx context.Context, g *User) error {
 	isExist, err := uc.repo.IsExist(g.Username)
 	if err != nil {
 		return err
