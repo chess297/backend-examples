@@ -30,7 +30,3 @@ export default () => {
   }
   return config;
 };
-
-export function getDBUrl() {
-  return config.db_url;
-}
