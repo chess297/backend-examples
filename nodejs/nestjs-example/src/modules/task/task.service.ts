@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import Redis from 'ioredis';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -11,6 +11,7 @@ export class TaskService {
   constructor(
     @InjectRedis() private readonly redis: Redis,
     private prisma: PrismaService,
+    private readonly logger: Logger,
   ) {}
   create(createTaskDto: CreateTaskDto) {
     const now = new Date();
@@ -26,6 +27,7 @@ export class TaskService {
 
   async findAll() {
     const list = await this.prisma.tasks.findMany();
+    this.logger.log('list', list);
     return list;
   }
 

@@ -1,10 +1,15 @@
 import { Prisma } from 'generated/prisma';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateTaskDto implements Prisma.tasksCreateInput {
-  task_id: string;
-  create_at?: Date;
-  update_at?: Date;
+export class CreateTaskDto implements Partial<Prisma.tasksCreateInput> {
+  @IsString()
+  @IsNotEmpty()
   title: string;
+
+  @IsString()
   description: string;
+
+  @IsBoolean()
+  @IsOptional()
   completed?: boolean;
 }

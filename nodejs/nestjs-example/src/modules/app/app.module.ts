@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TaskModule } from './modules/task/task.module';
+import { TaskModule } from '../task/task.module';
 import { ConfigModule } from '@nestjs/config';
-import config from './common/config/config';
-import { DatabaseModule } from './database/database.module';
-
+import config from '@/common/config/config';
+import { DatabaseModule } from '@/database/database.module';
+import { LogModule } from '@/common/logger/log.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -14,6 +14,7 @@ import { DatabaseModule } from './database/database.module';
     }),
     DatabaseModule,
     TaskModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
