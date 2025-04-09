@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
+import Redis from 'ioredis';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../../database/prisma.service';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class TaskService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRedis() private readonly redis: Redis,
+    private prisma: PrismaService,
+  ) {}
   create(createTaskDto: CreateTaskDto) {
     const now = new Date();
     return this.prisma.tasks.create({
@@ -19,9 +24,9 @@ export class TaskService {
     });
   }
 
-  findAll() {
-    // return `This action returns all task`;
-    return this.prisma.tasks.findMany();
+  async findAll() {
+    const list = await this.prisma.tasks.findMany();
+    return list;
   }
 
   findOne(id: number) {

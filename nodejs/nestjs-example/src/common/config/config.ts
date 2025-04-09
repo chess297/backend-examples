@@ -11,6 +11,7 @@ const YAML_CONFIG_FILENAME =
 let config: Config;
 export interface Config {
   db_url: string;
+  redis_url: string;
 }
 export default () => {
   config = yaml.load(
@@ -21,6 +22,7 @@ export default () => {
       config,
       Joi.object({
         db_url: Joi.string().required(),
+        redis_url: Joi.string().required(),
       }),
     );
   } catch (error) {
