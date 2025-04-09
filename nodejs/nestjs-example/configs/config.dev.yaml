@@ -1,3 +1,7 @@
 db_url: postgresql://backend-examples:backend-examples@localhost:5432/backend-examples?schema=public&TZ=Asia/Shanghai
 redis_url: redis://default:backend-examples@localhost:6379/0
-log_on: true
+log_on: false
+prefix: /api
+version:
+  - '1'
+  - '2'

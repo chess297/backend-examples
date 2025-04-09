@@ -24,6 +24,8 @@ export default () => {
         db_url: Joi.string().required(),
         redis_url: Joi.string().required(),
         log_on: Joi.boolean(),
+        prefix: Joi.string(),
+        version: Joi.array<string>(),
       }),
     );
   } catch (error) {

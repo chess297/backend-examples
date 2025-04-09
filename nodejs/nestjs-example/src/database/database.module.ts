@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { RedisModule } from '@nestjs-modules/ioredis';
-import config from '../common/config/config';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     RedisModule.forRootAsync({
-      useFactory: () => {
-        const url = config().redis_url;
-        // console.log('RedisModule url', url);
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const url = config.get<string>('redis_url');
         return {
           url: url,
           type: 'single',
