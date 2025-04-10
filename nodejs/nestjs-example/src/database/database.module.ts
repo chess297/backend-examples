@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ConfigService } from '@nestjs/config';
+import { CacheModule } from './cache/cache.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { TypeormModule } from './typeorm/typeorm.module';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { ConfigService } from '@nestjs/config';
         };
       },
     }),
+    CacheModule,
+    PrismaModule,
+    TypeormModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],

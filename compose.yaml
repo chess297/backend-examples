@@ -20,6 +20,31 @@ services:
       - 3306:3306
     volumes:
       - ./mysql/data:/var/lib/mysql
+  mongodb:
+    image: mongo:7.0
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: backend-examples
+      TZ: Asia/Shanghai
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb/data:/data/db
+    networks:
+      - backend-examples
+  mongodb-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: backend-examples
+      ME_CONFIG_MONGODB_URL: mongodb://root:backend-examples@mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    ports:
+      - 8081:8081
+    networks:
+      - backend-examples
   redis:
     image: redis
     restart: always
@@ -29,3 +54,6 @@ services:
       - --requirepass backend-examples
     environment:
       TZ: Asia/Shanghai
+networks:
+  backend-examples:
+    driver: bridge

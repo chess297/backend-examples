@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  // UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+// import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('task')
 export class TaskController {
@@ -20,6 +22,7 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
+  // @UseInterceptors(CacheInterceptor)
   @Get()
   findAll() {
     return this.taskService.findAll();

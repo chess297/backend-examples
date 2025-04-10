@@ -1,12 +1,13 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "./clients/postgresql"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("POSTGRESQL_URL")
 }
+
 
 model tasks {
   task_id     String   @id(map: "tasks_pk") @db.VarChar(36)
