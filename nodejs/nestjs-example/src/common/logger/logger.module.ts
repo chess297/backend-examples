@@ -75,4 +75,4 @@ function createDailyRotateTransport(level: string, filename: string) {
   providers: [Logger],
   exports: [Logger],
 })
-export class LogModule {}
+export class LoggerModule {}

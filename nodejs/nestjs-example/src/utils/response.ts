@@ -12,5 +12,5 @@ export const responseMessage = <T = any>(
   code: number = RESPONSE_CODE.SUCCESS,
   details?: string[],
 ): Response<T> => {
-  return { data, msg, code, details, timestamp: dayjs().valueOf() };
+  return { data, message: msg, code, details, timestamp: dayjs().valueOf() };
 };

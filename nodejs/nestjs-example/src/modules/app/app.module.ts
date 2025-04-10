@@ -5,16 +5,16 @@ import { TaskModule } from '../task/task.module';
 import { ConfigModule } from '@nestjs/config';
 import config from '@/common/config/config';
 import { DatabaseModule } from '@/database/database.module';
-import { LogModule } from '@/common/logger/log.module';
+import { LoggerModule } from '@/common/logger/logger.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [config],
       isGlobal: true,
     }),
+    LoggerModule,
     DatabaseModule,
     TaskModule,
-    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

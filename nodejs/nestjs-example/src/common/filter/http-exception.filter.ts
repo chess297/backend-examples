@@ -19,11 +19,18 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     // 获取状态码
     const statusCode = exception.getStatus();
-    // const responseBody = exception.getResponse();
+    const responseBody = exception.getResponse();
+    const details: string[] = [];
+    if (typeof responseBody === 'object' && responseBody !== null) {
+      if ('message' in responseBody && Array.isArray(responseBody.message)) {
+        const message = responseBody.message;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        details.push(...message);
+      }
+    }
     // 自定义异常返回体
-    this.logger.error(`${exception.message}`, exception.stack);
     response
       .status(statusCode)
-      .json(responseMessage(undefined, exception.message, statusCode));
+      .json(responseMessage(undefined, exception.message, statusCode, details));
   }
 }

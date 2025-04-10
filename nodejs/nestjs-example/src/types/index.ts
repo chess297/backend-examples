@@ -4,7 +4,7 @@
 export type Response<T = any> = {
   code: number; // 状态码
   data?: T; // 业务数据
-  msg: string; // 响应信息
+  message: string; // 响应信息
   timestamp: number; // 时间戳
   details?: string[];
 };
