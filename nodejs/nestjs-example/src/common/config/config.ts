@@ -22,6 +22,7 @@ export default () => {
       config,
       Joi.object({
         db_url: Joi.string().required(),
+        mysql_url: Joi.string().required(),
         redis_url: Joi.string().required(),
         log_on: Joi.boolean(),
         prefix: Joi.string(),

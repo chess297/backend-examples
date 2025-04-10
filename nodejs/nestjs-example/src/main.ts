@@ -7,7 +7,8 @@ import { AllExceptionsFilter } from './common/filter/all-exception.filter';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-
+import dayjs from 'dayjs';
+dayjs.locale('zh-cn');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);

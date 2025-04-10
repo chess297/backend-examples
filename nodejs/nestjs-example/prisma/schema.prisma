@@ -8,11 +8,10 @@ datasource db {
   url      = env("POSTGRESQL_URL")
 }
 
-
 model tasks {
-  task_id     String   @id(map: "tasks_pk") @db.VarChar(36)
-  create_at   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
-  update_at   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+  id     String   @id(map: "tasks_pk") @db.VarChar(36) @map("task_id")
+  createAt   DateTime @default(dbgenerated("NOW()")) @db.Timestamptz() @map("created_at")
+  updateAt   DateTime @default(dbgenerated("NOW()")) @db.Timestamptz() @map("updated_at")
   title       String   @db.VarChar(255)
   description String   @db.VarChar(255)
   completed   Boolean  @default(false)

@@ -1,4 +1,5 @@
 db_url: postgresql://backend-examples:backend-examples@localhost:5432/backend-examples?schema=public&TZ=Asia/Shanghai
+mysql_url: mysql://root:backend-examples@localhost:3306/backend-examples?schema=public&TZ=Asia/ShangHai
 redis_url: redis://default:backend-examples@localhost:6379/0
 log_on: false
 prefix: /api
