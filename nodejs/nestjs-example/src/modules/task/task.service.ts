@@ -3,11 +3,10 @@ import { v4 as uuid } from 'uuid';
 // import Redis from 'ioredis';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { PrismaService } from '@/database/prisma.service';
+import { PrismaService } from '@/database/prisma/prisma.service';
 // import { InjectRedis } from '@nestjs-modules/ioredis';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
@@ -16,75 +15,70 @@ import { Task } from './entities/task.entity';
 export class TaskService {
   constructor(
     @InjectRepository(Task)
-    private taskTypeOrmRepository: Repository<Task>,
+    private taskRepo: Repository<Task>,
     @Inject(CACHE_MANAGER) private cache: Cache,
     // @InjectRedis() private readonly redis: Redis,
     private prisma: PrismaService,
     private readonly logger: Logger,
   ) {}
 
-  get taskRepository() {
-    return this.prisma.$extends({
-      result: {
-        tasks: {
-          createAt: {
-            needs: { createAt: true },
-            compute(data) {
-              return dayjs(data.createAt).format();
-            },
-          },
-          updateAt: {
-            needs: { updateAt: true },
-            compute(data) {
-              return dayjs(data.updateAt).format();
-            },
-          },
-        },
-      },
-    });
-  }
-  create(createTaskDto: CreateTaskDto) {
-    return this.taskTypeOrmRepository.insert({
+  async create(createTaskDto: CreateTaskDto) {
+    // const task = await this.prisma.tasks.create({
+    //   data: {
+    //     id: uuid(),
+    //     title: createTaskDto.title,
+    //     description: createTaskDto.description,
+    //   },
+    // });
+    const task = await this.taskRepo.save({
       id: uuid(),
       title: createTaskDto.title,
       description: createTaskDto.description,
     });
+    return task;
   }
   async findAll() {
-    // const list = await this.taskRepository.tasks.findMany();
-    // return list;
-    const list = await this.taskTypeOrmRepository.find().catch((e) => {
-      this.logger.error(e);
-      return [];
-    });
+    // prisma
+    // const list = await this.prisma.tasks.findMany();
+    // mysql
+    const list = this.taskRepo.find();
     return list;
   }
 
-  findOne(id: string) {
-    return this.prisma.tasks.findFirst({
-      where: {
-        id,
-      },
-    });
+  async findOne(id: string) {
+    const task = await this.taskRepo.findOneBy({ id });
+    // const task = this.prisma.tasks.findUnique({
+    //   where: {
+    //     id,
+    //   },
+    // });
+    return task;
   }
 
   update(id: string, updateTaskDto: UpdateTaskDto) {
-    return this.prisma.tasks.update({
-      where: {
-        id,
-      },
-      data: {
-        ...updateTaskDto,
-        updateAt: new Date(),
-      },
+    return this.taskRepo.update(id, {
+      ...updateTaskDto,
+      updateAt: new Date(),
     });
+    // return this.prisma.tasks.update({
+    //   where: {
+    //     id,
+    //   },
+    //   data: {
+    //     ...updateTaskDto,
+    //     updateAt: new Date(),
+    //   },
+    // });
   }
 
   remove(id: string) {
-    return this.prisma.tasks.delete({
-      where: {
-        id,
-      },
+    return this.taskRepo.softRemove({ id }).catch((e) => {
+      this.logger.error(e);
     });
+    // return this.prisma.tasks.delete({
+    //   where: {
+    //     id,
+    //   },
+    // });
   }
 }

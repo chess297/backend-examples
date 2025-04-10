@@ -10,10 +10,11 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model tasks {
-  id     String   @unique(map: "task_id") @db.VarChar(36) @map("task_id")
-  title       String   @default("") @db.VarChar(255)
-  description String?  @db.VarChar(255)
-  completed   Boolean  @default(false)
-  createAt   DateTime @default(now()) @db.Timestamp(0) @map("created_at")
-  updateAt   DateTime @default(now()) @db.Timestamp(0) @map("updated_at")
+  id          String    @unique(map: "task_id") @map("id") @db.VarChar(36)
+  title       String    @default("") @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  completed   Boolean   @default(false)
+  createAt    DateTime  @default(now()) @map("create_at") @db.Timestamp(0)
+  updateAt    DateTime  @default(now()) @map("update_at") @db.Timestamp(0)
+  deleteAt    DateTime? @db.Timestamp(0) @map("delete_at")
 }

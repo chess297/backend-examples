@@ -9,10 +9,11 @@ datasource db {
 }
 
 model tasks {
-  id     String   @id(map: "tasks_pk") @db.VarChar(36) @map("task_id")
-  createAt   DateTime @default(dbgenerated("NOW()")) @db.Timestamptz() @map("created_at")
-  updateAt   DateTime @default(dbgenerated("NOW()")) @db.Timestamptz() @map("updated_at")
+  id     String   @id(map: "tasks_pk") @db.VarChar(36) @map("id")
   title       String   @db.VarChar(255)
   description String   @db.VarChar(255)
   completed   Boolean  @default(false)
+  createAt   DateTime   @default(dbgenerated("NOW()")) @db.Timestamptz() @map("create_at")
+  updateAt   DateTime   @default(dbgenerated("NOW()")) @db.Timestamptz() @map("update_at")
+  deleteAt   DateTime  @db.Timestamptz() @map("delete_at")
 }
