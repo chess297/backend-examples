@@ -1,7 +1,7 @@
-import { InterceptorsInterceptor } from './sequelize.interceptor';
+import { SequelizeInterceptor } from './sequelize.interceptor';
 
-describe('InterceptorsInterceptor', () => {
+describe('SequelizeInterceptor', () => {
   it('should be defined', () => {
-    expect(new InterceptorsInterceptor()).toBeDefined();
+    expect(new SequelizeInterceptor()).toBeDefined();
   });
 });

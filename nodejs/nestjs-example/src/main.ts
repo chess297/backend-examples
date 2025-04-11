@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { HttpExceptionsFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exception.filter';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
+import { SequelizeInterceptor } from './common/interceptors/sequelize.interceptor';
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
   dayjs.locale('zh-cn');
@@ -36,7 +36,7 @@ function resolveRoute(app: INestApplication, configService: ConfigService) {
 }
 
 function useInterceptors(app: INestApplication) {
-  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalInterceptors(new SequelizeInterceptor());
 }
 
 function usePipes(app: INestApplication) {

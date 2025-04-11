@@ -15,3 +15,8 @@ export class SigninRequest {
   @IsNotEmpty()
   password: string;
 }
+
+export class SigninResponse {
+  @ApiProperty()
+  accessToken: string;
+}

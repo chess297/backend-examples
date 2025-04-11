@@ -18,7 +18,7 @@ export class AuthService {
     const user = await this.userService.findOneByName(dto.name);
 
     if (!user) {
-      throw new BadRequestException('用户不存在');
+      throw new BadRequestException('用户名或密码错误');
     }
 
     const isValid = await this.verifyPassword(
@@ -30,11 +30,11 @@ export class AuthService {
     if (isValid) {
       const payload: JwtPayload = { username: user.name, userId: user.id };
       return {
-        access_token: this.jwtService.sign(payload),
+        accessToken: this.jwtService.sign(payload),
       };
+    } else {
+      throw new BadRequestException('用户名或密码错误');
     }
-
-    return dto;
   }
 
   signup(dto: SignupRequest) {
