@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { dataTimeFormatExtend } from './extends/data-time-format.extend';
+import dayjs from 'dayjs';
 @Global()
 @Module({
   imports: [],
@@ -10,8 +10,25 @@ import { dataTimeFormatExtend } from './extends/data-time-format.extend';
       provide: PrismaService,
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const prisma = new PrismaService(config);
-        return dataTimeFormatExtend(prisma);
+        const prisma = new PrismaService(config).$extends({
+          result: {
+            task: {
+              createAt: {
+                needs: { createAt: true },
+                compute(data) {
+                  return dayjs(data.createAt).format();
+                },
+              },
+              updateAt: {
+                needs: { updateAt: true },
+                compute(data) {
+                  return dayjs(data.updateAt).format();
+                },
+              },
+            },
+          },
+        });
+        return prisma;
       },
     },
   ],

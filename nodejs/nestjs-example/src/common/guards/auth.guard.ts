@@ -14,7 +14,7 @@ export interface RequestWithUser extends Request {
 
 export interface JwtPayload {
   username: string;
-  sub: number;
+  userId: string;
 }
 
 @Injectable()

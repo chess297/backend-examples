@@ -12,7 +12,7 @@ datasource db {
 model User {
   id         String     @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
   name       String     @unique @db.VarChar(50)
-  local_part String     @db.VarChar(64)
+  localPart String     @db.VarChar(64) @map("local_part")
   domain     String     @db.VarChar(255)
   password   String     @db.VarChar(255)
   profile    Profile?
@@ -22,7 +22,7 @@ model User {
   updateAt   DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   deleteAt   DateTime?   @map("delete_at") @db.Timestamptz()
 
-  @@unique([local_part, domain])
+  @@unique([localPart, domain])
   @@map("users")
 }
 
@@ -31,14 +31,14 @@ model Profile {
   id           String   @id(map: "profile_pk") @unique @map("id") @db.VarChar(36)
   userId       String   @unique @db.VarChar(36)
   user         User     @relation(fields: [userId], references: [id])
-  phone_number String   @db.VarChar(20)
-  country_code String   @db.VarChar(5)
+  phone String   @db.VarChar(20) @map("phone")
+  countryCode String   @db.VarChar(5) @map("country_code")
   address      String   @db.VarChar(255)
   createAt     DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt     DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt     DateTime @map("delete_at") @db.Timestamptz()
+  deleteAt     DateTime? @map("delete_at") @db.Timestamptz()
 
-  @@unique([userId, phone_number, country_code])
+  @@unique([userId, phone, countryCode])
   @@map("profiles")
 }
 
@@ -51,7 +51,7 @@ model Role {
   permissions RolePermissions[]
   createAt    DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt    DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime          @map("delete_at") @db.Timestamptz()
+  deleteAt    DateTime?          @map("delete_at") @db.Timestamptz()
 
   @@map("roles")
 }
@@ -65,7 +65,7 @@ model UserRole {
   user     User     @relation(fields: [userId], references: [id])
   createAt DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt DateTime @map("delete_at") @db.Timestamptz()
+  deleteAt DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("user_roles")
 }
@@ -79,7 +79,7 @@ model Permission {
   roles       RolePermissions[]
   createAt    DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt    DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime          @map("delete_at") @db.Timestamptz()
+  deleteAt    DateTime?          @map("delete_at") @db.Timestamptz()
 
   @@map("permissions")
 }
@@ -93,7 +93,7 @@ model RolePermissions {
   permission   Permission @relation(fields: [permissionId], references: [id])
   createAt     DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt     DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt     DateTime   @map("delete_at") @db.Timestamptz()
+  deleteAt     DateTime?   @map("delete_at") @db.Timestamptz()
 
   @@map("role_permissions")
 }
@@ -107,7 +107,7 @@ model Task {
   user        User     @relation(fields: [userId], references: [id])
   createAt    DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt    DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime @map("delete_at") @db.Timestamptz()
+  deleteAt    DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("tasks")
 }

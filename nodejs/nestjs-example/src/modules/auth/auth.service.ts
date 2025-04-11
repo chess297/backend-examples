@@ -1,9 +1,10 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { SigninRequest } from './dto/signin.dto';
 import { SignupRequest } from './dto/signup.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from '@/common/guards/auth.guard';
 
 @Injectable()
 export class AuthService {
@@ -17,17 +18,17 @@ export class AuthService {
     const user = await this.userService.findOneByName(dto.name);
 
     if (!user) {
-      throw new ForbiddenException('用户不存在');
+      throw new BadRequestException('用户不存在');
     }
 
     const isValid = await this.verifyPassword(
       dto.password,
       user.password,
     ).catch(() => {
-      throw new ForbiddenException('用户名或密码错误');
+      throw new BadRequestException('用户名或密码错误');
     });
     if (isValid) {
-      const payload = { username: user.name, sub: user.id };
+      const payload: JwtPayload = { username: user.name, userId: user.id };
       return {
         access_token: this.jwtService.sign(payload),
       };
