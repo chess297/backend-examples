@@ -18,9 +18,10 @@ import { UpdateProfileRequest } from './dto/update-profile.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard, RequestWithUser } from '@/common/guards/auth.guard';
 
-@ApiTags('user-profile')
+@UseInterceptors(ClassSerializerInterceptor)
+@ApiTags('user')
 @UseGuards(AuthGuard)
-@Controller('profile')
+@Controller('user/profile')
 export class ProfileController {
   private readonly logger = new Logger(ProfileController.name);
   constructor(private readonly profileService: ProfileService) {}
@@ -30,10 +31,8 @@ export class ProfileController {
     return this.profileService.create(createProfileDto);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findOnByUserId(@Req() req: RequestWithUser) {
-    this.logger.log(`findOnByUserId User ID: ${req.user.userId}`);
+  findOnnByUserId(@Req() req: RequestWithUser) {
     return this.profileService.findOneByUserId(req.user.userId);
   }
 

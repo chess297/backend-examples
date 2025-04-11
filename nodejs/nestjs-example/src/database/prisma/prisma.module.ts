@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
       useFactory: (config: ConfigService) => {
         const prisma = new PrismaService(config).$extends({
           result: {
-            task: {
+            $allModels: {
               createAt: {
                 needs: { createAt: true },
                 compute(data) {
@@ -23,6 +23,12 @@ import dayjs from 'dayjs';
                 needs: { updateAt: true },
                 compute(data) {
                   return dayjs(data.updateAt).format();
+                },
+              },
+              deleteAt: {
+                needs: { deleteAt: true },
+                compute(data) {
+                  return dayjs(data.deleteAt).format();
                 },
               },
             },

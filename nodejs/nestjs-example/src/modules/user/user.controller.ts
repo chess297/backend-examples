@@ -3,16 +3,18 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Logger,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserRequest } from './dto/create-user.dto';
-import { UpdateUserRequest } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@/common/guards/auth.guard';
 
+@UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(AuthGuard)
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -29,19 +31,19 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    this.logger.log(`findOne: ${id}`);
-    return this.userService.findOne(id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   this.logger.log(`findOne: ${id}`);
+  //   return this.userService.findOne(id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserRequest) {
-    return this.userService.update(id, updateUserDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserRequest) {
+  //   return this.userService.update(id, updateUserDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.userService.remove(id);
+  // }
 }

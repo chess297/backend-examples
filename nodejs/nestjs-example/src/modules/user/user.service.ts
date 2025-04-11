@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { CreateUserRequest } from './dto/create-user.dto';
+import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -57,17 +57,40 @@ export class UserService {
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.prisma.user
+      .findMany({
+        omit: {
+          deleteAt: true,
+          password: true,
+        },
+      })
+      .then((list) => {
+        return list.map(
+          (item) =>
+            new GetUserResponse({
+              ...item,
+              email: `${item.localPart}@${item.domain}`,
+            }),
+        );
+      });
   }
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
+      omit: {
+        deleteAt: true,
+      },
       where: {
         id,
       },
     });
-    this.logger.log(`user ${user?.name}`);
-    return user;
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+    return new GetUserResponse({
+      ...user,
+      email: `${user.localPart}@${user.domain}`,
+    });
   }
 
   async findOneByName(name: string) {
