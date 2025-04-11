@@ -6,9 +6,9 @@ import {
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import { HttpExceptionsFilter } from './common/filter/http-exception.filter';
-import { AllExceptionsFilter } from './common/filter/all-exception.filter';
-import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { HttpExceptionsFilter } from './common/filters/http-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exception.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
@@ -40,7 +40,11 @@ function useInterceptors(app: INestApplication) {
 }
 
 function usePipes(app: INestApplication) {
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 }
 
 function useFilters(app: INestApplication) {
@@ -52,8 +56,11 @@ function useSwagger(app: INestApplication) {
     .setTitle('NestJS Example')
     .setDescription('The NestJS Example API description')
     .setVersion('1.0')
+    .setBasePath('/api/v1')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('swagger', app, documentFactory, {
+    jsonDocumentUrl: '/swagger-json',
+  });
 }
 void bootstrap();

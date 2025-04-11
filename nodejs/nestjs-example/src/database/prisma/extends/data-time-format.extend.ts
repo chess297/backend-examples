@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 export function dataTimeFormatExtend(prisma: PrismaClient) {
   const client = prisma.$extends({
     result: {
-      tasks: {
+      task: {
         createAt: {
           needs: { createAt: true },
           compute(data) {

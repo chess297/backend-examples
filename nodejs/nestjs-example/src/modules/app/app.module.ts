@@ -6,6 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import config from '@/common/config/config';
 import { DatabaseModule } from '@/database/database.module';
 import { LoggerModule } from '@/common/logger/logger.module';
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { ProfileModule } from '../profile/profile.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,6 +18,9 @@ import { LoggerModule } from '@/common/logger/logger.module';
     LoggerModule,
     DatabaseModule,
     TaskModule,
+    AuthModule,
+    UserModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

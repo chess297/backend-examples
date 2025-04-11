@@ -6,9 +6,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-
-import { responseMessage } from '@/utils';
-
+import reqId from 'request-ip';
+// 过滤所有的异常
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
@@ -21,11 +20,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    console.log('AllExceptionsFilter statusCode', statusCode);
+    const req = ctx.getRequest<reqId.Request>();
+    let ip: string | null = null;
+    if (req) {
+      ip = reqId.getClientIp(req);
+    }
 
     // 自定义异常返回体
-    response
-      .status(statusCode)
-      .json(responseMessage(null, '服务器内部错误!', statusCode));
+    response.status(statusCode).json({
+      // responseMessage(null, '服务器内部错误!', statusCode)
+      message: '服务器内部错误!',
+      statusCode,
+      timestamp: new Date().toISOString(),
+      ip,
+    });
   }
 }

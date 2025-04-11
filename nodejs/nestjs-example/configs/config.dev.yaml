@@ -5,4 +5,6 @@ log_on: false
 prefix: /api
 version:
   - '1'
-  - '2'
+jwt:
+  secret: backend-examples
+  expire: 7d

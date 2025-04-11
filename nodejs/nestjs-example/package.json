@@ -1,10 +1,10 @@
 {
   "name": "nestjs-example",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "an example for nestjs",
+  "author": "chess",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "viky.chen@outlook.com",
   "scripts": {
     "build": "nest build --type-check",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -67,6 +67,7 @@
     "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
+    "@types/request-ip": "^0.0.41",
     "@types/supertest": "^6.0.3",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
@@ -90,6 +91,10 @@
       "ts"
     ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@prisma/(.*)$": "<rootDir>/../prisma/$1"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

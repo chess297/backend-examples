@@ -6,9 +6,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-
-import { responseMessage } from '@/utils';
-
+import reqId from 'request-ip';
+// 过滤Http异常
 @Catch(HttpException)
 export class HttpExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionsFilter.name);
@@ -28,9 +27,19 @@ export class HttpExceptionsFilter implements ExceptionFilter {
         details.push(...message);
       }
     }
+    const req = ctx.getRequest<reqId.Request>();
+    let ip: string | null = null;
+    if (req) {
+      ip = reqId.getClientIp(req);
+    }
     // 自定义异常返回体
-    response
-      .status(statusCode)
-      .json(responseMessage(undefined, exception.message, statusCode, details));
+    response.status(statusCode).json({
+      message:
+        typeof responseBody === 'string' ? responseBody : '服务器内部错误!',
+      statusCode,
+      timestamp: new Date().toISOString(),
+      ip,
+      details,
+    });
   }
 }

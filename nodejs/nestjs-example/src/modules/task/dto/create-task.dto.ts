@@ -1,7 +1,6 @@
-import { Prisma } from '@prisma/clients/postgresql';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateTaskDto implements Partial<Prisma.tasksCreateInput> {
+export class CreateTaskRequest {
   @IsString()
   @IsNotEmpty()
   title: string;

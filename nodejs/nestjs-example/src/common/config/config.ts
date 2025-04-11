@@ -1,16 +1,19 @@
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import Joi from 'joi';
+import * as Joi from 'joi';
+import { __IS_DEV__ } from '@/constants';
 const CWD = process.cwd();
 
-const YAML_CONFIG_FILENAME =
-  process.env['NODE_ENV'] === 'production'
-    ? 'configs/config.yaml'
-    : 'configs/config.dev.yaml';
+const YAML_CONFIG_FILENAME = !__IS_DEV__
+  ? 'configs/config.yaml'
+  : 'configs/config.dev.yaml';
+
 let config: Config;
 export interface Config {
   db_url: string;
+  mysql_url: string;
+  log_on: boolean;
   redis_url: string;
 }
 export default () => {
@@ -27,7 +30,15 @@ export default () => {
         log_on: Joi.boolean(),
         prefix: Joi.string(),
         version: Joi.array<string>(),
+        port: Joi.number(),
+        jwt: Joi.object({
+          secret: Joi.string().required(),
+          expire: Joi.string().required(),
+        }).required(),
       }),
+      {
+        allowUnknown: false,
+      },
     );
   } catch (error) {
     if (error instanceof Error) {

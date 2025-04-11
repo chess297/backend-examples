@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 // import Redis from 'ioredis';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { CreateTaskRequest } from './dto/create-task.dto';
+import { UpdateTaskRequest } from './dto/update-task.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 // import { InjectRedis } from '@nestjs-modules/ioredis';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -22,7 +22,7 @@ export class TaskService {
     private readonly logger: Logger,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto) {
+  async create(createTaskDto: CreateTaskRequest) {
     // const task = await this.prisma.tasks.create({
     //   data: {
     //     id: uuid(),
@@ -55,7 +55,7 @@ export class TaskService {
     return task;
   }
 
-  update(id: string, updateTaskDto: UpdateTaskDto) {
+  update(id: string, updateTaskDto: UpdateTaskRequest) {
     return this.taskRepo.update(id, {
       ...updateTaskDto,
       updateAt: new Date(),
