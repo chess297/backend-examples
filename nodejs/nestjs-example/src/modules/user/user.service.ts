@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
-import { UpdateUserRequest } from './dto/update-user.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { ProfileService } from '../profile/profile.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { UpdateUserRequest } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -59,6 +59,9 @@ export class UserService {
   findAll() {
     return this.prisma.user
       .findMany({
+        where: {
+          deleteAt: null,
+        },
         omit: {
           deleteAt: true,
           password: true,
@@ -87,10 +90,7 @@ export class UserService {
     if (!user) {
       throw new BadRequestException('用户不存在');
     }
-    return new GetUserResponse({
-      ...user,
-      email: `${user.localPart}@${user.domain}`,
-    });
+    return new GetUserResponse(user);
   }
 
   async findOneByName(name: string) {
@@ -102,11 +102,61 @@ export class UserService {
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserRequest) {
-    return updateUserDto;
+  async update(id: string, updateUserDto: UpdateUserRequest) {
+    let localPart: string | null = null,
+      domain: string | null = null;
+    if (updateUserDto.email) {
+      [localPart, domain] = updateUserDto.email.split('@');
+    }
+    const data = {
+      ...updateUserDto,
+
+      localPart,
+      domain,
+    };
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        name: data.name,
+        localPart: data.localPart?.toString(),
+        domain: data.domain?.toString(),
+        updateAt: new Date(),
+      },
+    });
+    return user;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    // 删除用户前要先把用户信息删除
+    // 删除用户信息
+    await this.profileService.remove(id);
+    // 删除用户
+    await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        deleteAt: new Date(),
+      },
+    });
+
+    return null;
+  }
+
+  async removeMany(ids: string[]) {
+    for (const id of ids) {
+      await this.profileService.remove(id);
+      await this.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          deleteAt: new Date(),
+        },
+      });
+    }
+    return null;
   }
 }

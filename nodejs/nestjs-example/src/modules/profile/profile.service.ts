@@ -41,6 +41,7 @@ export class ProfileService {
     const profile = await this.prisma.profile.findUnique({
       omit: {
         userId: true,
+        id: true,
       },
       where: {
         userId: userId,
@@ -52,31 +53,66 @@ export class ProfileService {
             id: true,
             localPart: true,
             domain: true,
+            name: true,
           },
         },
       },
     });
     if (!profile) throw new BadRequestException('Profile not found');
+    // TODO 需要更优雅的处理邮箱
     const user = profile.user;
     const email = `${user.localPart}@${user.domain}`;
-
     return new GetProfileResponse({
       ...profile,
       email,
-      id: user.id,
     });
   }
 
-  update(id: string, updateProfileDto: UpdateProfileRequest) {
-    return this.prisma.profile.update({
+  async update(userId: string, updateProfileDto: UpdateProfileRequest) {
+    let localPart: string | null = null,
+      domain: string | null = null;
+    if (updateProfileDto.email) {
+      [localPart, domain] = updateProfileDto.email.split('@');
+    }
+
+    await this.prisma.user.update({
       where: {
-        id: id,
+        id: userId,
       },
-      data: updateProfileDto,
+      data: {
+        name: updateProfileDto.name,
+        localPart: localPart?.toString(),
+        domain: domain?.toString(),
+        updateAt: new Date(),
+      },
     });
+    delete updateProfileDto['email'];
+    delete updateProfileDto['name'];
+    await this.prisma.profile.update({
+      omit: {
+        id: true,
+        deleteAt: true,
+      },
+      where: {
+        userId,
+      },
+      data: {
+        ...updateProfileDto,
+        updateAt: new Date(),
+      },
+    });
+    return null;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async remove(userId: string) {
+    await this.prisma.profile.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        deleteAt: new Date(),
+      },
+    });
+    return null;
   }
 }

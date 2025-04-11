@@ -48,15 +48,14 @@ function usePipes(app: INestApplication) {
 }
 
 function useFilters(app: INestApplication) {
-  app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new HttpExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter());
 }
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('NestJS Example')
     .setDescription('The NestJS Example API description')
     .setVersion('1.0')
-    .setBasePath('/api/v1')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory, {

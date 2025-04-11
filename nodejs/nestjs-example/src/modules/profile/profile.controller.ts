@@ -1,22 +1,18 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   Req,
   Logger,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Patch,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileRequest } from './dto/create-profile.dto';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
-import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard, RequestWithUser } from '@/common/guards/auth.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
@@ -26,31 +22,22 @@ export class ProfileController {
   private readonly logger = new Logger(ProfileController.name);
   constructor(private readonly profileService: ProfileService) {}
 
-  @Post()
-  create(@Body() createProfileDto: CreateProfileRequest) {
-    return this.profileService.create(createProfileDto);
-  }
-
+  @ApiOperation({
+    summary: '查询用户信息',
+  })
   @Get()
   findOnnByUserId(@Req() req: RequestWithUser) {
     return this.profileService.findOneByUserId(req.user.userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profileService.findOne(id);
-  }
-
-  @Patch(':id')
+  @ApiOperation({
+    summary: '修改用户信息',
+  })
+  @Patch()
   update(
-    @Param('id') id: string,
+    @Req() req: RequestWithUser,
     @Body() updateProfileDto: UpdateProfileRequest,
   ) {
-    return this.profileService.update(id, updateProfileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profileService.remove(+id);
+    return this.profileService.update(req.user.userId, updateProfileDto);
   }
 }

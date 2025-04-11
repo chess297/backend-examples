@@ -16,7 +16,6 @@ export class CreateUserRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @Exclude()
   password: string;
 }
 
@@ -33,4 +32,7 @@ export class GetUserResponse extends CreateUserRequest {
   domain: string;
   @Exclude()
   deleteAt?: Date;
+
+  @Exclude()
+  declare password: string;
 }

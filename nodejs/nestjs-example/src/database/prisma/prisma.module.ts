@@ -12,7 +12,15 @@ import dayjs from 'dayjs';
       useFactory: (config: ConfigService) => {
         const prisma = new PrismaService(config).$extends({
           result: {
-            $allModels: {
+            user: {
+              email: {
+                needs: { localPart: true, domain: true },
+                compute(data) {
+                  return `${data.localPart}@${data.domain}`;
+                },
+              },
+            },
+            task: {
               createAt: {
                 needs: { createAt: true },
                 compute(data) {

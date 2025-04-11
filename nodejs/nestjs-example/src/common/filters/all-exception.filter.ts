@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/clients/postgresql/runtime/library';
 import { Response } from 'express';
 import reqId from 'request-ip';
 // 过滤所有的异常
@@ -25,14 +26,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (req) {
       ip = reqId.getClientIp(req);
     }
-    const message =
-      exception instanceof HttpException
-        ? exception.message
-        : '服务器内部错误!';
+    if (exception instanceof PrismaClientKnownRequestError) {
+      // 数据库操作错误
+      response.status(statusCode).json({
+        message: '数据库操作错误',
+        statusCode,
+        timestamp: new Date().toISOString(),
+        ip,
+      });
+      return;
+    }
+    if (exception instanceof HttpException) {
+      const message = exception.message ?? '服务器内部错误!';
+
+      // 自定义异常返回体
+      response.status(statusCode).json({
+        message,
+        statusCode,
+        timestamp: new Date().toISOString(),
+        ip,
+      });
+    }
 
     // 自定义异常返回体
     response.status(statusCode).json({
-      message,
+      message: '服务器内部错误!',
       statusCode,
       timestamp: new Date().toISOString(),
       ip,
