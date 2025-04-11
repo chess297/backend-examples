@@ -1,4 +1,3 @@
-export class SignupRequest {
-  email: string;
-  password: string;
-}
+import { CreateUserRequest } from '@/modules/user/dto/create-user.dto';
+
+export class SignupRequest extends CreateUserRequest {}

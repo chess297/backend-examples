@@ -25,11 +25,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (req) {
       ip = reqId.getClientIp(req);
     }
+    const message =
+      exception instanceof HttpException
+        ? exception.message
+        : '服务器内部错误!';
 
     // 自定义异常返回体
     response.status(statusCode).json({
       // responseMessage(null, '服务器内部错误!', statusCode)
-      message: '服务器内部错误!',
+      message,
       statusCode,
       timestamp: new Date().toISOString(),
       ip,

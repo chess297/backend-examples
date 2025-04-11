@@ -6,13 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileRequest } from './dto/create-profile.dto';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard, RequestWithUser } from '@/common/guards/auth.guard';
 
 @ApiTags('user-profile')
+@UseGuards(AuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
@@ -21,9 +25,10 @@ export class ProfileController {
   create(@Body() createProfileDto: CreateProfileRequest) {
     return this.profileService.create(createProfileDto);
   }
-
   @Get()
-  findAll() {
+  findAll(@Req() req: RequestWithUser) {
+    console.log('req', req.user);
+
     return this.profileService.findAll();
   }
 

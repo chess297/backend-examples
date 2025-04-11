@@ -14,13 +14,13 @@ model User {
   name       String     @unique @db.VarChar(50)
   local_part String     @db.VarChar(64)
   domain     String     @db.VarChar(255)
-  password   String     @db.VarChar(50)
+  password   String     @db.VarChar(255)
   profile    Profile?
   tasks      Task[]
   roles      UserRole[]
   createAt   DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   updateAt   DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt   DateTime   @map("delete_at") @db.Timestamptz()
+  deleteAt   DateTime?   @map("delete_at") @db.Timestamptz()
 
   @@unique([local_part, domain])
   @@map("users")

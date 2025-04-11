@@ -7,7 +7,7 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import { HttpExceptionsFilter } from './common/filters/http-exception.filter';
-import { AllExceptionsFilter } from './common/filters/all-exception.filter';
+// import { AllExceptionsFilter } from './common/filters/all-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
@@ -48,7 +48,7 @@ function usePipes(app: INestApplication) {
 }
 
 function useFilters(app: INestApplication) {
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new HttpExceptionsFilter());
 }
 function useSwagger(app: INestApplication) {

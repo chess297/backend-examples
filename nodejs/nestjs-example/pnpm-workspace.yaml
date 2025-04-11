@@ -4,6 +4,7 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@scarf/scarf'
   - '@swc/core'
+  - bcrypt
   - esbuild
   - nestjs-pino
   - prisma

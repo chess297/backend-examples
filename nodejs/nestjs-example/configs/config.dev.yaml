@@ -7,4 +7,4 @@ version:
   - '1'
 jwt:
   secret: backend-examples
-  expire: 7d
+  expire: 60s

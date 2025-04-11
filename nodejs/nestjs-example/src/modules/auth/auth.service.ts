@@ -1,18 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { SigninRequest } from './dto/signin.dto';
 import { SignupRequest } from './dto/signup.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  signin(dto: SigninRequest) {
+  private readonly logger = new Logger(AuthService.name);
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+  ) {}
+
+  async signin(dto: SigninRequest) {
+    const user = await this.userService.findOneByName(dto.name);
+
+    if (!user) {
+      throw new ForbiddenException('用户不存在');
+    }
+
+    const isValid = await this.verifyPassword(
+      dto.password,
+      user.password,
+    ).catch(() => {
+      throw new ForbiddenException('用户名或密码错误');
+    });
+    if (isValid) {
+      const payload = { username: user.name, sub: user.id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
+
     return dto;
   }
 
   signup(dto: SignupRequest) {
-    return dto;
+    return this.userService.create(dto);
   }
-
+  // 登出
   signout() {
     return 'sign out';
+  }
+
+  verifyPassword(password: string, hash: string) {
+    // 这里可以使用 bcrypt 库进行密码验证
+    return bcrypt.compare(password, hash);
   }
 }

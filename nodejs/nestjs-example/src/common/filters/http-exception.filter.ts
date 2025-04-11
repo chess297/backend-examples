@@ -19,6 +19,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     // 获取状态码
     const statusCode = exception.getStatus();
     const responseBody = exception.getResponse();
+
     const details: string[] = [];
     if (typeof responseBody === 'object' && responseBody !== null) {
       if ('message' in responseBody && Array.isArray(responseBody.message)) {
@@ -34,8 +35,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     }
     // 自定义异常返回体
     response.status(statusCode).json({
-      message:
-        typeof responseBody === 'string' ? responseBody : '服务器内部错误!',
+      message: exception.message,
       statusCode,
       timestamp: new Date().toISOString(),
       ip,
