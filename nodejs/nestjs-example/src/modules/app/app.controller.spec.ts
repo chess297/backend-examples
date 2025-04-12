@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Nestjs Pone!"', () => {
-      expect(appController.getPong()).toBe('Nestjs Pone!');
+      expect(appController.ping()).toBe('Nestjs Pone!');
     });
   });
 });
