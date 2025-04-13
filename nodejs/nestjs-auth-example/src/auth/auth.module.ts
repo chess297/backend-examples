@@ -7,13 +7,14 @@ import { LocalController } from './local/local.controller';
 import { JwtController } from './jwt/jwt.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JWT_SECRET } from '@/constants';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: 'nestjs-auth-example',
+      secret: JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     }),
   ],

@@ -4,12 +4,13 @@ import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { JwtService } from '@nestjs/jwt';
+import { JWT_SECRET } from '@/constants';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let server: App;
   const jwt = new JwtService({
-    secret: 'nestjs-auth-example',
+    secret: JWT_SECRET,
     signOptions: { expiresIn: '60s' },
   });
 
