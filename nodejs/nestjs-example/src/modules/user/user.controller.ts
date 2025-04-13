@@ -12,11 +12,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserRequest } from './dto/create-user.dto';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ParserJwtAuthGuard } from '@/common/guards/auth.guard';
 import { RemoveUserRequest } from './dto/remove-user.request';
 import { Prisma } from '@prisma/clients/postgresql';
 import { TaskService } from '../task/task.service';
+import { UserSchema } from './entities/user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(ParserJwtAuthGuard)
@@ -41,6 +42,10 @@ export class UserController {
     summary: '查询用户',
   })
   @Get()
+  @ApiOkResponse({
+    isArray: true,
+    type: UserSchema,
+  })
   findAll() {
     return this.userService.findAll();
   }

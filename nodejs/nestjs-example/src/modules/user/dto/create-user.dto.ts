@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { User } from '../entities/user.entity';
+import { UserSchema } from '../entities/user.entity';
 
-export class CreateUserRequest extends User {
+export class CreateUserRequest extends UserSchema {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

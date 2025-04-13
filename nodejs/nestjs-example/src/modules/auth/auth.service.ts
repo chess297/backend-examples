@@ -14,7 +14,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { User } from '../user/entities/user.entity';
+import { UserSchema } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -64,7 +64,7 @@ export class AuthService {
     return 'sign out';
   }
 
-  async verifyUser(email: string, password: string): Promise<User> {
+  async verifyUser(email: string, password: string): Promise<UserSchema> {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
