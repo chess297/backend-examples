@@ -13,9 +13,9 @@ export class ProfileService {
   async create(createProfileDto: CreateProfileRequest) {
     const data = {
       id: uuid(),
-      userId: createProfileDto.userId,
+      user_id: createProfileDto.user_id,
       phone: createProfileDto.phone ?? '',
-      countryCode: createProfileDto.countryCode ?? '',
+      country_code: createProfileDto.country_code ?? '',
       address: createProfileDto.address ?? '',
     };
     const profile = await this.prisma.profile.create({
@@ -37,53 +37,42 @@ export class ProfileService {
     if (!profile) throw new BadRequestException('Profile not found');
     return new GetProfileResponse(profile);
   }
-  async findOneByUserId(userId: string) {
+  async findOneByUserId(user_id: string) {
     const profile = await this.prisma.profile.findUnique({
       omit: {
-        userId: true,
+        user_id: true,
         id: true,
       },
       where: {
-        userId: userId,
+        user_id: user_id,
       },
 
       include: {
         user: {
           select: {
             id: true,
-            localPart: true,
-            domain: true,
             name: true,
+            email: true,
           },
         },
       },
     });
     if (!profile) throw new BadRequestException('Profile not found');
-    // TODO 需要更优雅的处理邮箱
     const user = profile.user;
-    const email = `${user.localPart}@${user.domain}`;
     return new GetProfileResponse({
       ...profile,
-      email,
+      ...user,
     });
   }
 
-  async update(userId: string, updateProfileDto: UpdateProfileRequest) {
-    let localPart: string | null = null,
-      domain: string | null = null;
-    if (updateProfileDto.email) {
-      [localPart, domain] = updateProfileDto.email.split('@');
-    }
-
+  async update(user_id: string, updateProfileDto: UpdateProfileRequest) {
     await this.prisma.user.update({
       where: {
-        id: userId,
+        id: user_id,
       },
       data: {
-        name: updateProfileDto.name,
-        localPart: localPart?.toString(),
-        domain: domain?.toString(),
-        updateAt: new Date(),
+        ...updateProfileDto,
+        update_at: new Date(),
       },
     });
     delete updateProfileDto['email'];
@@ -91,26 +80,23 @@ export class ProfileService {
     await this.prisma.profile.update({
       omit: {
         id: true,
-        deleteAt: true,
+        delete_at: true,
       },
       where: {
-        userId,
+        user_id,
       },
       data: {
         ...updateProfileDto,
-        updateAt: new Date(),
+        update_at: new Date(),
       },
     });
     return null;
   }
 
-  async remove(userId: string) {
-    await this.prisma.profile.update({
+  async remove(user_id: string) {
+    await this.prisma.profile.delete({
       where: {
-        userId: userId,
-      },
-      data: {
-        deleteAt: new Date(),
+        user_id: user_id,
       },
     });
     return null;

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 // import Redis from 'ioredis';
-import { CreateTaskRequest } from './dto/create-task.dto';
+import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 // import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -23,26 +23,39 @@ export class TaskService {
   ) {}
 
   async create(createTaskDto: CreateTaskRequest) {
-    // const task = await this.prisma.tasks.create({
-    //   data: {
-    //     id: uuid(),
-    //     title: createTaskDto.title,
-    //     description: createTaskDto.description,
+    // const user = await this.prisma.user.findUnique({
+    //   where: {
+    //     id: createTaskDto.user_id,
     //   },
     // });
-    const task = await this.taskRepo.save({
-      id: uuid(),
-      title: createTaskDto.title,
-      description: createTaskDto.description,
+    const id = uuid();
+    const task = await this.prisma.task.create({
+      data: {
+        id,
+        user_id: createTaskDto.user_id,
+        title: createTaskDto.title,
+        description: createTaskDto.description,
+      },
     });
+    // const task = await this.taskRepo.save({
+    //   id: uuid(),
+    //   title: createTaskDto.title,
+    //   description: createTaskDto.description,
+    // });
     return task;
   }
-  async findAll() {
+  async findAll(): Promise<FindTaskResponse> {
     // prisma
-    // const list = await this.prisma.tasks.findMany();
+    const records = await this.prisma.task.findMany();
     // mysql
-    const list = this.taskRepo.find();
-    return list;
+    // const records = await this.taskRepo.find();
+    // await new Promise((resolve) => {
+    //   setTimeout(resolve, 3000);
+    // });
+    return new FindTaskResponse({
+      records,
+      total: records.length,
+    });
   }
 
   async findOne(id: string) {
@@ -58,7 +71,7 @@ export class TaskService {
   update(id: string, updateTaskDto: UpdateTaskRequest) {
     return this.taskRepo.update(id, {
       ...updateTaskDto,
-      updateAt: new Date(),
+      update_at: new Date(),
     });
     // return this.prisma.tasks.update({
     //   where: {
@@ -66,7 +79,7 @@ export class TaskService {
     //   },
     //   data: {
     //     ...updateTaskDto,
-    //     updateAt: new Date(),
+    //     update_at: new Date(),
     //   },
     // });
   }
@@ -80,5 +93,17 @@ export class TaskService {
     //     id,
     //   },
     // });
+  }
+
+  async findUserTasks(user_id: string) {
+    const records = await this.prisma.task.findMany({
+      where: {
+        user_id,
+      },
+    });
+    return new FindTaskResponse({
+      records,
+      total: records.length,
+    });
   }
 }

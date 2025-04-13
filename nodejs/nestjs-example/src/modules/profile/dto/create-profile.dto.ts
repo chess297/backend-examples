@@ -8,7 +8,7 @@ export class CreateProfileRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  user_id: string;
 
   @ApiProperty()
   @IsString()
@@ -17,7 +17,7 @@ export class CreateProfileRequest {
 
   @ApiProperty()
   @IsString()
-  countryCode?: string;
+  country_code?: string;
 
   @ApiProperty()
   @IsString()
@@ -37,5 +37,5 @@ export class GetProfileResponse extends CreateProfileRequest {
   email: string;
 
   @Exclude()
-  deleteAt: Date | null;
+  delete_at: Date | null;
 }

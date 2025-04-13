@@ -1,3 +1,4 @@
+import { User } from '@/modules/user/entities/user.entity';
 import {
   CanActivate,
   ExecutionContext,
@@ -6,19 +7,18 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
 export interface RequestWithUser extends Request {
   user: JwtPayload;
 }
 
-export interface JwtPayload {
-  username: string;
-  userId: string;
-}
+export type JwtPayload = Omit<User, 'password'>;
 
+// 校验请求头中的jwt鉴权，并且将jwt解析出来的信息赋值到request中
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class ParserJwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -48,3 +48,11 @@ export class AuthGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 }
+
+// 单纯的请求体字段校验
+@Injectable()
+export class LocalAuthGuard extends AuthGuard('local') {}
+
+// 单纯的jwt校验，无法将payload往后传递
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}

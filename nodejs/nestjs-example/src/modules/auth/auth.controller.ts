@@ -1,9 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninRequest, SigninResponse } from './dto/signin.dto';
 import { SignupRequest, SignupResponse } from './dto/signup.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SwaggerErr, SwaggerOk } from '@/common/decorators/swagger.decorator';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+// import { LocalStrategy } from './local.strategy';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,8 +15,9 @@ export class AuthController {
     summary: '注册',
   })
   @Post('signup')
-  @SwaggerOk(SignupResponse)
-  @SwaggerErr(400)
+  @ApiOkResponse({
+    type: SignupResponse,
+  })
   signup(@Body() body: SignupRequest) {
     return this.authService.signup(body);
   }
@@ -24,8 +26,8 @@ export class AuthController {
     summary: '登录',
   })
   @Post('signin')
-  @SwaggerOk(SigninResponse)
-  @SwaggerErr(400)
+  @ApiOkResponse({ type: SigninResponse })
+  @UseGuards(AuthGuard('local'))
   signin(@Body() body: SigninRequest) {
     return this.authService.signin(body);
   }

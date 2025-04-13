@@ -10,35 +10,33 @@ datasource db {
 
 // 用户表
 model User {
-  id         String     @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
-  name       String     @unique @db.VarChar(50)
-  localPart String     @db.VarChar(64) @map("local_part")
-  domain     String     @db.VarChar(255)
-  password   String     @db.VarChar(255)
-  profile    Profile?
-  tasks      Task[]
-  roles      UserRole[]
-  createAt   DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt   DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt   DateTime?   @map("delete_at") @db.Timestamptz()
+  id        String     @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
+  name      String     @db.VarChar(50)
+  email     String     @unique
+  password  String     @db.VarChar(255)
+  profile   Profile?
+  tasks     Task[]
+  roles     UserRole[]
+  create_at DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at DateTime?  @map("delete_at") @db.Timestamptz()
 
-  @@unique([localPart, domain])
   @@map("users")
 }
 
 // 用户信息表
 model Profile {
-  id           String   @id(map: "profile_pk") @unique @map("id") @db.VarChar(36)
-  userId       String   @unique @db.VarChar(36)
-  user         User     @relation(fields: [userId], references: [id])
-  phone String   @db.VarChar(20) @map("phone")
-  countryCode String   @db.VarChar(5) @map("country_code")
-  address      String   @db.VarChar(255)
-  createAt     DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt     DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt     DateTime? @map("delete_at") @db.Timestamptz()
+  id           String    @id(map: "profile_pk") @unique @map("id") @db.VarChar(36)
+  user_id      String    @unique @db.VarChar(36)
+  user         User      @relation(fields: [user_id], references: [id])
+  phone        String    @map("phone") @db.VarChar(20)
+  country_code String    @map("country_code") @db.VarChar(5)
+  address      String    @db.VarChar(255)
+  create_at    DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at    DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at    DateTime? @map("delete_at") @db.Timestamptz()
 
-  @@unique([userId, phone, countryCode])
+  @@unique([user_id, phone, country_code])
   @@map("profiles")
 }
 
@@ -49,23 +47,23 @@ model Role {
   description String            @db.VarChar(255)
   users       UserRole[]
   permissions RolePermissions[]
-  createAt    DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt    DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime?          @map("delete_at") @db.Timestamptz()
+  create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
 
   @@map("roles")
 }
 
 // 用户角色表
 model UserRole {
-  id       String   @id(map: "user_role_pk") @map("id") @db.VarChar(36)
-  userId   String   @map("user_id") @db.VarChar(36)
-  roleId   String   @map("role_id") @db.VarChar(36)
-  role     Role     @relation(fields: [roleId], references: [id])
-  user     User     @relation(fields: [userId], references: [id])
-  createAt DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt DateTime? @map("delete_at") @db.Timestamptz()
+  id        String    @id(map: "user_role_pk") @map("id") @db.VarChar(36)
+  user_id   String    @map("user_id") @db.VarChar(36)
+  roleId    String    @map("role_id") @db.VarChar(36)
+  role      Role      @relation(fields: [roleId], references: [id])
+  user      User      @relation(fields: [user_id], references: [id])
+  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("user_roles")
 }
@@ -77,9 +75,9 @@ model Permission {
   action      String            @db.VarChar(255)
   description String            @db.VarChar(255)
   roles       RolePermissions[]
-  createAt    DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt    DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime?          @map("delete_at") @db.Timestamptz()
+  create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
 
   @@map("permissions")
 }
@@ -91,23 +89,23 @@ model RolePermissions {
   permissionId String     @map("permission_id") @db.VarChar(36)
   role         Role       @relation(fields: [roleId], references: [id])
   permission   Permission @relation(fields: [permissionId], references: [id])
-  createAt     DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt     DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt     DateTime?   @map("delete_at") @db.Timestamptz()
+  create_at    DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at    DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at    DateTime?  @map("delete_at") @db.Timestamptz()
 
   @@map("role_permissions")
 }
 
 model Task {
-  id          String   @id @map("id") @db.VarChar(36)
-  title       String   @db.VarChar(255)
-  description String   @db.VarChar(255)
-  completed   Boolean  @default(false)
-  userId      String   @map("user_id") @db.VarChar(36)
-  user        User     @relation(fields: [userId], references: [id])
-  createAt    DateTime @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  updateAt    DateTime @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  deleteAt    DateTime? @map("delete_at") @db.Timestamptz()
+  id          String    @id @map("id") @db.VarChar(36)
+  title       String    @db.VarChar(255)
+  description String    @db.VarChar(255)
+  completed   Boolean   @default(false)
+  user_id     String    @map("user_id") @db.VarChar(36)
+  user        User      @relation(fields: [user_id], references: [id])
+  create_at   DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("tasks")
 }

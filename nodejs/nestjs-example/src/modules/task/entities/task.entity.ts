@@ -28,7 +28,7 @@ export class Task {
       from: (value: string) => dayjs(value).format(),
     },
   })
-  createAt: Date;
+  create_at: Date;
   @Column({
     name: 'update_at',
     transformer: {
@@ -36,7 +36,7 @@ export class Task {
       from: (value: string) => dayjs(value).format(),
     },
   })
-  updateAt: Date;
+  update_at: Date;
 
   @DeleteDateColumn({
     name: 'delete_at',
@@ -47,5 +47,5 @@ export class Task {
     nullable: true,
     default: null,
   })
-  deleteAt?: Date;
+  delete_at?: Date;
 }

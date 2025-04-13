@@ -11,12 +11,15 @@ import {
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
-import { AuthGuard, RequestWithUser } from '@/common/guards/auth.guard';
+import {
+  ParserJwtAuthGuard,
+  RequestWithUser,
+} from '@/common/guards/auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
-@UseGuards(AuthGuard)
+@UseGuards(ParserJwtAuthGuard)
 @Controller('user/profile')
 export class ProfileController {
   private readonly logger = new Logger(ProfileController.name);
@@ -27,7 +30,7 @@ export class ProfileController {
   })
   @Get()
   findOnnByUserId(@Req() req: RequestWithUser) {
-    return this.profileService.findOneByUserId(req.user.userId);
+    return this.profileService.findOneByUserId(req.user.id);
   }
 
   @ApiOperation({
@@ -38,6 +41,6 @@ export class ProfileController {
     @Req() req: RequestWithUser,
     @Body() updateProfileDto: UpdateProfileRequest,
   ) {
-    return this.profileService.update(req.user.userId, updateProfileDto);
+    return this.profileService.update(req.user.id, updateProfileDto);
   }
 }

@@ -12,6 +12,12 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 import { SequelizeInterceptor } from './common/interceptors/sequelize.interceptor';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import Redis from 'ioredis';
+import { RedisStore } from 'connect-redis';
+import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
+
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
   dayjs.locale('zh-cn');
@@ -50,6 +56,21 @@ function usePipes(app: INestApplication) {
 function useFilters(app: INestApplication) {
   app.useGlobalFilters(new HttpExceptionsFilter());
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.use(cookieParser());
+  const client: Redis = app.get(getRedisConnectionToken());
+  const store = new RedisStore({
+    client,
+    prefix: 'nestjs-example:',
+  });
+  app.use(
+    session({
+      store,
+      secret: 'backend-examples',
+      name: 'nestjs-example',
+      rolling: true,
+      saveUninitialized: false,
+    }),
+  );
 }
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder()

@@ -19,15 +19,12 @@ export class UserService {
     const salt = await bcrypt.genSalt();
     const password = await bcrypt.hash(createUserDto.password, salt);
     // 处理邮箱
-    const email = createUserDto.email;
-    const [localPart, domain] = email.split('@');
     const id = uuid();
     const data = {
       name: createUserDto.name,
       password: password,
       id,
-      localPart,
-      domain,
+      email: createUserDto.email,
     };
 
     const user = await this.prisma.user
@@ -49,7 +46,7 @@ export class UserService {
       });
     if (user) {
       await this.profileService.create({
-        userId: user.id,
+        user_id: user.id,
       });
       return { id: user.id };
     }
@@ -60,10 +57,10 @@ export class UserService {
     return this.prisma.user
       .findMany({
         where: {
-          deleteAt: null,
+          delete_at: null,
         },
         omit: {
-          deleteAt: true,
+          delete_at: true,
           password: true,
         },
       })
@@ -72,7 +69,6 @@ export class UserService {
           (item) =>
             new GetUserResponse({
               ...item,
-              email: `${item.localPart}@${item.domain}`,
             }),
         );
       });
@@ -81,7 +77,7 @@ export class UserService {
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       omit: {
-        deleteAt: true,
+        delete_at: true,
       },
       where: {
         id,
@@ -93,10 +89,10 @@ export class UserService {
     return new GetUserResponse(user);
   }
 
-  async findOneByName(name: string) {
+  async findOneByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        name,
+        email,
       },
     });
     return user;
@@ -120,9 +116,8 @@ export class UserService {
       },
       data: {
         name: data.name,
-        localPart: data.localPart?.toString(),
-        domain: data.domain?.toString(),
-        updateAt: new Date(),
+        email: data.email,
+        update_at: new Date(),
       },
     });
     return user;
@@ -133,27 +128,23 @@ export class UserService {
     // 删除用户信息
     await this.profileService.remove(id);
     // 删除用户
-    await this.prisma.user.update({
+    await this.prisma.user.delete({
       where: {
         id,
       },
-      data: {
-        deleteAt: new Date(),
-      },
     });
 
-    return null;
+    return {
+      success: true,
+    };
   }
 
   async removeMany(ids: string[]) {
     for (const id of ids) {
       await this.profileService.remove(id);
-      await this.prisma.user.update({
+      await this.prisma.user.delete({
         where: {
           id,
-        },
-        data: {
-          deleteAt: new Date(),
         },
       });
     }

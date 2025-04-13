@@ -46,6 +46,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         timestamp: new Date().toISOString(),
         ip,
       });
+      return;
     }
 
     // 自定义异常返回体

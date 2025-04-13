@@ -4,7 +4,7 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateProfileRequest extends PartialType(CreateProfileRequest) {
   @IsOptional()
-  userId?: string;
+  user_id?: string;
 
   @IsString()
   name?: string;

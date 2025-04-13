@@ -1,22 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { User } from '../entities/user.entity';
 
-export class CreateUserRequest {
+export class CreateUserRequest extends User {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  email: string;
+  declare name: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  password: string;
+  declare email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  declare password: string;
 }
 
 export class GetUserResponse extends CreateUserRequest {
@@ -26,12 +27,7 @@ export class GetUserResponse extends CreateUserRequest {
   }
 
   @Exclude()
-  localPart: string;
-
-  @Exclude()
-  domain: string;
-  @Exclude()
-  deleteAt?: Date;
+  delete_at?: Date;
 
   @Exclude()
   declare password: string;

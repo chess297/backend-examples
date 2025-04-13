@@ -14,7 +14,7 @@ model tasks {
   title       String    @default("") @db.VarChar(255)
   description String?   @db.VarChar(255)
   completed   Boolean   @default(false)
-  createAt    DateTime  @default(now()) @map("create_at") @db.Timestamp(0)
-  updateAt    DateTime  @default(now()) @map("update_at") @db.Timestamp(0)
-  deleteAt    DateTime? @db.Timestamp(0) @map("delete_at")
+  create_at    DateTime  @default(now()) @map("create_at") @db.Timestamp(0)
+  update_at    DateTime  @default(now()) @map("update_at") @db.Timestamp(0)
+  delete_at    DateTime? @db.Timestamp(0) @map("delete_at")
 }

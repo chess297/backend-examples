@@ -13,17 +13,21 @@ import {
 import { UserService } from './user.service';
 import { CreateUserRequest } from './dto/create-user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@/common/guards/auth.guard';
+import { ParserJwtAuthGuard } from '@/common/guards/auth.guard';
 import { RemoveUserRequest } from './dto/remove-user.request';
 import { Prisma } from '@prisma/clients/postgresql';
+import { TaskService } from '../task/task.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(AuthGuard)
+@UseGuards(ParserJwtAuthGuard)
 @ApiTags('user')
 @Controller('user')
 export class UserController {
   private readonly logger = new Logger(UserController.name);
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly taskService: TaskService,
+  ) {}
 
   @ApiOperation({
     summary: '创建一个用户',
@@ -62,4 +66,7 @@ export class UserController {
       throw new BadRequestException('删除用户失败');
     }
   }
+
+  @Get('task')
+  getUserTask() {}
 }

@@ -12,31 +12,23 @@ import dayjs from 'dayjs';
       useFactory: (config: ConfigService) => {
         const prisma = new PrismaService(config).$extends({
           result: {
-            user: {
-              email: {
-                needs: { localPart: true, domain: true },
-                compute(data) {
-                  return `${data.localPart}@${data.domain}`;
-                },
-              },
-            },
             task: {
-              createAt: {
-                needs: { createAt: true },
+              create_at: {
+                needs: { create_at: true },
                 compute(data) {
-                  return dayjs(data.createAt).format();
+                  return dayjs(data.create_at).format();
                 },
               },
-              updateAt: {
-                needs: { updateAt: true },
+              update_at: {
+                needs: { update_at: true },
                 compute(data) {
-                  return dayjs(data.updateAt).format();
+                  return dayjs(data.update_at).format();
                 },
               },
-              deleteAt: {
-                needs: { deleteAt: true },
+              delete_at: {
+                needs: { delete_at: true },
                 compute(data) {
-                  return dayjs(data.deleteAt).format();
+                  return dayjs(data.delete_at).format();
                 },
               },
             },

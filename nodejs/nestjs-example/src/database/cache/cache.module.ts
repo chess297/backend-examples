@@ -10,7 +10,7 @@ import * as redisStore from 'cache-manager-redis-store';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
-          ttl: 10 * 1000, // 10s 缓存
+          ttl: 60 * 1000, // 10s 缓存
           store: redisStore,
           url: config.get('redis_url'),
         };

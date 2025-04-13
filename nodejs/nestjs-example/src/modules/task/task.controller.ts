@@ -6,13 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskRequest } from './dto/create-task.dto';
+import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
-import { CacheInterceptor } from '@nestjs/cache-manager';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('task')
 @Controller('task')
@@ -24,9 +22,12 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
-  @UseInterceptors(CacheInterceptor)
+  // @UseInterceptors(CacheInterceptor)
+  @ApiOkResponse({
+    type: FindTaskResponse,
+  })
   @Get()
-  findAll() {
+  findAll(): Promise<FindTaskResponse> {
     return this.taskService.findAll();
   }
 

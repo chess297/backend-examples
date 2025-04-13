@@ -11,6 +11,8 @@ export class AppController {
   })
   @Get('ping')
   ping(): string {
+    // const expiryDate = new Date(Date.now() + 10000); // 设置过期时间为当前时间往后 10 秒
+    // res.cookie('foo', 'bar', { expires: expiryDate });
     return this.appService.getPong();
   }
 }
