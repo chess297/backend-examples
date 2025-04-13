@@ -9,8 +9,8 @@ export class AuthService {
   validateUser(username: string, pass: string): Omit<User, 'password'> | null {
     const user = this.usersService.findOne(username);
     if (user && user.password === pass) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
-      console.log('🚀 ~ AuthService ~ validateUser ~ password:', password);
       return result;
     }
     return null;

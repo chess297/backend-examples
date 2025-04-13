@@ -5,3 +5,5 @@ export class User {
 
   password: string;
 }
+
+export type RequestWithUser = Request & { user: Omit<User, 'id'> };
