@@ -4,6 +4,7 @@ import { SigninRequest, SigninResponse } from './dto/signin.dto';
 import { SignupRequest, SignupResponse } from './dto/signup.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '@/common/guards/auth.guard';
 // import { LocalStrategy } from './local.strategy';
 
 @ApiTags('auth')
@@ -32,6 +33,7 @@ export class AuthController {
     return this.authService.signin(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '登出',
   })
