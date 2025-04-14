@@ -11,6 +11,7 @@ import { JWT_SECRET } from '@/constants';
 import { SessionController } from './session/session.controller';
 import { AuthController } from './auth.controller';
 import { SessionSerializer } from './session/session.serializer';
+import { SessionStrategy } from './session/session.strategy';
 
 @Module({
   imports: [
@@ -23,7 +24,14 @@ import { SessionSerializer } from './session/session.serializer';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer],
+  providers: [
+    AuthService,
+
+    LocalStrategy, // 注册用户名密码认证策略
+    JwtStrategy, // 注册jwt策略
+    SessionSerializer, // 注册session序列化
+    SessionStrategy,
+  ],
   controllers: [
     LocalController,
     JwtController,

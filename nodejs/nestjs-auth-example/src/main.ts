@@ -7,6 +7,7 @@ import { RedisStore } from 'connect-redis';
 import Redis from 'ioredis';
 import { SESSION_ID_COOKIE_KEY } from './constants';
 import cookieParser from 'cookie-parser';
+import passport from 'passport';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
@@ -22,7 +23,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
   app.use(cookieParser());
-  // app.enableCors();
   const redis = new Redis({
     password: 'backend-examples',
   });
@@ -38,6 +38,8 @@ async function bootstrap() {
       name: SESSION_ID_COOKIE_KEY,
     }),
   );
+
+  app.use(passport.session());
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
