@@ -1,11 +1,23 @@
+import { SESSION_ID_COOKIE_KEY } from '@/constants';
+import { SessionGuard } from '@/guards/session.guard';
 import { User } from '@/user/entities/user.entity';
-import { Body, Controller, Logger, Post, Req, Session } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 declare module 'express-session' {
   interface SessionData {
     views: Record<string, string>;
+    isLogin: boolean;
+    email: string;
   }
 }
 
@@ -14,11 +26,13 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   constructor(private readonly jwtService: JwtService) {}
   @Post('signin')
-  signin(@Req() req: Request, @Body() body: User) {
-    console.log('🚀 ~ AuthController ~ signin ~ body:', body);
-    console.log('🚀 ~ AuthController ~ signout ~ session:', req.sessionID);
-    req.session.touch();
-    if (req.session.views) req.session.views['email'] = body.email ?? '';
+  signin(@Req() req: Request, @Res() res: Response, @Body() body: User) {
+    req.session.isLogin = true;
+    req.session.email = body.email;
+
+    res.json({
+      access_token: '',
+    });
   }
 
   @Post('signup')
@@ -26,13 +40,11 @@ export class AuthController {
     return 'signup';
   }
 
+  @UseGuards(SessionGuard)
   @Post('signout')
-  async signout(@Req() req: Request, @Session() session: Record<string, any>) {
-    console.log(
-      '🚀 ~ AuthController ~ signout ~ req.sessionID:',
-      req.sessionID,
-    );
-    console.log('🚀 ~ AuthController ~ signout ~ session:', session);
+  async signout(@Req() req: Request, @Res() res: Response) {
+    res.clearCookie(SESSION_ID_COOKIE_KEY);
+    // req.session.
     await new Promise((resolve) => {
       req.session.destroy((err) => {
         if (err) {
@@ -41,6 +53,8 @@ export class AuthController {
         resolve(true);
       });
     });
-    return 'signout';
+    res.json({
+      success: true,
+    });
   }
 }

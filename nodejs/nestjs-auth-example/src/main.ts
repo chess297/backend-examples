@@ -5,7 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { VersioningType } from '@nestjs/common';
 import { RedisStore } from 'connect-redis';
 import Redis from 'ioredis';
-// import cookieParser from 'cookie-parser';
+import { SESSION_ID_COOKIE_KEY } from './constants';
+import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
@@ -20,7 +21,7 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
-  // app.use(cookieParser());
+  app.use(cookieParser());
   // app.enableCors();
   const redis = new Redis({
     password: 'backend-examples',
@@ -34,7 +35,7 @@ async function bootstrap() {
       store: redisStore,
       secret: 'nestjs-auth-example',
       resave: false,
-      name: 'nestjs-auth-example',
+      name: SESSION_ID_COOKIE_KEY,
     }),
   );
   await app.listen(process.env.PORT ?? 3000);
