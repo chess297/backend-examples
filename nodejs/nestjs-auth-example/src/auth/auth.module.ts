@@ -10,17 +10,20 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 import { JWT_SECRET } from '@/constants';
 import { SessionController } from './session/session.controller';
 import { AuthController } from './auth.controller';
+import { SessionSerializer } from './session/session.serializer';
 
 @Module({
   imports: [
     UserModule,
-    PassportModule,
+    PassportModule.register({
+      session: true, // 开启session 序列化和反序列化功能
+    }),
     JwtModule.register({
       secret: JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer],
   controllers: [
     LocalController,
     JwtController,

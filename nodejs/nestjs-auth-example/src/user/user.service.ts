@@ -17,6 +17,11 @@ const users: User[] = [
     username: 'maria',
     password: 'guess',
   },
+  {
+    id: 3,
+    username: 'example',
+    password: 'example',
+  },
 ];
 
 @Injectable()

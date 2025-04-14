@@ -12,10 +12,23 @@ import { Request } from 'express';
 
 // 一个示例的守卫，它使用名为 'local' 的策略进行身份验证。
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {}
+export class LocalAuthGuard extends AuthGuard('local') {
+  constructor() {
+    super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const result: boolean = (await super.canActivate(context)) as boolean;
+    await super.logIn(context.switchToHttp().getRequest());
+    return result;
+  }
+}
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {}
+
+@Injectable()
+export class SessionAuthGuard extends AuthGuard('session') {}
 
 export type Payload = Omit<User, 'password'>;
 

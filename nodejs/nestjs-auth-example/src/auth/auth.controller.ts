@@ -1,5 +1,5 @@
 import { SESSION_ID_COOKIE_KEY } from '@/constants';
-import { SessionGuard } from '@/guards/session.guard';
+import { LocalAuthGuard, SessionAuthGuard } from '@/guards/auth.guard';
 import { User } from '@/user/entities/user.entity';
 import {
   Body,
@@ -23,10 +23,10 @@ declare module 'express-session' {
 }
 
 class SigninRequest {
-  @ApiProperty({ example: 'example@example.com' })
-  email: string;
+  @ApiProperty({ example: 'example' })
+  username: string;
   @ApiProperty({
-    example: '123456',
+    example: 'example',
   })
   password: string;
 }
@@ -36,6 +36,7 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   constructor(private readonly jwtService: JwtService) {}
 
+  @UseGuards(LocalAuthGuard)
   @ApiBody({
     type: SigninRequest,
   })
@@ -53,9 +54,10 @@ export class AuthController {
     return 'signup';
   }
 
-  @UseGuards(SessionGuard)
+  @UseGuards(SessionAuthGuard)
   @Post('signout')
-  signout(@Req() req: Request, @Res() res: Response) {
+  signout(@Req() req: Request, @Body() body: any, @Res() res: Response) {
+    console.log('🚀 ~ AuthController ~ signout ~ body:', body);
     req.session.destroy((err) => {
       if (err) {
         this.logger.error(err);
