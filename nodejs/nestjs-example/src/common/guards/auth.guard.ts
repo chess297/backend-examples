@@ -1,4 +1,4 @@
-import { UserSchema } from '@/modules/user/entities/user.entity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 import {
   CanActivate,
   ExecutionContext,
@@ -14,7 +14,7 @@ export interface RequestWithUser extends Request {
   user: JwtPayload;
 }
 
-export type JwtPayload = Omit<UserSchema, 'password'>;
+export type JwtPayload = Omit<UserEntity, 'password'>;
 
 // 校验请求头中的jwt鉴权，并且将jwt解析出来的信息赋值到request中
 @Injectable()

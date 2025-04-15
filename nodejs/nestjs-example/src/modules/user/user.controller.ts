@@ -17,7 +17,7 @@ import { ParserJwtAuthGuard } from '@/common/guards/auth.guard';
 import { RemoveUserRequest } from './dto/remove-user.request';
 import { Prisma } from '@prisma/clients/postgresql';
 import { TaskService } from '../task/task.service';
-import { UserSchema } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(ParserJwtAuthGuard)
@@ -44,7 +44,7 @@ export class UserController {
   @Get()
   @ApiOkResponse({
     isArray: true,
-    type: UserSchema,
+    type: UserEntity,
   })
   findAll() {
     return this.userService.findAll();

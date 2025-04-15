@@ -16,7 +16,7 @@ model User {
   password  String     @db.VarChar(255)
   profile   Profile?
   tasks     Task[]
-  roles     UserRole[]
+  roles     Role[]
   create_at DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at DateTime?  @map("delete_at") @db.Timestamptz()
@@ -36,6 +36,7 @@ model Profile {
   update_at    DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at    DateTime? @map("delete_at") @db.Timestamptz()
 
+  @@index([user_id], map: "profile_user_id_idx")
   @@unique([user_id, phone, country_code])
   @@map("profiles")
 }
@@ -45,8 +46,8 @@ model Role {
   id          String            @id @db.VarChar(36)
   name        String            @unique @db.VarChar(255)
   description String            @db.VarChar(255)
-  users       UserRole[]
-  permissions RolePermissions[]
+  users       User[]
+  permissions Permission[]
   create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
@@ -55,26 +56,26 @@ model Role {
 }
 
 // 用户角色表
-model UserRole {
-  id        String    @id(map: "user_role_pk") @map("id") @db.VarChar(36)
-  user_id   String    @map("user_id") @db.VarChar(36)
-  roleId    String    @map("role_id") @db.VarChar(36)
-  role      Role      @relation(fields: [roleId], references: [id])
-  user      User      @relation(fields: [user_id], references: [id])
-  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at DateTime? @map("delete_at") @db.Timestamptz()
-
-  @@map("user_roles")
-}
+// model UserRole {
+//   id        String    @id(map: "user_role_pk") @map("id") @db.VarChar(36)
+//   user_id   String    @map("user_id") @db.VarChar(36)
+//   roleId    String    @map("role_id") @db.VarChar(36)
+//   role      Role      @relation(fields: [roleId], references: [id])
+//   user      User      @relation(fields: [user_id], references: [id])
+//   create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+//   update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+//   delete_at DateTime? @map("delete_at") @db.Timestamptz()
+//   @@index([user_id, roleId], map: "user_role_unique")
+//   @@map("user_roles")
+// }
 
 // 权限表
 model Permission {
   id          String            @id(map: "permission_pk") @map("id") @db.VarChar(36)
-  name        String            @unique @db.VarChar(255)
-  action      String            @db.VarChar(255)
+  name        String            @unique @db.VarChar(255) // 权限名称，例如："users:create", "users:update"
+  action      String            @db.VarChar(255) // 操作，例如："create", "update", "delete", "read"
   description String            @db.VarChar(255)
-  roles       RolePermissions[]
+  roles       Role[]
   create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
@@ -83,18 +84,18 @@ model Permission {
 }
 
 // 角色权限表
-model RolePermissions {
-  id           String     @id(map: "role_permission_pk") @map("id") @db.VarChar(36)
-  roleId       String     @map("role_id") @db.VarChar(36)
-  permissionId String     @map("permission_id") @db.VarChar(36)
-  role         Role       @relation(fields: [roleId], references: [id])
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  create_at    DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at    DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at    DateTime?  @map("delete_at") @db.Timestamptz()
+// model RolePermissions {
+//   id           String     @id(map: "role_permission_pk") @map("id") @db.VarChar(36)
+//   roleId       String     @map("role_id") @db.VarChar(36)
+//   permissionId String     @map("permission_id") @db.VarChar(36)
+//   role         Role       @relation(fields: [roleId], references: [id])
+//   permission   Permission @relation(fields: [permissionId], references: [id])
+//   create_at    DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+//   update_at    DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+//   delete_at    DateTime?  @map("delete_at") @db.Timestamptz()
 
-  @@map("role_permissions")
-}
+//   @@map("role_permissions")
+// }
 
 model Task {
   id          String    @id @map("id") @db.VarChar(36)

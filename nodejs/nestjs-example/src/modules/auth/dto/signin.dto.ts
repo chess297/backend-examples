@@ -8,16 +8,22 @@ export class SigninRequest {
   // name: string;
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    title: '邮箱',
+  })
   email: string;
 
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({
+    title: '密码',
+  })
   password: string;
 }
 
 export class SigninResponse {
-  @ApiProperty()
+  @ApiProperty({
+    title: 'token',
+  })
   access_token: string;
 }

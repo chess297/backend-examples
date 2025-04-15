@@ -14,7 +14,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { UserSchema } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -64,15 +64,15 @@ export class AuthService {
     return 'sign out';
   }
 
-  async verifyUser(email: string, password: string): Promise<UserSchema> {
+  async verifyUser(email: string, password: string): Promise<UserEntity> {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
-      throw new BadRequestException('用户名或密码错误');
+      throw new BadRequestException('邮箱不存在');
     }
 
     await this.verifyPassword(password, user.password).catch(() => {
-      throw new BadRequestException('用户名或密码错误');
+      throw new BadRequestException('邮箱或密码错误');
     });
     return user;
   }

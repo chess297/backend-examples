@@ -53,6 +53,7 @@ export class ProfileService {
             id: true,
             name: true,
             email: true,
+            roles: true,
           },
         },
       },

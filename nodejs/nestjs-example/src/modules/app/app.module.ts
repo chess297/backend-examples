@@ -9,6 +9,8 @@ import { LoggerModule } from '@/common/logger/logger.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { ProfileModule } from '../profile/profile.module';
+import { RoleModule } from '../role/role.module';
+import { PermissionModule } from '../permission/permission.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +23,8 @@ import { ProfileModule } from '../profile/profile.module';
     AuthModule,
     UserModule,
     ProfileModule,
+    RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

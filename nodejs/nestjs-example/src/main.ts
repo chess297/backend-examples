@@ -17,6 +17,7 @@ import session from 'express-session';
 import Redis from 'ioredis';
 import { RedisStore } from 'connect-redis';
 import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
+import passport from 'passport';
 
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
@@ -68,9 +69,11 @@ function useFilters(app: INestApplication) {
       secret: 'backend-examples',
       name: 'nestjs-example',
       rolling: true,
+      resave: false,
       saveUninitialized: false,
     }),
   );
+  app.use(passport.session());
 }
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
