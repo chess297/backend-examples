@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { ConfigModule } from '@nestjs/config';
-import config from '@/common/config/config';
+import config from '@/config';
 import { DatabaseModule } from '@/database/database.module';
 import { LoggerModule } from '@/common/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import config from '@/common/config/config';
+import config from '@/config';
 import { DatabaseModule } from '@/database/database.module';
 import { LoggerModule } from '@/common/logger/logger.module';
 import { AccessModule } from '@/access/access.module';
