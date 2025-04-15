@@ -1,26 +1,84 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-
+import { PrismaService } from '@/database/prisma/prisma.service';
+import { v4 as uuid } from 'uuid';
 @Injectable()
 export class PermissionService {
+  constructor(private readonly prisma: PrismaService) {}
   create(createPermissionDto: CreatePermissionDto) {
-    return 'This action adds a new permission';
+    const id = uuid();
+    return this.prisma.permission.create({
+      omit: {
+        delete_at: true,
+      },
+      data: {
+        id,
+        name: createPermissionDto.name,
+        description: createPermissionDto.description,
+        resource: createPermissionDto.resource,
+        actions: createPermissionDto.actions,
+      },
+    });
   }
 
   findAll() {
-    return `This action returns all permission`;
+    return this.prisma.permission.findMany({
+      where: {
+        delete_at: null,
+      },
+      omit: {
+        delete_at: true,
+      },
+      include: {
+        roles: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  findOne(id: string) {
+    return this.prisma.permission.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        roles: true,
+      },
+    });
   }
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
+  async update(id: string, updatePermissionDto: UpdatePermissionDto) {
+    // 这里可以根据id更新权限
+    const roles = updatePermissionDto.roles;
+    if (roles && roles.length > 0) {
+      await this.prisma.permission.update({
+        where: {
+          id,
+        },
+        data: {
+          roles: {
+            connect: roles.map((role) => ({ id: role })),
+          },
+        },
+      });
+    }
+    return await this.prisma.permission.update({
+      where: {
+        id,
+      },
+      data: {
+        name: updatePermissionDto.name,
+        description: updatePermissionDto.description,
+        resource: updatePermissionDto.resource,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  remove(id: string) {
+    return this.prisma.permission.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

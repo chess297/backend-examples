@@ -68,12 +68,20 @@ model Role {
 //   @@index([user_id, roleId], map: "user_role_unique")
 //   @@map("user_roles")
 // }
+enum PermissionAction {
+  manage
+  create
+  update
+  delete
+  read
+}
 
 // 权限表
 model Permission {
-  id          String            @id(map: "permission_pk") @map("id") @db.VarChar(36)
-  name        String            @unique @db.VarChar(255) // 权限名称，例如："users:create", "users:update"
-  action      String            @db.VarChar(255) // 操作，例如："create", "update", "delete", "read"
+  id          String            @unique @id(map: "permission_pk") @map("id") @db.VarChar(36)
+  name        String            @db.VarChar(255) // 权限名称
+  actions      PermissionAction[]  // 操作，例如："create", "update", "delete", "read"
+  resource    String            @db.VarChar(255) // 资源，例如："users", "posts"
   description String            @db.VarChar(255)
   roles       Role[]
   create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()

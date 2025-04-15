@@ -1,5 +1,7 @@
 export interface IPermission {
-  id: string;
+  id?: string;
   name: string;
   description: string;
+  actions?: string[];
+  resources?: string[];
 }

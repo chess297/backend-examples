@@ -33,8 +33,15 @@ export class RoleService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  findOne(id: string) {
+    return this.prisma.role.findUnique({
+      omit: {
+        delete_at: true,
+      },
+      where: {
+        id,
+      },
+    });
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
@@ -52,15 +59,6 @@ export class RoleService {
         description: updateRoleDto.description,
       },
     });
-    const role = await this.prisma.role.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        users: true,
-      },
-    });
-    console.log('🚀 ~ RoleService ~ update ~ role:', role);
 
     if (userIds.length > 0) {
       for (const uid of userIds) {
