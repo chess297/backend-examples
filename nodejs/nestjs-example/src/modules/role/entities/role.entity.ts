@@ -7,5 +7,5 @@ export class RoleEntity extends BaseEntity implements IRole {
 
   description: string;
 
-  permissions: PermissionEntity[];
+  permissions?: PermissionEntity[];
 }

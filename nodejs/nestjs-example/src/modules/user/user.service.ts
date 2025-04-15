@@ -3,9 +3,10 @@ import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import { ProfileService } from '../profile/profile.service';
+import { ProfileService } from './profile/profile.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UpdateUserRequest } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -89,7 +90,7 @@ export class UserService {
     return new GetUserResponse(user);
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail(email: string): Promise<UserEntity> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
@@ -98,6 +99,9 @@ export class UserService {
         roles: true,
       },
     });
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
     return user;
   }
 

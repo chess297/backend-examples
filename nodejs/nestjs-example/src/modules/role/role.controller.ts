@@ -14,6 +14,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SystemRoleGuard } from '@/common/guards/role.guard';
 
+@UseGuards(SystemRoleGuard)
 @ApiTags('role')
 @Controller('role')
 export class RoleController {
@@ -28,7 +29,6 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
-  @UseGuards(SystemRoleGuard)
   @Get()
   findAll() {
     return this.roleService.findAll();

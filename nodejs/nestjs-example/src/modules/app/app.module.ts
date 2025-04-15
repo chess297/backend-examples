@@ -8,7 +8,6 @@ import { DatabaseModule } from '@/database/database.module';
 import { LoggerModule } from '@/common/logger/logger.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
-import { ProfileModule } from '../profile/profile.module';
 import { RoleModule } from '../role/role.module';
 import { PermissionModule } from '../permission/permission.module';
 @Module({
@@ -22,7 +21,6 @@ import { PermissionModule } from '../permission/permission.module';
     TaskModule,
     AuthModule,
     UserModule,
-    ProfileModule,
     RoleModule,
     PermissionModule,
   ],

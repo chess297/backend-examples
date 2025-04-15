@@ -9,6 +9,7 @@ import {
   ClassSerializerInterceptor,
   Delete,
   BadRequestException,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserRequest } from './dto/create-user.dto';
@@ -51,16 +52,31 @@ export class UserController {
   }
 
   @ApiOperation({
+    summary: '查询用户',
+  })
+  @Get(':id')
+  @ApiOkResponse({
+    isArray: true,
+    type: UserEntity,
+  })
+  findOn(@Param('id') id: string) {
+    return this.userService.findOne(id);
+  }
+
+  @ApiOperation({
     summary: '删除用户',
   })
   @ApiBody({
     type: RemoveUserRequest,
   })
-  @Delete()
-  async remove(@Body() removeUserRequest: RemoveUserRequest) {
+  @Delete(':id')
+  async remove(
+    @Param('id') id: string,
+    @Body() removeUserRequest: RemoveUserRequest,
+  ) {
     try {
-      if (removeUserRequest.id) {
-        await this.userService.remove(removeUserRequest.id);
+      if (id || removeUserRequest.id) {
+        await this.userService.remove(id || removeUserRequest.id);
       } else {
         await this.userService.removeMany(removeUserRequest.ids);
       }
@@ -71,7 +87,4 @@ export class UserController {
       throw new BadRequestException('删除用户失败');
     }
   }
-
-  @Get('task')
-  getUserTask() {}
 }

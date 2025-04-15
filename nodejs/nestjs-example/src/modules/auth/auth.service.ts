@@ -64,7 +64,10 @@ export class AuthService {
     return 'sign out';
   }
 
-  async verifyUser(email: string, password: string): Promise<UserEntity> {
+  async verifyUser(
+    email: string,
+    password: string,
+  ): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
