@@ -1,23 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UserEntity } from '../entities/user.entity';
+import { RoleEntity } from '@/access/role/entities/role.entity';
 
 export class CreateUserRequest extends UserEntity {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'user',
+  })
   @IsString()
   @IsNotEmpty()
   declare name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'user@example.com',
+  })
   @IsString()
   @IsNotEmpty()
   declare email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '123456user',
+  })
   @IsString()
   @IsNotEmpty()
   declare password: string;
+
+  @IsArray()
+  @IsOptional()
+  declare roles?: RoleEntity[] | undefined;
 }
 
 export class GetUserResponse extends CreateUserRequest {

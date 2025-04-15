@@ -59,7 +59,12 @@ export class LocalAuthGuard extends AuthGuard('local') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const result: boolean = (await super.canActivate(context)) as boolean;
     await super.logIn(context.switchToHttp().getRequest());
-
+    const req = context.switchToHttp().getRequest<RequestWithUser>();
+    const user = req.user;
+    console.log('🚀 ~ LocalAuthGuard ~ canActivate ~ user:', user);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     return result;
   }
 }

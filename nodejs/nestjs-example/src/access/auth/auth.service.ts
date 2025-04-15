@@ -9,7 +9,7 @@ import { SignupRequest } from './dto/signup.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from '@/common/guards/auth.guard';
+// import { JwtPayload } from '@/common/guards/auth.guard';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import Redis from 'ioredis';
@@ -26,34 +26,8 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async signin(dto: SigninRequest) {
-    const user = await this.userService.findOneByEmail(dto.email);
-
-    if (!user) {
-      throw new BadRequestException('用户名或密码错误');
-    }
-
-    const isValid = await this.verifyPassword(
-      dto.password,
-      user.password,
-    ).catch(() => {
-      throw new BadRequestException('用户名或密码错误');
-    });
-    if (isValid) {
-      const payload: JwtPayload = {
-        name: user.name,
-        id: user.id,
-        email: user.email,
-      };
-      const access_token = this.jwtService.sign(payload);
-      await this.redis.set(`user:${user.id}:token`, access_token);
-
-      return {
-        access_token,
-      };
-    } else {
-      throw new BadRequestException('用户名或密码错误');
-    }
+  signin(dto: SigninRequest) {
+    return this.verifyUser(dto.email, dto.password);
   }
 
   signup(dto: SignupRequest) {
@@ -74,9 +48,10 @@ export class AuthService {
       throw new BadRequestException('邮箱不存在');
     }
 
-    await this.verifyPassword(password, user.password).catch(() => {
+    const isValid = await this.verifyPassword(password, user.password);
+    if (!isValid) {
       throw new BadRequestException('邮箱或密码错误');
-    });
+    }
     return user;
   }
 

@@ -1,19 +1,13 @@
-import { RoleEntity } from '@/modules/role/entities/role.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { RoleEntity } from '@/access/role/entities/role.entity';
 
 export class UserEntity {
-  @ApiProperty()
   id: string;
 
-  @ApiProperty()
   name: string;
 
-  @ApiProperty()
   email: string;
 
-  @ApiProperty()
   password: string;
 
-  @ApiProperty()
   roles?: RoleEntity[];
 }

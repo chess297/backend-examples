@@ -10,6 +10,7 @@ export class SigninRequest {
   @IsNotEmpty()
   @ApiProperty({
     title: '邮箱',
+    example: 'user@example.com',
   })
   email: string;
 
@@ -17,13 +18,16 @@ export class SigninRequest {
   @IsNotEmpty()
   @ApiProperty({
     title: '密码',
+    example: '123456user',
   })
   password: string;
 }
 
 export class SigninResponse {
-  @ApiProperty({
-    title: 'token',
-  })
-  access_token: string;
+  // @ApiProperty({
+  //   title: 'token',
+  // })
+  // access_token: string;
+  @ApiProperty()
+  success: boolean;
 }
