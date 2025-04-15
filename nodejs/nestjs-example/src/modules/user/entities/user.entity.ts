@@ -15,5 +15,5 @@ export class UserEntity {
   password: string;
 
   @ApiProperty()
-  role?: RoleEntity;
+  roles?: RoleEntity[];
 }

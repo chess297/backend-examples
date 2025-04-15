@@ -51,7 +51,18 @@ export class ParserJwtAuthGuard implements CanActivate {
 
 // 单纯的请求体字段校验
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {}
+export class LocalAuthGuard extends AuthGuard('local') {
+  constructor() {
+    super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const result: boolean = (await super.canActivate(context)) as boolean;
+    await super.logIn(context.switchToHttp().getRequest());
+
+    return result;
+  }
+}
 
 // 单纯的jwt校验，无法将payload往后传递
 @Injectable()

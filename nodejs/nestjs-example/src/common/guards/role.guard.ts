@@ -11,7 +11,12 @@ import { Request } from 'express';
 export class SystemRoleGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest<Request>();
-    if (req.user.role?.name !== SYSTEM_ADMIN_KEY) {
+
+    if (
+      !req.session.passport?.user?.roles?.some(
+        (item) => item.name === SYSTEM_ADMIN_KEY,
+      )
+    ) {
       throw new ForbiddenException(
         'You are not allowed to access this resource',
       );

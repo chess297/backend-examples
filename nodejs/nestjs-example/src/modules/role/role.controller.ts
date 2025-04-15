@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleRequest } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SystemRoleGuard } from '@/common/guards/role.guard';
 
 @ApiTags('role')
 @Controller('role')
@@ -26,6 +28,7 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
+  @UseGuards(SystemRoleGuard)
   @Get()
   findAll() {
     return this.roleService.findAll();
