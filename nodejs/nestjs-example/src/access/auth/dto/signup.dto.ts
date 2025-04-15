@@ -1,4 +1,4 @@
-import { CreateUserRequest } from '@/modules/user/dto/create-user.dto';
+import { CreateUserRequest } from '@/access/user/dto/create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SignupRequest extends CreateUserRequest {}

@@ -17,7 +17,6 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ParserJwtAuthGuard } from '@/common/guards/auth.guard';
 import { RemoveUserRequest } from './dto/remove-user.request';
 import { Prisma } from '@prisma/clients/postgresql';
-import { TaskService } from '../task/task.service';
 import { UserEntity } from './entities/user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -26,10 +25,7 @@ import { UserEntity } from './entities/user.entity';
 @Controller('user')
 export class UserController {
   private readonly logger = new Logger(UserController.name);
-  constructor(
-    private readonly userService: UserService,
-    private readonly taskService: TaskService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @ApiOperation({
     summary: '创建一个用户',

@@ -1,6 +1,6 @@
+import { UserEntity } from '@/access/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
-import { UserEntity } from '@/modules/user/entities/user.entity';
 
 declare module 'express-session' {
   interface SessionData {

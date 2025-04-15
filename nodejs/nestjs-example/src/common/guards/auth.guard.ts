@@ -1,4 +1,4 @@
-import { UserEntity } from '@/modules/user/entities/user.entity';
+import { UserEntity } from '@/access/user/entities/user.entity';
 import {
   CanActivate,
   ExecutionContext,

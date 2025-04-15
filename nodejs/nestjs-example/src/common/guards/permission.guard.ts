@@ -1,6 +1,6 @@
+import { UserEntity } from '@/access/user/entities/user.entity';
 import { PERMISSION_KEY } from '@/common/decorators/permission.decorator';
 import { Action } from '@/constants/enums/action.enum';
-import { UserEntity } from '@/modules/user/entities/user.entity';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
