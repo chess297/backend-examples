@@ -9,13 +9,10 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Patch,
+  Param,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  Read,
-  Update,
-  Permission,
-} from '@/common/decorators/permission.decorator';
+import { Permission } from '@/common/decorators/permission.decorator';
 import { PermissionGuard } from '@/common/guards/permission.guard';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
 import { ProfileService } from './profile.service';
@@ -30,23 +27,40 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @ApiOperation({
-    summary: '查询用户信息',
+    summary: '获取当前用户的信息',
   })
   @Get()
-  @Read()
-  @Update()
   findOnnByUserId(@Req() req: Request) {
     return this.profileService.findOneByUserId(
       req.session.passport?.user.id ?? '',
     );
-    // return this.profileService.findOneByUserId(req.user.id);
   }
 
   @ApiOperation({
-    summary: '修改用户信息',
+    summary: '修改当前用户信息',
   })
   @Patch()
   update(@Req() req: Request, @Body() updateProfileDto: UpdateProfileRequest) {
     return this.profileService.update(req.user.id, updateProfileDto);
+  }
+
+  // TODO 修改/获取其他用户的信息应该需要权限
+  @ApiOperation({
+    summary: '获取路径id用户信息',
+  })
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.profileService.findOne(id);
+  }
+
+  @ApiOperation({
+    summary: '修改路径id用户信息',
+  })
+  @Patch(':id')
+  updateOne(
+    @Param('id') id: string,
+    @Body() updateProfileDto: UpdateProfileRequest,
+  ) {
+    return this.profileService.update(id, updateProfileDto);
   }
 }

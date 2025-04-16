@@ -6,9 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
+import {
+  CreateTaskRequest,
+  FindTaskRequest,
+  FindTaskResponse,
+} from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
 import { TaskService } from './task.service';
 
@@ -18,7 +23,7 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @ApiOperation({
-    summary: '创建任务',
+    summary: '创建新的任务',
   })
   @Post()
   create(@Body() createTaskDto: CreateTaskRequest) {
@@ -26,19 +31,21 @@ export class TaskController {
   }
 
   @ApiOperation({
-    summary: '查询所有任务',
+    summary: '查询任务',
+    description: '支持分页查询',
   })
-  // @UseInterceptors(CacheInterceptor)
   @ApiOkResponse({
+    isArray: true,
     type: FindTaskResponse,
   })
   @Get()
-  findAll(): Promise<FindTaskResponse> {
-    return this.taskService.findAll();
+  findAll(@Query() query: FindTaskRequest): Promise<FindTaskResponse> {
+    console.log('🚀 ~ TaskController ~ findAll ~ query:', query);
+    return this.taskService.findAll(query);
   }
 
   @ApiOperation({
-    summary: '根据id查询任务',
+    summary: '查询单个任务',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -60,4 +67,16 @@ export class TaskController {
   remove(@Param('id') id: string) {
     return this.taskService.remove(id);
   }
+
+  // @ApiOperation({
+  //   summary: '查询单个用户的任务',
+  // })
+  // @ApiOkResponse({
+  //   isArray: true,
+  //   type: FindTaskResponse,
+  // })
+  // @Get('/user/:id/task')
+  // findUserTask(@Param('id') id: string) {
+  //   return this.taskService.findUserTasks(id);
+  // }
 }

@@ -2,22 +2,29 @@ import { Prisma } from '@prisma/clients/postgresql';
 import { Exclude } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationInterface } from '@/common/interface/pagination.interface';
 
 export class CreateTaskRequest {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @ApiProperty()
   @IsString()
   description: string;
 
+  @ApiProperty()
   @IsBoolean()
   @IsOptional()
   completed?: boolean;
 
+  @ApiProperty({
+    title: '创建者',
+  })
   @IsString()
-  @IsNotEmpty()
-  user_id: string;
+  @IsOptional()
+  creator?: string;
 }
 
 // export class FindTaskResponse {
@@ -40,7 +47,8 @@ export class TaskModel implements Prisma.TaskMinAggregateOutputType {
   completed: boolean;
 
   @Exclude()
-  user_id: string | null;
+  creator_id: string | null;
+
   @ApiProperty()
   create_at: Date;
   @ApiProperty()
@@ -67,4 +75,36 @@ export class FindTaskResponse {
   constructor(partial: Partial<FindTaskResponse>) {
     Object.assign(this, partial);
   }
+}
+
+export class FindTaskRequest implements PaginationInterface {
+  @ApiProperty({
+    title: '页码',
+    required: false,
+    default: 0,
+  })
+  @IsOptional()
+  page?: number = 0;
+
+  @ApiProperty({
+    title: '每页数量',
+    required: false,
+    default: 10,
+  })
+  @IsOptional()
+  limit?: number = 10;
+
+  @ApiProperty({
+    title: '任务id',
+    required: false,
+  })
+  @IsOptional()
+  id?: string;
+
+  @ApiProperty({
+    title: '创建者id',
+    required: false,
+  })
+  @IsOptional()
+  creator?: string;
 }

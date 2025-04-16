@@ -25,7 +25,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({
-    summary: '创建一个用户',
+    summary: '创建新用户',
   })
   @Post()
   create(@Body() createUserDto: CreateUserRequest) {
@@ -33,7 +33,7 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '查询用户',
+    summary: '查询多个用户',
   })
   @Get()
   @ApiOkResponse({
@@ -45,7 +45,7 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '查询用户',
+    summary: '查询单个用户',
   })
   @Get(':id')
   @ApiOkResponse({
@@ -57,7 +57,7 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '删除用户',
+    summary: '删除单个或多个用户',
   })
   @ApiBody({
     type: RemoveUserRequest,

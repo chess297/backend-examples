@@ -37,20 +37,21 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'session 身份验证',
-  })
-  @Post('signin/session')
-  signinWithSession() {
-    return {
-      success: true,
-    };
-  }
-
-  @ApiOperation({
     summary: '登出',
   })
   @Post('signout')
   signout() {
     return this.authService.signout();
+  }
+
+  @ApiOperation({
+    summary: '注销用户',
+  })
+  @Post('logout')
+  logout(@Req() req: Request) {
+    req.session.destroy((err) => console.log(err));
+    return {
+      success: true,
+    };
   }
 }

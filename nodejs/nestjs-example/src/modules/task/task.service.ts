@@ -1,13 +1,15 @@
 import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-// import { InjectRedis } from '@nestjs-modules/ioredis';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PrismaService } from '@/database/prisma/prisma.service';
-// import Redis from 'ioredis';
-import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
+import {
+  CreateTaskRequest,
+  FindTaskRequest,
+  FindTaskResponse,
+} from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 
@@ -23,30 +25,31 @@ export class TaskService {
   ) {}
 
   async create(createTaskDto: CreateTaskRequest) {
-    // const user = await this.prisma.user.findUnique({
-    //   where: {
-    //     id: createTaskDto.user_id,
-    //   },
-    // });
     const id = uuid();
     const task = await this.prisma.task.create({
+      omit: {
+        delete_at: true,
+      },
       data: {
         id,
-        user_id: createTaskDto.user_id,
+        creator_id: createTaskDto.creator,
         title: createTaskDto.title,
         description: createTaskDto.description,
       },
     });
-    // const task = await this.taskRepo.save({
-    //   id: uuid(),
-    //   title: createTaskDto.title,
-    //   description: createTaskDto.description,
-    // });
+
     return task;
   }
-  async findAll(): Promise<FindTaskResponse> {
+  async findAll(query: FindTaskRequest): Promise<FindTaskResponse> {
+    const { page = 0, limit = 10, creator, ...where } = query;
     // prisma
-    const records = await this.prisma.task.findMany();
+    const skip = +page * +limit;
+    const take = +limit;
+    const records = await this.prisma.task.findMany({
+      skip,
+      take,
+      where: { ...where, creator_id: creator },
+    });
     // mysql
     // const records = await this.taskRepo.find();
     // await new Promise((resolve) => {
@@ -59,46 +62,55 @@ export class TaskService {
   }
 
   async findOne(id: string) {
-    const task = await this.taskRepo.findOneBy({ id });
-    // const task = this.prisma.tasks.findUnique({
-    //   where: {
-    //     id,
-    //   },
-    // });
+    // const task = await this.taskRepo.findOneBy({ id });
+    const task = this.prisma.task.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        creator: true,
+      },
+    });
     return task;
   }
 
   update(id: string, updateTaskDto: UpdateTaskRequest) {
-    return this.taskRepo.update(id, {
-      ...updateTaskDto,
-      update_at: new Date(),
-    });
-    // return this.prisma.tasks.update({
-    //   where: {
-    //     id,
-    //   },
-    //   data: {
-    //     ...updateTaskDto,
-    //     update_at: new Date(),
-    //   },
+    // return this.taskRepo.update(id, {
+    //   ...updateTaskDto,
+    //   update_at: new Date(),
     // });
+    const { creator, ...data } = updateTaskDto;
+    return this.prisma.task.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+        update_at: new Date(),
+        creator: {
+          connect: {
+            id: creator,
+          },
+        },
+      },
+    });
   }
 
   remove(id: string) {
-    return this.taskRepo.softRemove({ id }).catch((e) => {
-      this.logger.error(e);
-    });
-    // return this.prisma.tasks.delete({
-    //   where: {
-    //     id,
-    //   },
+    // return this.taskRepo.softRemove({ id }).catch((e) => {
+    //   this.logger.error(e);
     // });
+    return this.prisma.task.delete({
+      where: {
+        id,
+      },
+    });
   }
 
-  async findUserTasks(user_id: string) {
+  async findUserTasks(creator_id: string) {
     const records = await this.prisma.task.findMany({
       where: {
-        user_id,
+        creator_id,
       },
     });
     return new FindTaskResponse({
