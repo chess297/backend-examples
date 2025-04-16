@@ -21,7 +21,7 @@ async function bootstrap() {
     .addTag('examples')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('swagger', app, documentFactory);
   app.use(cookieParser());
   const redis = new Redis({
     password: 'backend-examples',

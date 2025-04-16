@@ -1,11 +1,12 @@
+import { v4 as uuid } from 'uuid';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from '@/database/prisma/prisma.service';
 import {
   CreateProfileRequest,
   GetProfileResponse,
 } from './dto/create-profile.dto';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
-import { PrismaService } from '@/database/prisma/prisma.service';
-import { v4 as uuid } from 'uuid';
+
 @Injectable()
 export class ProfileService {
   constructor(private readonly prisma: PrismaService) {}

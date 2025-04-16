@@ -19,6 +19,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const result: boolean = (await super.canActivate(context)) as boolean;
+    // 这里的login和session的login是不一样的
     await super.logIn(context.switchToHttp().getRequest());
 
     return result;

@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -9,12 +10,6 @@ import {
   ClassSerializerInterceptor,
   Patch,
 } from '@nestjs/common';
-import { ProfileService } from './profile.service';
-import { UpdateProfileRequest } from './dto/update-profile.dto';
-import {
-  ParserJwtAuthGuard,
-  RequestWithUser,
-} from '@/common/guards/auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Read,
@@ -22,10 +17,12 @@ import {
   Permission,
 } from '@/common/decorators/permission.decorator';
 import { PermissionGuard } from '@/common/guards/permission.guard';
+import { UpdateProfileRequest } from './dto/update-profile.dto';
+import { ProfileService } from './profile.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
-@UseGuards(ParserJwtAuthGuard, PermissionGuard)
+@UseGuards(PermissionGuard)
 @Controller('user/profile')
 @Permission('profile')
 export class ProfileController {
@@ -38,18 +35,18 @@ export class ProfileController {
   @Get()
   @Read()
   @Update()
-  findOnnByUserId(@Req() req: RequestWithUser) {
-    return this.profileService.findOneByUserId(req.user.id);
+  findOnnByUserId(@Req() req: Request) {
+    return this.profileService.findOneByUserId(
+      req.session.passport?.user.id ?? '',
+    );
+    // return this.profileService.findOneByUserId(req.user.id);
   }
 
   @ApiOperation({
     summary: '修改用户信息',
   })
   @Patch()
-  update(
-    @Req() req: RequestWithUser,
-    @Body() updateProfileDto: UpdateProfileRequest,
-  ) {
+  update(@Req() req: Request, @Body() updateProfileDto: UpdateProfileRequest) {
     return this.profileService.update(req.user.id, updateProfileDto);
   }
 }

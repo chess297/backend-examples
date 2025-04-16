@@ -1,8 +1,9 @@
+// import * as Joi from 'joi';
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-// import * as Joi from 'joi';
 import { __IS_DEV__ } from '@/constants';
+
 const CWD = process.cwd();
 
 const YAML_CONFIG_FILENAME = !__IS_DEV__

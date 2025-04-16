@@ -1,3 +1,5 @@
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import {
   Injectable,
   NestInterceptor,
@@ -5,8 +7,6 @@ import {
   BadGatewayException,
   CallHandler,
 } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ExceptionInterceptor implements NestInterceptor {

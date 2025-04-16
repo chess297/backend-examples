@@ -8,11 +8,11 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { RoleService } from './role.service';
-import { CreateRoleRequest } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SystemRoleGuard } from '@/common/guards/role.guard';
+import { CreateRoleRequest } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleService } from './role.service';
 
 @UseGuards(SystemRoleGuard)
 @ApiTags('role')

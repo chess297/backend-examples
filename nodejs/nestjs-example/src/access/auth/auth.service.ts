@@ -1,20 +1,20 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import * as bcrypt from 'bcrypt';
+import { Cache } from 'cache-manager';
+import Redis from 'ioredis';
+// import { JwtPayload } from '@/common/guards/auth.guard';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   BadRequestException,
   Inject,
   Injectable,
   Logger,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 import { SigninRequest } from './dto/signin.dto';
 import { SignupRequest } from './dto/signup.dto';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
-// import { JwtPayload } from '@/common/guards/auth.guard';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import Redis from 'ioredis';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {

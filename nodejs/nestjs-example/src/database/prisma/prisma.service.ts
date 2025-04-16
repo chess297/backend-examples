@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/clients/postgresql';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 // import { PrismaClient } from '@prisma/clients/mysql';
 import { ConfigService } from '@nestjs/config';
 

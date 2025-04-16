@@ -1,5 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 import { UserService } from './user.service';
+import { Request } from 'express';
+import { ApiOperation } from '@nestjs/swagger';
 // import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,6 +18,14 @@ export class UserController {
   // findAll() {
   //   return this.userService.findAll();
   // }
+  @ApiOperation({
+    summary: '获取用户信息',
+  })
+  @Get('/profile')
+  getProfile(@Req() req: Request) {
+    // return this.userService.getProfile(id);
+    return req.session.passport;
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

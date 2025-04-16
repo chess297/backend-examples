@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SigninRequest {
   // @ApiProperty()
@@ -18,7 +18,7 @@ export class SigninRequest {
   @IsNotEmpty()
   @ApiProperty({
     title: '密码',
-    example: '123456user',
+    example: '123456',
   })
   password: string;
 }

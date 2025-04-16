@@ -1,26 +1,23 @@
+import { Prisma } from '@prisma/clients/postgresql';
 import {
   Controller,
   Get,
   Post,
   Body,
   Logger,
-  UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
   Delete,
   BadRequestException,
   Param,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserRequest } from './dto/create-user.dto';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ParserJwtAuthGuard } from '@/common/guards/auth.guard';
+import { CreateUserRequest } from './dto/create-user.dto';
 import { RemoveUserRequest } from './dto/remove-user.request';
-import { Prisma } from '@prisma/clients/postgresql';
 import { UserEntity } from './entities/user.entity';
+import { UserService } from './user.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(ParserJwtAuthGuard)
 @ApiTags('user')
 @Controller('user')
 export class UserController {

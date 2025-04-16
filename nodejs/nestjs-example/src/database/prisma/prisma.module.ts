@@ -1,7 +1,8 @@
-import { Global, Module } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
+import { Global, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PrismaService } from './prisma.service';
+
 @Global()
 @Module({
   imports: [],

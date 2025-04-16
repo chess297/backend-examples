@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CacheModule } from './cache/cache.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TypeormModule } from './typeorm/typeorm.module';
+
 @Module({
   imports: [
     RedisModule.forRootAsync({

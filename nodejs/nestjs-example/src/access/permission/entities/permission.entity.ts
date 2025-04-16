@@ -1,7 +1,7 @@
+import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '@/common/entity/base.entity';
 import { IPermission } from '../interface/permission.interface';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
 
 export class PermissionEntity extends BaseEntity implements IPermission {
   @ApiProperty({

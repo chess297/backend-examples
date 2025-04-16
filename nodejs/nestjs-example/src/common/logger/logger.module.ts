@@ -1,11 +1,11 @@
-import { Global, Logger, Module } from '@nestjs/common';
-import { join } from 'path';
-
 import { utilities, WinstonModule } from 'nest-winston';
-import { Console } from 'winston/lib/winston/transports';
-import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 import { format } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { Console } from 'winston/lib/winston/transports';
+import { Global, Logger, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
 // import { LoggerModule } from 'nestjs-pino';
 // import { __IS_DEV__ } from '@/constants';
 

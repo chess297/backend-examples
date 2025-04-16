@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { AccessModule } from '@/access/access.module';
+import { LoggerModule } from '@/common/logger/logger.module';
 import config from '@/config';
 import { DatabaseModule } from '@/database/database.module';
-import { LoggerModule } from '@/common/logger/logger.module';
-import { AccessModule } from '@/access/access.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { FeaturesModule } from './modules/features.module';
 
 @Module({

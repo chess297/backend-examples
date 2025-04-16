@@ -1,7 +1,7 @@
-import { UserEntity } from '@/modules/user/entities/user.entity';
+import * as passport from 'passport';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import * as passport from 'passport';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class SessionStrategy extends PassportStrategy(

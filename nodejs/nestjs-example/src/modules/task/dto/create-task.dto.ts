@@ -1,7 +1,7 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Prisma } from '@prisma/clients/postgresql';
-import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTaskRequest {
   @IsString()

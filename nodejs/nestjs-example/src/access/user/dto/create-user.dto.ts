@@ -1,8 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { UserEntity } from '../entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 import { RoleEntity } from '@/access/role/entities/role.entity';
+import { UserEntity } from '../entities/user.entity';
 
 export class CreateUserRequest extends UserEntity {
   @ApiProperty({

@@ -1,8 +1,8 @@
+import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateRoleRequest } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { v4 as uuid } from 'uuid';
-import { PrismaService } from '@/database/prisma/prisma.service';
 
 @Injectable()
 export class RoleService {

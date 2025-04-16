@@ -7,11 +7,11 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { PermissionService } from './permission.service';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { PermissionService } from './permission.service';
 
 @ApiTags('permission')
 @Controller('permission')

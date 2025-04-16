@@ -1,8 +1,9 @@
+import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { PrismaService } from '@/database/prisma/prisma.service';
-import { v4 as uuid } from 'uuid';
+
 @Injectable()
 export class PermissionService {
   constructor(private readonly prisma: PrismaService) {}

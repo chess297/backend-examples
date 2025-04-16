@@ -1,7 +1,7 @@
+import { PermissionAction } from '@prisma/clients/postgresql';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IPermission } from '../interface/permission.interface';
-import { IsArray, IsOptional, IsString } from 'class-validator';
-import { PermissionAction } from '@prisma/clients/postgresql';
 
 export class CreatePermissionDto implements IPermission {
   @ApiProperty()

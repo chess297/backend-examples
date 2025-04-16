@@ -1,11 +1,11 @@
-import { SYSTEM_ADMIN_KEY } from '@/common/decorators/role.decorator';
+import { Request } from 'express';
 import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { SYSTEM_ADMIN_KEY } from '@/common/decorators/role.decorator';
 
 @Injectable()
 export class SystemRoleGuard implements CanActivate {

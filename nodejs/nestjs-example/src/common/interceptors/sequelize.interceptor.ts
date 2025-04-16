@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+import { map, Observable } from 'rxjs';
 import {
   CallHandler,
   ExecutionContext,
@@ -6,8 +8,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { map, Observable } from 'rxjs';
-import { Request, Response } from 'express';
+
 export class CommonResponse<T = any> {
   @ApiProperty({})
   data?: T;

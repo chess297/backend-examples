@@ -1,12 +1,12 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
-import { PrismaService } from '@/database/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import { ProfileService } from './profile/profile.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '@/database/prisma/prisma.service';
+import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import { ProfileService } from './profile/profile.service';
 
 @Injectable()
 export class UserService {

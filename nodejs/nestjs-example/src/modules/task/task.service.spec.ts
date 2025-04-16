@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TaskService } from './task.service';
-import { DatabaseModule } from '@/database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import config from '@/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Task } from './entities/task.entity';
 import { LoggerModule } from '@/common/logger/logger.module';
+import config from '@/config';
+import { DatabaseModule } from '@/database/database.module';
+import { Task } from './entities/task.entity';
+import { TaskService } from './task.service';
 
 describe('TaskService', () => {
   let service: TaskService;

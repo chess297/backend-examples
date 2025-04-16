@@ -1,3 +1,6 @@
+import { PrismaClientKnownRequestError } from '@prisma/clients/postgresql/runtime/library';
+import { Response } from 'express';
+import reqId from 'request-ip';
 import {
   ArgumentsHost,
   Catch,
@@ -5,9 +8,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/clients/postgresql/runtime/library';
-import { Response } from 'express';
-import reqId from 'request-ip';
+
 // 过滤所有的异常
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

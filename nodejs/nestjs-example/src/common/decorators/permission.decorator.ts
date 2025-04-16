@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Action } from '@/constants/enums/action.enum';
 import { SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Action } from '@/constants/enums/action.enum';
 
 export const PERMISSION_KEY = 'permission';
 

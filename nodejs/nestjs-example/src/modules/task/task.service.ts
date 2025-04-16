@@ -1,14 +1,14 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+// import { InjectRedis } from '@nestjs-modules/ioredis';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PrismaService } from '@/database/prisma/prisma.service';
 // import Redis from 'ioredis';
 import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
-import { PrismaService } from '@/database/prisma/prisma.service';
-// import { InjectRedis } from '@nestjs-modules/ioredis';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 
 @Injectable()

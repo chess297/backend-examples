@@ -7,10 +7,10 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { TaskService } from './task.service';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTaskRequest, FindTaskResponse } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TaskService } from './task.service';
 
 @ApiTags('task')
 @Controller('task')

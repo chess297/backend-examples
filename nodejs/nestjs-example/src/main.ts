@@ -1,23 +1,23 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
+import { RedisStore } from 'connect-redis';
+import cookieParser from 'cookie-parser';
+import dayjs from 'dayjs';
+import session from 'express-session';
+import Redis from 'ioredis';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import passport from 'passport';
 import {
   INestApplication,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import { HttpExceptionsFilter } from './common/filters/http-exception.filter';
-import { AllExceptionsFilter } from './common/filters/all-exception.filter';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import dayjs from 'dayjs';
-import { SequelizeInterceptor } from './common/interceptors/sequelize.interceptor';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import Redis from 'ioredis';
-import { RedisStore } from 'connect-redis';
-import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
-import passport from 'passport';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionsFilter } from '@/filters/all-exception.filter';
+import { HttpExceptionsFilter } from '@/filters/http-exception.filter';
+import { SequelizeInterceptor } from '@/interceptors/sequelize.interceptor';
+import { AppModule } from './app.module';
 
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
@@ -68,9 +68,12 @@ function useFilters(app: INestApplication) {
       store,
       secret: 'backend-examples',
       name: 'nestjs-example',
-      rolling: true,
       resave: false,
       saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      },
     }),
   );
   app.use(passport.session());
