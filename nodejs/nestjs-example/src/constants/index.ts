@@ -27,3 +27,5 @@ export const API_MSGS = {
   [API_CODES.USER_PASSWORD_ERR]: '用户密码错误',
   [API_CODES.AUTH_ERR]: '认证失败',
 };
+
+export const APP_NAME = 'nestjs-example';

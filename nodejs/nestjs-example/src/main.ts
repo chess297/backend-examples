@@ -18,6 +18,7 @@ import { AllExceptionsFilter } from '@/filters/all-exception.filter';
 import { HttpExceptionsFilter } from '@/filters/http-exception.filter';
 import { SequelizeInterceptor } from '@/interceptors/sequelize.interceptor';
 import { AppModule } from './app.module';
+import { APP_NAME } from './constants';
 
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
@@ -61,13 +62,13 @@ function useFilters(app: INestApplication) {
   const client: Redis = app.get(getRedisConnectionToken());
   const store = new RedisStore({
     client,
-    prefix: 'nestjs-example:',
+    prefix: `${APP_NAME}:`,
   });
   app.use(
     session({
       store,
       secret: 'backend-examples',
-      name: 'nestjs-example',
+      name: APP_NAME,
       resave: false,
       saveUninitialized: false,
       cookie: {

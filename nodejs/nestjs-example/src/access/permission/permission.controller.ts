@@ -21,6 +21,8 @@ export class PermissionController {
 
   @ApiOperation({
     summary: '创建权限',
+    description: '创建权限',
+    operationId: 'createPermission',
   })
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
@@ -29,6 +31,8 @@ export class PermissionController {
 
   @ApiOperation({
     summary: '查询所有权限',
+    description: '查询所有权限',
+    operationId: 'findManyPermission',
   })
   @Get()
   findAll() {
@@ -37,6 +41,8 @@ export class PermissionController {
 
   @ApiOperation({
     summary: '根据id查询权限',
+    operationId: 'findOnePermission',
+    description: '根据id查询权限',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -45,6 +51,8 @@ export class PermissionController {
 
   @ApiOperation({
     summary: '修改权限',
+    description: '修改权限',
+    operationId: 'updatePermission',
   })
   @Patch(':id')
   update(
@@ -56,6 +64,8 @@ export class PermissionController {
 
   @ApiOperation({
     summary: '删除权限',
+    description: '删除权限',
+    operationId: 'removePermission',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

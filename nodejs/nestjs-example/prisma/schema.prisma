@@ -10,16 +10,16 @@ datasource db {
 
 // 用户表
 model User {
-  id        String     @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
-  name      String     @db.VarChar(50)
-  email     String     @unique
-  password  String     @db.VarChar(255)
+  id        String    @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
+  name      String    @db.VarChar(50)
+  email     String    @unique
+  password  String    @db.VarChar(255)
   profile   Profile?
   tasks     Task[]
   roles     Role[]
-  create_at DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at DateTime?  @map("delete_at") @db.Timestamptz()
+  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("users")
 }
@@ -36,21 +36,21 @@ model Profile {
   update_at    DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at    DateTime? @map("delete_at") @db.Timestamptz()
 
-  @@index([user_id], map: "profile_user_id_idx")
   @@unique([user_id, phone, country_code])
+  @@index([user_id], map: "profile_user_id_idx")
   @@map("profiles")
 }
 
 // 角色表
 model Role {
-  id          String            @id @db.VarChar(36)
-  name        String            @unique @db.VarChar(255)
-  description String            @db.VarChar(255)
+  id          String       @id @db.VarChar(36)
+  name        String       @unique @db.VarChar(255)
+  description String       @db.VarChar(255)
   users       User[]
   permissions Permission[]
-  create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
+  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
 
   @@map("roles")
 }
@@ -78,15 +78,17 @@ enum PermissionAction {
 
 // 权限表
 model Permission {
-  id          String            @unique @id(map: "permission_pk") @map("id") @db.VarChar(36)
-  name        String            @db.VarChar(255) // 权限名称
-  actions      PermissionAction[]  // 操作，例如："create", "update", "delete", "read"
-  resource    String            @db.VarChar(255) // 资源，例如："users", "posts"
-  description String            @db.VarChar(255)
+  id          String             @id(map: "permission_pk") @unique @map("id") @db.VarChar(36)
+  name        String             @db.VarChar(255) // 权限名称
+  actions     PermissionAction[] // 操作，例如："create", "update", "delete", "read"
+  resource    String             @db.VarChar(255) // 资源，例如："users", "posts"
+  description String             @db.VarChar(255)
   roles       Role[]
-  create_at   DateTime          @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at   DateTime          @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at   DateTime?         @map("delete_at") @db.Timestamptz()
+  create_at   DateTime           @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime           @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime?          @map("delete_at") @db.Timestamptz()
+  // 关联的菜单
+  menus       Menu[]
 
   @@map("permissions")
 }
@@ -111,10 +113,27 @@ model Task {
   description String    @db.VarChar(255)
   completed   Boolean   @default(false)
   creator_id  String?   @unique @map("creator_id") @db.VarChar(36)
-  creator        User?      @relation(fields: [creator_id], references: [id])
+  creator     User?     @relation(fields: [creator_id], references: [id])
   create_at   DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("tasks")
+}
+
+model Menu {
+  id          String       @id @unique @map("id") @db.VarChar(36)
+  name        String       @db.VarChar(255)
+  path        String       @unique @db.VarChar(255)
+  icon        String       @db.VarChar(255)
+  component   String       @db.VarChar(255)
+  parent_id   String?      @map("parent_id") @db.VarChar(36)
+  parent      Menu?        @relation("MenuParent", fields: [parent_id], references: [id])
+  children    Menu[]       @relation("MenuParent")
+  permissions Permission[]
+  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
+
+  @@map("menus")
 }
