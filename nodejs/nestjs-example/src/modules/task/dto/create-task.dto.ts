@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/clients/postgresql';
 import { Exclude } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationInterface } from '@/common/interface/pagination.interface';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 export class CreateTaskRequest {
   @ApiProperty()
@@ -33,7 +33,7 @@ export class CreateTaskRequest {
 //   description: string;
 // }
 
-export class TaskModel implements Prisma.TaskMinAggregateOutputType {
+export class TaskEntity implements Prisma.TaskMinAggregateOutputType {
   @ApiProperty()
   @IsString()
   title: string;
@@ -64,9 +64,9 @@ export class FindTaskResponse {
   @ApiProperty({
     isArray: true,
     title: '任务列表',
-    type: TaskModel,
+    type: TaskEntity,
   })
-  records: TaskModel[];
+  records: TaskEntity[];
   @ApiProperty()
   total: number;
   @ApiProperty()
@@ -77,23 +77,7 @@ export class FindTaskResponse {
   }
 }
 
-export class FindTaskRequest implements PaginationInterface {
-  @ApiProperty({
-    title: '页码',
-    required: false,
-    default: 0,
-  })
-  @IsOptional()
-  page?: number = 0;
-
-  @ApiProperty({
-    title: '每页数量',
-    required: false,
-    default: 10,
-  })
-  @IsOptional()
-  limit?: number = 10;
-
+export class FindTaskQuery extends PaginationDto {
   @ApiProperty({
     title: '任务id',
     required: false,

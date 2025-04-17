@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateRoleRequest } from './dto/create-role.dto';
+import { FindManyRoleQuery } from './dto/find.role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
@@ -22,15 +23,21 @@ export class RoleService {
     });
   }
 
-  findAll() {
-    return this.prisma.role.findMany({
-      where: {
-        delete_at: null,
-      },
+  async findAll(query: FindManyRoleQuery) {
+    const { page, limit, ...where } = query;
+    const roles = await this.prisma.role.findMany({
       omit: {
         delete_at: true,
       },
+      where: where,
+      skip: (page - 1) * limit,
+      take: limit,
     });
+    const total = await this.prisma.role.count();
+    return {
+      records: roles,
+      total,
+    };
   }
 
   findOne(id: string) {

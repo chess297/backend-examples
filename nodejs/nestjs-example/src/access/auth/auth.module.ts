@@ -6,11 +6,7 @@ import { SessionSerializer } from '@/common/serializer/session.serializer';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
 import { SessionStrategy } from './strategies/session.strategy';
-
-// import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -30,12 +26,6 @@ import { SessionStrategy } from './strategies/session.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    SessionSerializer,
-    SessionStrategy,
-  ],
+  providers: [AuthService, SessionSerializer, SessionStrategy],
 })
 export class AuthModule {}

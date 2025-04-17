@@ -7,11 +7,19 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  APIBadRequestResponse,
+  APIOkResponse,
+  APIPaginationResponse,
+} from '@/common/decorators/swagger.decorator';
 import { SystemRoleGuard } from '@/common/guards/role.guard';
 import { CreateRoleRequest } from './dto/create-role.dto';
+import { FindManyRoleQuery } from './dto/find.role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { RoleEntity } from './entities/role.entity';
 import { RoleService } from './role.service';
 
 @UseGuards(SystemRoleGuard)
@@ -23,8 +31,9 @@ export class RoleController {
   @ApiOperation({
     summary: '创建角色',
   })
+  @APIOkResponse(RoleEntity)
+  @APIBadRequestResponse()
   @Post()
-  @ApiOkResponse()
   create(@Body() createRoleDto: CreateRoleRequest) {
     return this.roleService.create(createRoleDto);
   }
@@ -32,14 +41,17 @@ export class RoleController {
   @ApiOperation({
     summary: '查询所有角色',
   })
+  @APIPaginationResponse(RoleEntity)
+  @APIBadRequestResponse()
   @Get()
-  findAll() {
-    return this.roleService.findAll();
+  findAll(@Query() query: FindManyRoleQuery) {
+    return this.roleService.findAll(query);
   }
 
   @ApiOperation({
     summary: '根据id查询角色',
   })
+  @APIOkResponse(RoleEntity)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roleService.findOne(id);
@@ -48,6 +60,7 @@ export class RoleController {
   @ApiOperation({
     summary: '修改角色',
   })
+  @APIOkResponse(RoleEntity)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(id, updateRoleDto);

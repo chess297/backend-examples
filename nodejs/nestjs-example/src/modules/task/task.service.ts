@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import {
   CreateTaskRequest,
-  FindTaskRequest,
+  FindTaskQuery,
   FindTaskResponse,
 } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
@@ -40,7 +40,7 @@ export class TaskService {
 
     return task;
   }
-  async findAll(query: FindTaskRequest): Promise<FindTaskResponse> {
+  async findAll(query: FindTaskQuery): Promise<FindTaskResponse> {
     const { page = 0, limit = 10, creator, ...where } = query;
     // prisma
     const skip = +page * +limit;

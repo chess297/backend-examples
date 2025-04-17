@@ -1,13 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationInterface } from '@/common/interface/pagination.interface';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 import { MenuEntity } from '../entities/menu.entity';
 
-export class FindMenuRequest implements PaginationInterface {
+export class FindMenuQuery extends PaginationDto {
   declare name: string;
-
-  page?: number;
-
-  limit?: number;
 }
 
 export class FindManyMenuResponse {

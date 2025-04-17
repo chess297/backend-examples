@@ -14,9 +14,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SuccessResponseInterceptor } from '@/common/interceptors/success.interceptor';
 import { AllExceptionsFilter } from '@/filters/all-exception.filter';
 import { HttpExceptionsFilter } from '@/filters/http-exception.filter';
-import { SequelizeInterceptor } from '@/interceptors/sequelize.interceptor';
 import { AppModule } from './app.module';
 import { APP_NAME } from './constants';
 
@@ -44,7 +44,7 @@ function resolveRoute(app: INestApplication, configService: ConfigService) {
 }
 
 function useInterceptors(app: INestApplication) {
-  app.useGlobalInterceptors(new SequelizeInterceptor());
+  app.useGlobalInterceptors(new SuccessResponseInterceptor());
 }
 
 function usePipes(app: INestApplication) {
@@ -56,8 +56,8 @@ function usePipes(app: INestApplication) {
 }
 
 function useFilters(app: INestApplication) {
-  app.useGlobalFilters(new HttpExceptionsFilter());
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new HttpExceptionsFilter());
   app.use(cookieParser());
   const client: Redis = app.get(getRedisConnectionToken());
   const store = new RedisStore({

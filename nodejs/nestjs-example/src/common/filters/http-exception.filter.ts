@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import reqId from 'request-ip';
 import {
   ArgumentsHost,
   Catch,
@@ -19,9 +18,9 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     // 获取状态码
     const statusCode = exception.getStatus();
+    const details: string[] = [];
     const responseBody = exception.getResponse();
 
-    const details: string[] = [];
     if (typeof responseBody === 'object' && responseBody !== null) {
       if ('message' in responseBody && Array.isArray(responseBody.message)) {
         const message = responseBody.message;
@@ -29,17 +28,11 @@ export class HttpExceptionsFilter implements ExceptionFilter {
         details.push(...message);
       }
     }
-    const req = ctx.getRequest<reqId.Request>();
-    let ip: string | null = null;
-    if (req) {
-      ip = reqId.getClientIp(req);
-    }
     // 自定义异常返回体
     response.status(statusCode).json({
       message: exception.message,
-      statusCode,
+      code: statusCode,
       timestamp: new Date().toISOString(),
-      ip,
       details,
     });
   }

@@ -6,11 +6,18 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
+import {
+  APIOkResponse,
+  APIPaginationResponse,
+} from '@/common/decorators/swagger.decorator';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { FindPermissionQuery } from './dto/find-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { PermissionEntity } from './entities/permission.entity';
 import { PermissionService } from './permission.service';
 
 @ApiTags('permission')
@@ -24,6 +31,7 @@ export class PermissionController {
     description: '创建权限',
     operationId: 'createPermission',
   })
+  @APIOkResponse(PermissionEntity)
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionService.create(createPermissionDto);
@@ -34,8 +42,10 @@ export class PermissionController {
     description: '查询所有权限',
     operationId: 'findManyPermission',
   })
+  @APIPaginationResponse(PermissionEntity)
   @Get()
-  findAll() {
+  findAll(@Query() query: FindPermissionQuery) {
+    console.log('🚀 ~ PermissionController ~ findAll ~ query:', query);
     return this.permissionService.findAll();
   }
 
@@ -44,6 +54,7 @@ export class PermissionController {
     operationId: 'findOnePermission',
     description: '根据id查询权限',
   })
+  @APIOkResponse(PermissionEntity)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.permissionService.findOne(id);
@@ -54,6 +65,7 @@ export class PermissionController {
     description: '修改权限',
     operationId: 'updatePermission',
   })
+  @APIOkResponse(PermissionEntity)
   @Patch(':id')
   update(
     @Param('id') id: string,

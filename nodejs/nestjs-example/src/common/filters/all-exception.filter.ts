@@ -1,6 +1,4 @@
-import { PrismaClientKnownRequestError } from '@prisma/clients/postgresql/runtime/library';
 import { Response } from 'express';
-import reqId from 'request-ip';
 import {
   ArgumentsHost,
   Catch,
@@ -22,40 +20,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    const req = ctx.getRequest<reqId.Request>();
-    let ip: string | null = null;
-    if (req) {
-      ip = reqId.getClientIp(req);
-    }
-    if (exception instanceof PrismaClientKnownRequestError) {
-      // 数据库操作错误
-      response.status(statusCode).json({
-        message: '数据库操作错误',
-        statusCode,
-        timestamp: new Date().toISOString(),
-        ip,
-      });
-      return;
-    }
-    if (exception instanceof HttpException) {
-      const message = exception.message ?? '服务器内部错误!';
-
-      // 自定义异常返回体
-      response.status(statusCode).json({
-        message,
-        statusCode,
-        timestamp: new Date().toISOString(),
-        ip,
-      });
-      return;
+    let message = '服务器内部错误';
+    if (exception && exception['message']) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      message = (exception as any).message;
     }
 
     // 自定义异常返回体
     response.status(statusCode).json({
-      message: '服务器内部错误!',
-      statusCode,
+      message,
+      code: statusCode,
       timestamp: new Date().toISOString(),
-      ip,
     });
   }
 }

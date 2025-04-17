@@ -12,6 +12,10 @@ import {
   Param,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  APIOkResponse,
+  APIPaginationResponse,
+} from '@/common/decorators/swagger.decorator';
 import { CreateUserRequest } from './dto/create-user.dto';
 import { RemoveUserRequest } from './dto/remove-user.request';
 import { UserEntity } from './entities/user.entity';
@@ -27,6 +31,7 @@ export class UserController {
   @ApiOperation({
     summary: '创建新用户',
   })
+  @APIOkResponse(UserEntity)
   @Post()
   create(@Body() createUserDto: CreateUserRequest) {
     return this.userService.create(createUserDto);
@@ -35,6 +40,7 @@ export class UserController {
   @ApiOperation({
     summary: '查询多个用户',
   })
+  @APIPaginationResponse(UserEntity)
   @Get()
   @ApiOkResponse({
     isArray: true,
@@ -47,11 +53,9 @@ export class UserController {
   @ApiOperation({
     summary: '查询单个用户',
   })
+  @APIOkResponse(UserEntity)
   @Get(':id')
-  @ApiOkResponse({
-    isArray: true,
-    type: UserEntity,
-  })
+  @APIOkResponse(UserEntity)
   findOn(@Param('id') id: string) {
     return this.userService.findOne(id);
   }

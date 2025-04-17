@@ -6,16 +6,6 @@ export type Response<T = any> = {
   data?: T; // 业务数据
   message: string; // 响应信息
   timestamp: number; // 时间戳
-  details?: string[];
-};
-/**
- * @description: 分页数据
- */
-export type PageResponse<T = any> = {
-  current?: number; // 页码
-  size?: number; // 当前页条数
-  total?: number; // 总条数
-  records: T[]; // 业务数据
 };
 
 // 统一成功响应的数据结构
@@ -31,10 +21,15 @@ export interface ErrorResponse {
   message: string;
 }
 
-// 统一分页响应的数据结构
-export interface PaginatedResponse<T> {
-  code: number;
-  message: string;
-  data: T[];
-  total: number;
-}
+/**
+ * @description: 分页数据
+ */
+type PageResponse<T = any> = {
+  current?: number; // 页码
+  size?: number; // 当前页条数
+  total?: number; // 总条数
+  records: T[]; // 业务数据
+};
+
+// 分页响应体
+export type PaginatedResponse<T> = Response<PageResponse<T>>;
