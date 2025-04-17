@@ -55,19 +55,7 @@ model Role {
   @@map("roles")
 }
 
-// 用户角色表
-// model UserRole {
-//   id        String    @id(map: "user_role_pk") @map("id") @db.VarChar(36)
-//   user_id   String    @map("user_id") @db.VarChar(36)
-//   roleId    String    @map("role_id") @db.VarChar(36)
-//   role      Role      @relation(fields: [roleId], references: [id])
-//   user      User      @relation(fields: [user_id], references: [id])
-//   create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-//   update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-//   delete_at DateTime? @map("delete_at") @db.Timestamptz()
-//   @@index([user_id, roleId], map: "user_role_unique")
-//   @@map("user_roles")
-// }
+
 enum PermissionAction {
   manage
   create
@@ -93,26 +81,13 @@ model Permission {
   @@map("permissions")
 }
 
-// 角色权限表
-// model RolePermissions {
-//   id           String     @id(map: "role_permission_pk") @map("id") @db.VarChar(36)
-//   roleId       String     @map("role_id") @db.VarChar(36)
-//   permissionId String     @map("permission_id") @db.VarChar(36)
-//   role         Role       @relation(fields: [roleId], references: [id])
-//   permission   Permission @relation(fields: [permissionId], references: [id])
-//   create_at    DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-//   update_at    DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-//   delete_at    DateTime?  @map("delete_at") @db.Timestamptz()
-
-//   @@map("role_permissions")
-// }
 
 model Task {
   id          String    @id @map("id") @db.VarChar(36)
   title       String    @db.VarChar(255)
   description String    @db.VarChar(255)
   completed   Boolean   @default(false)
-  creator_id  String?   @unique @map("creator_id") @db.VarChar(36)
+  creator_id  String?   @unique @db.VarChar(36)
   creator     User?     @relation(fields: [creator_id], references: [id])
   create_at   DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
@@ -121,19 +96,50 @@ model Task {
   @@map("tasks")
 }
 
+// 菜单表
 model Menu {
   id          String       @id @unique @map("id") @db.VarChar(36)
-  name        String       @db.VarChar(255)
-  path        String       @unique @db.VarChar(255)
-  icon        String       @db.VarChar(255)
-  component   String       @db.VarChar(255)
   parent_id   String?      @map("parent_id") @db.VarChar(36)
   parent      Menu?        @relation("MenuParent", fields: [parent_id], references: [id])
   children    Menu[]       @relation("MenuParent")
+  mate        MenuMate?
+  group       MenuGroup?   @relation(fields: [group_id], references: [id])
+  group_id    String?      @map("group_id") @db.VarChar(36)
   permissions Permission[]
   create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
 
   @@map("menus")
+}
+
+// 菜单元数据表
+model MenuMate {
+  id        String @id @unique @map("id") @db.VarChar(36)
+  menu_id   String @unique @map("menu_id") @db.VarChar(36)
+  menu      Menu   @relation(fields: [menu_id], references: [id])
+  title     String @db.VarChar(255)
+  path      String @unique @db.VarChar(255)
+  icon      String @db.VarChar(255)
+  component String @db.VarChar(255)
+
+  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at DateTime? @map("delete_at") @db.Timestamptz()
+
+  @@map("menu_mates")
+}
+
+// 菜单组表,分组不是子菜单和父菜单的关系
+model MenuGroup {
+  id        String      @id @unique @map("id") @db.VarChar(36)
+  name      String      @unique @db.VarChar(255)
+  parent_id String?     @map("parent_id") @db.VarChar(36)
+  menu_ids  String[]
+  menus     Menu[]
+  create_at DateTime    @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  update_at DateTime    @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  delete_at DateTime?   @map("delete_at") @db.Timestamptz()
+
+  @@map("menu_groups")
 }

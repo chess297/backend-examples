@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import { Controller, Post, Body, Req, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  APIBadRequestResponse,
+  APIOkResponse,
+} from '@/common/decorators/swagger.decorator';
 import { APP_NAME } from '@/constants';
 import { AuthService } from './auth.service';
 import { SigninRequest, SigninResponse } from './dto/signin.dto';
@@ -28,7 +32,8 @@ export class AuthController {
     operationId: 'signin',
   })
   @Post('signin')
-  @ApiOkResponse({ type: SigninResponse })
+  @APIOkResponse(SigninResponse)
+  @APIBadRequestResponse()
   async signin(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,

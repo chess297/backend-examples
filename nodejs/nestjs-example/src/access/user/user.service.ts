@@ -21,16 +21,20 @@ export class UserService {
     const password = await bcrypt.hash(createUserDto.password, salt);
     // 处理邮箱
     const id = uuid();
-    const data = {
-      name: createUserDto.name,
-      password: password,
-      id,
-      email: createUserDto.email,
-    };
 
     const user = await this.prisma.user
       .create({
-        data: data,
+        data: {
+          name: createUserDto.name,
+          password: password,
+          id,
+          email: createUserDto.email,
+          roles: {
+            connect: {
+              id: createUserDto.role,
+            },
+          },
+        },
       })
       .catch((err: PrismaClientKnownRequestError) => {
         if (err.code === 'P2002') {

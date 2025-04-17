@@ -51,6 +51,7 @@ export class PaginationData<T> {
 
   @ApiProperty({
     title: '数据列表',
+    isArray: true,
   })
   records: T[];
 }

@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
+import { IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleEntity } from '@/access/role/entities/role.entity';
 import { UserEntity } from '../entities/user.entity';
 
 export class CreateUserRequest extends UserEntity {
@@ -21,10 +21,9 @@ export class CreateUserRequest extends UserEntity {
 
   @ApiProperty({
     title: '用户角色id列表',
-    example: '123456user',
-    isArray: true,
   })
-  declare roles?: RoleEntity[] | undefined;
+  @IsUUID()
+  role?: string | undefined;
 }
 
 export class GetUserResponse extends CreateUserRequest {

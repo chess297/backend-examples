@@ -10,7 +10,7 @@ import { RoleEntity } from '@/access/role/entities/role.entity';
 
 export class UserEntity implements User {
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   id: string;
 
   @IsString()

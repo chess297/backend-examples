@@ -51,6 +51,17 @@ export class RoleService {
     });
   }
 
+  findOneByName(name: string) {
+    return this.prisma.role.findUnique({
+      omit: {
+        delete_at: true,
+      },
+      where: {
+        name,
+      },
+    });
+  }
+
   async update(id: string, updateRoleDto: UpdateRoleDto) {
     const userIds: string[] = [];
     if (updateRoleDto.users) {

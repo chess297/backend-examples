@@ -2,13 +2,11 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserEntity } from '@/access/user/entities/user.entity';
 import { PERMISSION_KEY } from '@/common/decorators/permission.decorator';
 import { Action } from '@/constants/enums/action.enum';
 
 declare module 'express' {
   interface Request {
-    user: Omit<UserEntity, 'password'>;
     permissions: string[];
   }
 }

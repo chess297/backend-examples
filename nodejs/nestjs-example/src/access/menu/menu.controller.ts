@@ -13,7 +13,6 @@ import {
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
 import { CreateMenuRequest } from './dto/create-menu.dto';
-import { FindManyMenuResponse } from './dto/find-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenuEntity } from './entities/menu.entity';
 import { MenuService } from './menu.service';
@@ -32,7 +31,7 @@ export class MenuController {
 
   @ApiOperation({ summary: '获取菜单列表', operationId: 'findManyMenu' })
   @Get()
-  @APIPaginationResponse(FindManyMenuResponse)
+  @APIPaginationResponse(MenuEntity)
   findAll() {
     return this.menuService.findAll();
   }

@@ -13,13 +13,16 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
-import { PermissionGuard } from '@/common/guards/permission.guard';
+import { APIOkResponse } from '@/common/decorators/swagger.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
+// import { PermissionGuard } from '@/common/guards/permission.guard';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
+import { ProfileEntity } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
-@UseGuards(PermissionGuard)
+@UseGuards(AuthGuard)
 @Controller('user/profile')
 @Permission('profile')
 export class ProfileController {
@@ -28,7 +31,9 @@ export class ProfileController {
 
   @ApiOperation({
     summary: '获取当前用户的信息',
+    operationId: 'getUserProfile',
   })
+  @APIOkResponse(ProfileEntity)
   @Get()
   findOnnByUserId(@Req() req: Request) {
     return this.profileService.findOneByUserId(
@@ -38,13 +43,17 @@ export class ProfileController {
 
   @ApiOperation({
     summary: '修改当前用户信息',
+    operationId: 'updateUserProfile',
   })
+  @APIOkResponse(ProfileEntity)
   @Patch()
   update(@Req() req: Request, @Body() updateProfileDto: UpdateProfileRequest) {
-    return this.profileService.update(req.user.id, updateProfileDto);
+    return this.profileService.update(
+      req.session.passport?.user.id ?? '',
+      updateProfileDto,
+    );
   }
 
-  // TODO 修改/获取其他用户的信息应该需要权限
   @ApiOperation({
     summary: '获取路径id用户信息',
   })

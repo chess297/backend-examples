@@ -47,7 +47,6 @@ export class ProfileService {
       where: {
         user_id: user_id,
       },
-
       include: {
         user: {
           select: {

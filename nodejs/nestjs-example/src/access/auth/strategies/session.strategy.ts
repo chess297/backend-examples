@@ -8,6 +8,7 @@ export class SessionStrategy extends PassportStrategy(
   passport.strategies.SessionStrategy,
 ) {
   validate(user?: UserEntity): boolean {
+    console.log('🚀 ~ validate ~ user:', user);
     return !!user;
   }
 }

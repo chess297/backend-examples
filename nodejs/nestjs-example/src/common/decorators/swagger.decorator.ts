@@ -42,12 +42,14 @@ export const APIPaginationResponse = <T extends Function>(data: T) => {
           {
             properties: {
               data: {
-                type: 'object',
-                properties: {
-                  records: { $ref: getSchemaPath(data) },
-                  current: { type: 'number' },
-                  total: { type: 'number' },
-                },
+                allOf: [
+                  { $ref: getSchemaPath(PaginationData) },
+                  {
+                    properties: {
+                      records: { items: { $ref: getSchemaPath(data) } },
+                    },
+                  },
+                ],
               },
             },
           },
