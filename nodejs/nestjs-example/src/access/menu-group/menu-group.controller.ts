@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -7,6 +8,7 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -46,12 +48,12 @@ export class MenuGroupController {
 
   @ApiOperation({
     summary: '根据id查询菜单分组',
-    operationId: 'queryMenuGroupById',
+    operationId: 'findMenuGroupById',
   })
   @APIOkResponse(MenuGroupEntity)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.menuGroupService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.menuGroupService.findOne(id, req.session.passport?.permissions);
   }
 
   @ApiOperation({

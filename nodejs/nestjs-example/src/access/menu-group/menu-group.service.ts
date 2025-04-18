@@ -1,5 +1,6 @@
+import { Request } from 'express';
 import { v4 as uuid } from 'uuid';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateMenuGroupDto } from './dto/create-menu-group.dto';
 import { FindMenuGroupQuery } from './dto/find-menu-group.dto';
@@ -10,10 +11,14 @@ export class MenuGroupService {
   constructor(private readonly prisma: PrismaService) {}
   create(createMenuGroupDto: CreateMenuGroupDto) {
     const id = uuid();
+    const { menu_ids, ...rest } = createMenuGroupDto;
     return this.prisma.menuGroup.create({
       data: {
-        ...createMenuGroupDto,
+        ...rest,
         id,
+        menus: {
+          connect: menu_ids?.map((menu_id) => ({ id: menu_id })),
+        },
       },
     });
   }
@@ -39,10 +44,35 @@ export class MenuGroupService {
     };
   }
 
-  findOne(id: string) {
-    return this.prisma.menuGroup.findUnique({
+  async findOne(id: string, userPermissions?: string[]) {
+    const group = await this.prisma.menuGroup.findUnique({
       where: { id },
+      include: {
+        permissions: true,
+        menus: {
+          include: {
+            mate: true,
+          },
+        },
+      },
     });
+    if (group?.permissions?.length) {
+      const hasPermission = userPermissions?.some((permission) => {
+        return group?.permissions?.some((groupPermission) => {
+          const actionPermission = groupPermission.actions.reduce(
+            (acc, cur) => {
+              return [...acc, `${groupPermission.resource}:${cur}`];
+            },
+            [],
+          );
+          return actionPermission.includes(permission);
+        });
+      });
+      if (!hasPermission) {
+        return null;
+      }
+    }
+    return group;
   }
 
   update(id: string, updateMenuGroupDto: UpdateMenuGroupDto) {
