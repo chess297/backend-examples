@@ -28,7 +28,6 @@ import { PermissionService } from './permission.service';
 @ApiTags('permission')
 @Controller('permission')
 @UseGuards(AuthGuard, PermissionGuard)
-@Permission('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 

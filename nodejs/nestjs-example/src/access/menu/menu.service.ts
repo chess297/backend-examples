@@ -16,11 +16,16 @@ export class MenuService {
       icon: createMenuDto.icon,
       component: createMenuDto.component,
     };
+    const { groups, ...data } = createMenuDto;
     return this.prisma.menu.create({
       data: {
         id,
         parent_id: createMenuDto.parent_id,
-        group_id: createMenuDto.group_id,
+        groups: {
+          connect: groups.map((item) => ({
+            id: item,
+          })),
+        },
         mate: {
           create: {
             ...mate,

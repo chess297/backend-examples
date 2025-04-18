@@ -104,8 +104,7 @@ model Menu {
   parent      Menu?        @relation("MenuParent", fields: [parent_id], references: [id])
   children    Menu[]       @relation("MenuParent")
   mate        MenuMate?      
-  group       MenuGroup?   @relation(fields: [group_id], references: [id])
-  group_id    String?      @map("group_id") @db.VarChar(36)
+  groups       MenuGroup[]  
   permissions Permission[]
   create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()

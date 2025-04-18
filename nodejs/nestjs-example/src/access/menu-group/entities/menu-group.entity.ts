@@ -1,6 +1,7 @@
 import { MenuGroup } from '@prisma/clients/postgresql';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { MenuEntity } from '@/access/menu/entities/menu.entity';
 import { BaseEntity } from '@/common/entity/base.entity';
 
 export class MenuGroupEntity extends BaseEntity implements MenuGroup {
@@ -21,8 +22,8 @@ export class MenuGroupEntity extends BaseEntity implements MenuGroup {
   @IsOptional()
   parent_id: string | null;
 
-  @ApiProperty()
-  @IsString({ each: true })
-  @IsOptional()
-  menu_ids: string[];
+  @ApiProperty({
+    type: [MenuEntity],
+  })
+  menus?: MenuEntity[];
 }
