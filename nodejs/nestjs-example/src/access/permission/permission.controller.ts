@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -7,6 +8,8 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
@@ -14,6 +17,8 @@ import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
+import { PermissionGuard } from '@/common/guards/permission.guard';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { FindPermissionQuery } from './dto/find-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -22,7 +27,8 @@ import { PermissionService } from './permission.service';
 
 @ApiTags('permission')
 @Controller('permission')
-@Permission('profile')
+@UseGuards(AuthGuard, PermissionGuard)
+@Permission('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
@@ -35,6 +41,19 @@ export class PermissionController {
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionService.create(createPermissionDto);
+  }
+
+  @ApiOperation({
+    summary: '获取当前登录用户的权限',
+    description: '获取当前登录用户的权限',
+    operationId: 'getUserPermission',
+  })
+  @APIOkResponse(PermissionEntity)
+  @Get('/user/permission')
+  getUserPermission(@Req() req: Request) {
+    return this.permissionService.findByUserId(
+      req.session.passport?.user.id ?? '',
+    );
   }
 
   @ApiOperation({

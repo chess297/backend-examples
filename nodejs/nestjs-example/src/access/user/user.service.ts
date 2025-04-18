@@ -100,7 +100,11 @@ export class UserService {
         email,
       },
       include: {
-        roles: true,
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
       },
     });
     if (!user) {

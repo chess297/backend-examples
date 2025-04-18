@@ -6,6 +6,7 @@ declare module 'express-session' {
   interface SessionData {
     passport: {
       user: Omit<UserEntity, 'password'>;
+      permissions: string[];
     };
   }
 }

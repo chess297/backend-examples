@@ -40,7 +40,7 @@ export class AuthService {
 
   async verifyUser(
     email: string,
-    password: string,
+    pwd: string,
   ): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.userService.findOneByEmail(email);
 
@@ -48,11 +48,13 @@ export class AuthService {
       throw new BadRequestException('邮箱不存在');
     }
 
-    const isValid = await this.verifyPassword(password, user.password);
+    const isValid = await this.verifyPassword(pwd, user.password);
     if (!isValid) {
       throw new BadRequestException('邮箱或密码错误');
     }
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...res } = user;
+    return res;
   }
 
   verifyPassword(password: string, hash: string) {

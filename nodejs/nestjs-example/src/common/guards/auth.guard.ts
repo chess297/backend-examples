@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
     // throw new Error('Method not implemented.');
     const req = context.switchToHttp().getRequest<Request>();
     if (!req.session.passport?.user) {
-      throw new UnauthorizedException('请先登录');
+      throw new UnauthorizedException();
     }
     return true;
   }

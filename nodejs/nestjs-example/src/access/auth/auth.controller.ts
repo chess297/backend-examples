@@ -6,6 +6,7 @@ import {
   APIOkResponse,
 } from '@/common/decorators/swagger.decorator';
 import { APP_NAME } from '@/constants';
+import { PrismaService } from '@/database/prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { SigninRequest, SigninResponse } from './dto/signin.dto';
 import { SignupRequest, SignupResponse } from './dto/signup.dto';
@@ -13,7 +14,10 @@ import { SignupRequest, SignupResponse } from './dto/signup.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @ApiOperation({
     summary: '注册',
@@ -40,8 +44,23 @@ export class AuthController {
     @Body() body: SigninRequest,
   ) {
     const user = await this.authService.verifyUser(body.email, body.password);
+    const permissions: string[] =
+      user.roles?.reduce((acc, role) => {
+        if (role.permissions?.length === 0) {
+          return acc;
+        }
+        const permission =
+          role.permissions?.reduce((a, b) => {
+            const strArr = b.actions.map((item) => `${b.resource}:${item}`);
+            return [...a, ...strArr];
+          }, []) ?? [];
+        return [...acc, ...permission];
+      }, []) ?? [];
+    delete user.roles;
+    delete user.password;
     req.session.passport = {
       user: user,
+      permissions,
     };
     res.cookie('user_id', user.id, {
       httpOnly: false,

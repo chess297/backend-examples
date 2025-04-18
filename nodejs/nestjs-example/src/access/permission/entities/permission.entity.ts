@@ -15,9 +15,6 @@ export class PermissionEntity extends BaseEntity implements Permission {
   @IsString()
   description: string;
 
-  @IsString()
-  module: string;
-
   @ApiProperty({
     description: '权限动作列表',
     enum: $Enums.PermissionAction,

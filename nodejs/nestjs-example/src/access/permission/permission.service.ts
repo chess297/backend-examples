@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -37,15 +37,44 @@ export class PermissionService {
     });
   }
 
-  findOne(id: string) {
-    return this.prisma.permission.findUnique({
+  async findByUserId(id: string) {
+    const user = await this.prisma.user.findUnique({
       where: {
         id,
       },
       include: {
-        roles: true,
+        roles: {
+          include: {
+            permissions: true,
+          },
+        },
       },
     });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const permissions = user.roles.reduce((acc, role) => {
+      const rolePermissions = role.permissions.map((permission) => {
+        return {
+          id: permission.id,
+          name: permission.name,
+          description: permission.description,
+          resource: permission.resource,
+          actions: permission.actions,
+        };
+      });
+      return [...acc, ...rolePermissions];
+    }, []);
+    return permissions;
+  }
+
+  async findOne(id: string) {
+    const permission = await this.prisma.permission.findUnique({
+      where: {
+        id,
+      },
+    });
+    return permission;
   }
 
   async update(id: string, updatePermissionDto: UpdatePermissionDto) {

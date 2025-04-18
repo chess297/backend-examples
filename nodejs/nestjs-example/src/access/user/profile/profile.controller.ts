@@ -17,7 +17,7 @@ import { APIOkResponse } from '@/common/decorators/swagger.decorator';
 import { AuthGuard } from '@/common/guards/auth.guard';
 // import { PermissionGuard } from '@/common/guards/permission.guard';
 import { UpdateProfileRequest } from './dto/update-profile.dto';
-import { ProfileEntity } from './entities/profile.entity';
+import { FullProfile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,7 +33,7 @@ export class ProfileController {
     summary: '获取当前用户的信息',
     operationId: 'getUserProfile',
   })
-  @APIOkResponse(ProfileEntity)
+  @APIOkResponse(FullProfile)
   @Get()
   findOnnByUserId(@Req() req: Request) {
     return this.profileService.findOneByUserId(
@@ -45,7 +45,7 @@ export class ProfileController {
     summary: '修改当前用户信息',
     operationId: 'updateUserProfile',
   })
-  @APIOkResponse(ProfileEntity)
+  @APIOkResponse(FullProfile)
   @Patch()
   update(@Req() req: Request, @Body() updateProfileDto: UpdateProfileRequest) {
     return this.profileService.update(
@@ -57,6 +57,7 @@ export class ProfileController {
   @ApiOperation({
     summary: '获取路径id用户信息',
   })
+  @APIOkResponse(FullProfile)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.profileService.findOne(id);
@@ -65,6 +66,7 @@ export class ProfileController {
   @ApiOperation({
     summary: '修改路径id用户信息',
   })
+  @APIOkResponse(FullProfile)
   @Patch(':id')
   updateOne(
     @Param('id') id: string,
