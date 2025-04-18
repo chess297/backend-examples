@@ -21,6 +21,7 @@ export class UserService {
     const password = await bcrypt.hash(createUserDto.password, salt);
     // 处理邮箱
     const id = uuid();
+    const profileId = uuid();
 
     const user = await this.prisma.user
       .create({
@@ -29,9 +30,12 @@ export class UserService {
           password: password,
           id,
           email: createUserDto.email,
-          roles: {
-            connect: {
-              id: createUserDto.role,
+          profile: {
+            create: {
+              id: profileId,
+              address: '',
+              phone: '',
+              country_code: '+86',
             },
           },
         },
@@ -49,13 +53,7 @@ export class UserService {
           }
         }
       });
-    if (user) {
-      await this.profileService.create({
-        user_id: user.id,
-      });
-      return { id: user.id };
-    }
-    throw new BadRequestException('注册失败');
+    return user;
   }
 
   findAll() {

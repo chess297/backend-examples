@@ -7,6 +7,7 @@ declare module 'express-session' {
     passport: {
       user: Omit<UserEntity, 'password'>;
       permissions: string[];
+      is_admin: boolean;
     };
   }
 }

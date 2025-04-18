@@ -52,7 +52,6 @@ export class AuthService {
     if (!isValid) {
       throw new BadRequestException('邮箱或密码错误');
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...res } = user;
     return res;
   }

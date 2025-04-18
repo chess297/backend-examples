@@ -56,11 +56,12 @@ export class AuthController {
           }, []) ?? [];
         return [...acc, ...permission];
       }, []) ?? [];
+    const is_admin = !!user.roles?.some((role) => role.name === 'system-admin');
     delete user.roles;
-    delete user.password;
     req.session.passport = {
       user: user,
       permissions,
+      is_admin,
     };
     res.cookie('user_id', user.id, {
       httpOnly: false,

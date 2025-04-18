@@ -11,14 +11,20 @@ export class RoleService {
 
   create(createRoleDto: CreateRoleRequest) {
     const id = uuid();
+    const { users, permissions, ...rest } = createRoleDto;
     return this.prisma.role.create({
       omit: {
         delete_at: true,
       },
       data: {
+        ...rest,
         id,
-        name: createRoleDto.name,
-        description: createRoleDto.description,
+        users: {
+          connect: users?.map((item) => ({ id: item })),
+        },
+        permissions: {
+          connect: permissions?.map((item) => ({ id: item })),
+        },
       },
     });
   }

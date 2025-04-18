@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IRole } from '../interface/role.interface';
 
@@ -20,6 +20,8 @@ export class CreateRoleRequest implements Omit<IRole, 'id' | 'permissions'> {
     isArray: true,
     type: String,
   })
+  @IsOptional()
+  @IsArray()
   permissions?: string[];
 
   @ApiProperty({
@@ -27,5 +29,7 @@ export class CreateRoleRequest implements Omit<IRole, 'id' | 'permissions'> {
     isArray: true,
     type: String,
   })
+  @IsOptional()
+  @IsArray()
   users?: string[];
 }

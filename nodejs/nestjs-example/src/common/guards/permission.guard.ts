@@ -1,6 +1,11 @@
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '@/common/decorators/permission.decorator';
 import { Action } from '@/constants/enums/action.enum';
@@ -29,7 +34,9 @@ export class PermissionGuard implements CanActivate {
     if (classPermissions) {
       const req = context.switchToHttp().getRequest<Request>();
       const permissions: string[] = [];
-
+      if (req.session.passport?.is_admin) {
+        return true;
+      }
       // permissions.push(...classPermission);
       classPermissions.forEach((permission) => {
         // permissions.push(permission);
@@ -44,7 +51,10 @@ export class PermissionGuard implements CanActivate {
         }
       });
       req.permissions = permissions;
-      console.log('🚀 ~ PermissionGuard ~ permissions:', permissions);
+      const userPermissions = req.session.passport?.permissions;
+      if (!userPermissions?.some((item) => permissions.includes(item))) {
+        throw new ForbiddenException();
+      }
     }
 
     return true;
