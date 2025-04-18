@@ -7,22 +7,35 @@ import { UpdateMenuDto } from './dto/update-menu.dto';
 @Injectable()
 export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createMenuDto: CreateMenuRequest) {
+  async create(createMenuDto: CreateMenuRequest) {
     const id = uuid();
+    const mate = {
+      id: uuid(),
+      title: createMenuDto.title,
+      path: createMenuDto.path,
+      icon: createMenuDto.icon,
+      component: createMenuDto.component,
+    };
     return this.prisma.menu.create({
       data: {
         id,
-        name: createMenuDto.name,
-        path: createMenuDto.path,
-        icon: createMenuDto.icon,
-        component: createMenuDto.component,
         parent_id: createMenuDto.parent_id,
+        group_id: createMenuDto.group_id,
+        mate: {
+          create: {
+            ...mate,
+          },
+        },
       },
     });
   }
 
   async findAll() {
-    const records = await this.prisma.menu.findMany();
+    const records = await this.prisma.menu.findMany({
+      include: {
+        mate: true,
+      },
+    });
     return {
       records,
       total: records.length,
@@ -43,10 +56,6 @@ export class MenuService {
         id,
       },
       data: {
-        name: updateMenuDto.name,
-        path: updateMenuDto.path,
-        icon: updateMenuDto.icon,
-        component: updateMenuDto.component,
         parent_id: updateMenuDto.parent_id,
       },
     });

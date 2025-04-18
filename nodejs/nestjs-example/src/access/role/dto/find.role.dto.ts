@@ -1,8 +1,8 @@
-import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginationQuery } from '@/common/dto/pagination.dto';
 import { RoleEntity } from '../entities/role.entity';
 
 export class FindManyRoleQuery
-  extends PaginationDto
+  extends PaginationQuery
   implements Partial<RoleEntity>
 {
   create_at?: Date | undefined;

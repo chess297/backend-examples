@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
  * 分页参数
  * @description 分页参数
  */
-export class PaginationDto {
+export class PaginationQuery {
   @ApiProperty({
     description: '当前页码',
     default: 1,

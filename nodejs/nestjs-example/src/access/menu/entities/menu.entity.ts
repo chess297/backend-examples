@@ -1,22 +1,11 @@
 import { Permission, Menu } from '@prisma/clients/postgresql';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsUUID } from 'class-validator';
+import { BaseEntity } from '@/common/entity/base.entity';
 
-export class MenuEntity implements Menu {
-  @ApiProperty()
-  id: string;
-  @ApiProperty()
-  @IsString()
-  name: string;
-  @ApiProperty()
-  @IsString()
-  path: string;
-  @ApiProperty()
-  @IsString()
-  icon: string;
-  @ApiProperty()
-  @IsString()
-  component: string;
+export class MenuEntity extends BaseEntity implements Menu {
+  @IsUUID()
+  @IsOptional()
+  group_id: string | null;
 
   @IsUUID()
   @IsOptional()
@@ -27,10 +16,4 @@ export class MenuEntity implements Menu {
   children?: Menu[];
 
   permissions?: Permission;
-
-  create_at: Date;
-
-  update_at: Date;
-
-  delete_at: Date | null;
 }

@@ -3,9 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class BaseEntity {
   @ApiProperty()
   id: string;
-  @ApiProperty()
+  // @ApiProperty()
   create_at: Date;
-  @ApiProperty()
+  // @ApiProperty()
   update_at: Date;
   delete_at: Date | null;
 }

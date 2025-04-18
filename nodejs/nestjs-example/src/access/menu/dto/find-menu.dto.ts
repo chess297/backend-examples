@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginationQuery } from '@/common/dto/pagination.dto';
 import { MenuEntity } from '../entities/menu.entity';
 
-export class FindMenuQuery extends PaginationDto {
+export class FindMenuQuery extends PaginationQuery {
   declare name: string;
 }
 

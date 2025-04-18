@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/clients/postgresql';
 import { Exclude } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginationQuery } from '@/common/dto/pagination.dto';
 
 export class CreateTaskRequest {
   @ApiProperty()
@@ -77,7 +77,7 @@ export class FindTaskResponse {
   }
 }
 
-export class FindTaskQuery extends PaginationDto {
+export class FindTaskQuery extends PaginationQuery {
   @ApiProperty({
     title: '任务id',
     required: false,
