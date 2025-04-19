@@ -53,7 +53,11 @@ export class MenuGroupController {
   @APIOkResponse(MenuGroupEntity)
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.menuGroupService.findOne(id, req.session.passport?.permissions);
+    return this.menuGroupService.findOne(
+      id,
+      req.session.passport?.is_admin,
+      req.session.passport?.permissions,
+    );
   }
 
   @ApiOperation({

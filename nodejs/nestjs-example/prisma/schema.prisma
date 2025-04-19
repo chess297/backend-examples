@@ -10,18 +10,56 @@ datasource db {
 
 // 用户表
 model User {
+  /// 用户ID，UUID格式
   id        String    @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
+  /// 用户名，最大长度50字符
   name      String    @db.VarChar(50)
+  /// 用户邮箱，唯一
   email     String    @unique
+  /// 密码哈希值
   password  String    @db.VarChar(255)
+  /// 关联的用户资料
   profile   Profile?
+  /// 用户创建的任务
   tasks     Task[]
+  /// 用户拥有的角色
   roles     Role[]
+  /// 创建时间，自动设置为当前时间
   create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
   update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
   delete_at DateTime? @map("delete_at") @db.Timestamptz()
 
   @@map("users")
+  @@index([email], name: "user_email_idx")
+  @@index([create_at], name: "user_create_at_idx")
+}
+
+// 菜单组表
+model MenuGroup {
+  /// 菜单组ID，UUID格式
+  id          String       @id @unique @map("id") @db.VarChar(36)
+  /// 菜单组标题
+  title       String       @db.VarChar(255)
+  /// 菜单组图标
+  icon        String       @db.VarChar(255)
+  /// 菜单组描述
+  description String       @db.VarChar(255)
+  /// 关联的权限
+  permissions Permission[]
+  /// 包含的菜单项
+  menus       Menu[]
+  /// 创建时间，自动设置为当前时间
+  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
+  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
+  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
+
+  @@map("menu_groups")
+  @@index([title], name: "menu_group_title_idx")
+  @@index([create_at], name: "menu_group_create_at_idx")
 }
 
 // 用户信息表
@@ -117,9 +155,9 @@ model MenuMate {
   menu_id   String @unique @map("menu_id") @db.VarChar(36)
   menu      Menu   @relation(fields: [menu_id], references: [id])
   title     String @db.VarChar(255)
-  path      String @unique @db.VarChar(255)
+  path      String? @unique @db.VarChar(255)
   icon      String @db.VarChar(255)
-  component String @db.VarChar(255)
+  component String? @db.VarChar(255)
 
   create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
@@ -128,17 +166,3 @@ model MenuMate {
   @@map("menu_mates")
 }
 
-// 菜单组表,分组不是子菜单和父菜单的关系
-model MenuGroup {
-  id          String       @id @unique @map("id") @db.VarChar(36)
-  title       String       @db.VarChar(255)
-  icon        String       @db.VarChar(255)
-  description String       @db.VarChar(255)
-  permissions Permission[]
-  menus       Menu[]
-  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
-
-  @@map("menu_groups")
-}

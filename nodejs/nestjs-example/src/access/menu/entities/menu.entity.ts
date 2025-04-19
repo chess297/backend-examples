@@ -19,9 +19,5 @@ export class MenuEntity extends BaseEntity implements Menu {
 
   permissions?: Permission;
 
-  @ApiProperty({
-    type: MenuMateEntity,
-  })
-  @IsOptional()
   mate: MenuMateEntity;
 }

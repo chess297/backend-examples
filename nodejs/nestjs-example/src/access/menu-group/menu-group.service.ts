@@ -44,7 +44,7 @@ export class MenuGroupService {
     };
   }
 
-  async findOne(id: string, userPermissions?: string[]) {
+  async findOne(id: string, is_admin?: boolean, userPermissions?: string[]) {
     const group = await this.prisma.menuGroup.findUnique({
       where: { id },
       include: {
@@ -56,7 +56,7 @@ export class MenuGroupService {
         },
       },
     });
-    if (group?.permissions?.length) {
+    if (group?.permissions?.length && !is_admin) {
       const hasPermission = userPermissions?.some((permission) => {
         return group?.permissions?.some((groupPermission) => {
           const actionPermission = groupPermission.actions.reduce(
