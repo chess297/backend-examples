@@ -1,4 +1,4 @@
-import { PermissionAction } from '@prisma/clients/postgresql';
+import { PermissionAction } from '@prisma/client';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IPermission } from '../interface/permission.interface';

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/clients/postgresql';
+import { PrismaClient } from '@prisma/client';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 // import { PrismaClient } from '@prisma/clients/mysql';
 import { ConfigService } from '@nestjs/config';
@@ -8,7 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor(private readonly config: ConfigService) {
     super({
       datasourceUrl: config.get('postgres_url'),
-      log: ['query', 'info', 'warn', 'error'],
+      // log: ['query', 'info', 'warn', 'error'],
     });
   }
   async onModuleInit() {

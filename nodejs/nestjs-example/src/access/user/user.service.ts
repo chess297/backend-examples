@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
@@ -6,41 +6,30 @@ import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateUserRequest, GetUserResponse } from './dto/create-user.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { ProfileService } from './profile/profile.service';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly profileService: ProfileService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
   async create(createUserDto: CreateUserRequest) {
     // 处理密码
     const salt = await bcrypt.genSalt();
     const password = await bcrypt.hash(createUserDto.password, salt);
     // 处理邮箱
-    const id = uuid();
-    const profileId = uuid();
 
     const user = await this.prisma.user
       .create({
         data: {
-          name: createUserDto.name,
+          username: createUserDto.username,
           password: password,
-          id,
+          id: uuid(),
           email: createUserDto.email,
-          profile: {
-            create: {
-              id: profileId,
-              address: '',
-              phone: '',
-              country_code: '+86',
-            },
-          },
+          address: '',
+          phone: '',
+          country_code: '+86',
         },
       })
-      .catch((err: PrismaClientKnownRequestError) => {
+      .catch((err: Prisma.PrismaClientKnownRequestError) => {
         if (err.code === 'P2002') {
           // TODO 处理有可能导致的类型错误
           const target = err.meta?.target as string[] | null;
@@ -56,8 +45,8 @@ export class UserService {
     return user;
   }
 
-  findAll() {
-    return this.prisma.user
+  async findAll() {
+    const records = await this.prisma.user
       .findMany({
         where: {
           delete_at: null,
@@ -75,6 +64,11 @@ export class UserService {
             }),
         );
       });
+    const total = await this.prisma.user.count();
+    return {
+      records,
+      total,
+    };
   }
 
   async findOne(id: string) {
@@ -128,7 +122,7 @@ export class UserService {
         id,
       },
       data: {
-        name: data.name,
+        username: data.username,
         email: data.email,
         update_at: new Date(),
       },
@@ -137,9 +131,6 @@ export class UserService {
   }
 
   async remove(id: string) {
-    // 删除用户前要先把用户信息删除
-    // 删除用户信息
-    await this.profileService.remove(id);
     // 删除用户
     await this.prisma.user.delete({
       where: {
@@ -154,7 +145,6 @@ export class UserService {
 
   async removeMany(ids: string[]) {
     for (const id of ids) {
-      await this.profileService.remove(id);
       await this.prisma.user.delete({
         where: {
           id,

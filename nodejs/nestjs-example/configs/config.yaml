@@ -5,3 +5,9 @@ prefix: /api
 version:
   - '1'
   - '2'
+port: 3000
+
+# Session配置
+session:
+  maxAge: 604800 # 7天，单位：秒
+  secret: backend-examples

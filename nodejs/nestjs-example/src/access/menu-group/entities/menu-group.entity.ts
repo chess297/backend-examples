@@ -1,4 +1,4 @@
-import { MenuGroup } from '@prisma/clients/postgresql';
+import { MenuGroup } from '@prisma/client';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { MenuEntity } from '@/access/menu/entities/menu.entity';

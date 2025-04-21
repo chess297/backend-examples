@@ -1,21 +1,25 @@
+import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '@/access/user/entities/user.entity';
 
-export class SignupRequest extends UserEntity {
+export class SignupRequest {
   @ApiProperty({
     example: 'user',
   })
-  declare name: string;
+  @IsString()
+  username: string;
 
   @ApiProperty({
     example: 'user@example.com',
   })
-  declare email: string;
+  @IsString()
+  email: string;
 
   @ApiProperty({
-    example: '123456user',
+    example: '123456',
   })
-  declare password: string;
+  @IsString()
+  password: string;
 }
 
 export class SignupResponse {

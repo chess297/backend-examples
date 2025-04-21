@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CacheModule } from './cache/cache.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { TypeormModule } from './typeorm/typeorm.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { TypeormModule } from './typeorm/typeorm.module';
     }),
     CacheModule,
     PrismaModule,
-    TypeormModule,
   ],
   providers: [],
   exports: [],

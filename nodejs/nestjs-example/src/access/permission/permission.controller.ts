@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
   Req,
+  Logger,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
@@ -29,6 +30,8 @@ import { PermissionService } from './permission.service';
 @Controller('permission')
 @UseGuards(AuthGuard, PermissionGuard)
 export class PermissionController {
+  private readonly logger = new Logger(PermissionController.name);
+
   constructor(private readonly permissionService: PermissionService) {}
 
   @ApiOperation({
@@ -39,32 +42,24 @@ export class PermissionController {
   @APIOkResponse(PermissionEntity)
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
+    this.logger.debug(
+      `Creating permission: ${JSON.stringify(createPermissionDto)}`,
+    );
     return this.permissionService.create(createPermissionDto);
   }
 
   @ApiOperation({
-    summary: '获取当前登录用户的权限',
-    description: '获取当前登录用户的权限',
-    operationId: 'getUserPermission',
-  })
-  @APIOkResponse(PermissionEntity)
-  @Get('/user/permission')
-  getUserPermission(@Req() req: Request) {
-    return this.permissionService.findByUserId(
-      req.session.passport?.user.id ?? '',
-    );
-  }
-
-  @ApiOperation({
     summary: '查询所有权限',
-    description: '查询所有权限',
+    description: '查询所有权限，支持分页和筛选',
     operationId: 'findManyPermission',
   })
   @APIPaginationResponse(PermissionEntity)
   @Get()
   findAll(@Query() query: FindPermissionQuery) {
-    console.log('🚀 ~ PermissionController ~ findAll ~ query:', query);
-    return this.permissionService.findAll();
+    this.logger.debug(
+      `Finding all permissions with query: ${JSON.stringify(query)}`,
+    );
+    return this.permissionService.findAll(query);
   }
 
   @ApiOperation({
@@ -75,7 +70,21 @@ export class PermissionController {
   @APIOkResponse(PermissionEntity)
   @Get(':id')
   findOne(@Param('id') id: string) {
+    this.logger.debug(`Finding permission by id: ${id}`);
     return this.permissionService.findOne(id);
+  }
+
+  @ApiOperation({
+    summary: '获取当前登录用户的权限',
+    description: '获取当前登录用户的权限',
+    operationId: 'getUserPermission',
+  })
+  @APIOkResponse(PermissionEntity)
+  @Get()
+  getUserPermission(@Req() req: Request) {
+    const userId = req.session.passport?.user.id ?? '';
+    this.logger.debug(`Getting permissions for user: ${userId}`);
+    return this.permissionService.findByUserId(userId);
   }
 
   @ApiOperation({
@@ -89,6 +98,9 @@ export class PermissionController {
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
   ) {
+    this.logger.debug(
+      `Updating permission ${id}: ${JSON.stringify(updatePermissionDto)}`,
+    );
     return this.permissionService.update(id, updatePermissionDto);
   }
 
@@ -99,6 +111,7 @@ export class PermissionController {
   })
   @Delete(':id')
   remove(@Param('id') id: string) {
+    this.logger.debug(`Removing permission: ${id}`);
     return this.permissionService.remove(id);
   }
 }

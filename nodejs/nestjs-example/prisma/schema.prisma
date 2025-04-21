@@ -11,72 +11,31 @@ datasource db {
 // 用户表
 model User {
   /// 用户ID，UUID格式
-  id        String    @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
+  id           String    @id(map: "user_pk") @unique @map("id") @db.VarChar(36)
   /// 用户名，最大长度50字符
-  name      String    @db.VarChar(50)
+  username     String    @db.VarChar(50)
   /// 用户邮箱，唯一
-  email     String    @unique
+  email        String    @unique
   /// 密码哈希值
-  password  String    @db.VarChar(255)
+  password     String    @db.VarChar(255)
+  /// 是否激活，默认值为true
+  is_active    Boolean   @default(true)
   /// 关联的用户资料
-  profile   Profile?
-  /// 用户创建的任务
-  tasks     Task[]
-  /// 用户拥有的角色
-  roles     Role[]
-  /// 创建时间，自动设置为当前时间
-  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  /// 更新时间，自动设置为当前时间
-  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  /// 删除时间，软删除标记
-  delete_at DateTime? @map("delete_at") @db.Timestamptz()
-
-  @@map("users")
-  @@index([email], name: "user_email_idx")
-  @@index([create_at], name: "user_create_at_idx")
-}
-
-// 菜单组表
-model MenuGroup {
-  /// 菜单组ID，UUID格式
-  id          String       @id @unique @map("id") @db.VarChar(36)
-  /// 菜单组标题
-  title       String       @db.VarChar(255)
-  /// 菜单组图标
-  icon        String       @db.VarChar(255)
-  /// 菜单组描述
-  description String       @db.VarChar(255)
-  /// 关联的权限
-  permissions Permission[]
-  /// 包含的菜单项
-  menus       Menu[]
-  /// 创建时间，自动设置为当前时间
-  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  /// 更新时间，自动设置为当前时间
-  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  /// 删除时间，软删除标记
-  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
-
-  @@map("menu_groups")
-  @@index([title], name: "menu_group_title_idx")
-  @@index([create_at], name: "menu_group_create_at_idx")
-}
-
-// 用户信息表
-model Profile {
-  id           String    @id(map: "profile_pk") @unique @map("id") @db.VarChar(36)
-  user_id      String    @unique @db.VarChar(36)
-  user         User      @relation(fields: [user_id], references: [id])
   phone        String    @map("phone") @db.VarChar(20)
   country_code String    @map("country_code") @db.VarChar(5)
   address      String    @db.VarChar(255)
+  /// 用户创建的任务
+  tasks        Task[]
+  /// 用户拥有的角色
+  roles        Role[]
+  /// 创建时间，自动设置为当前时间
   create_at    DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
   update_at    DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
   delete_at    DateTime? @map("delete_at") @db.Timestamptz()
 
-  @@unique([user_id, phone, country_code])
-  @@index([user_id], map: "profile_user_id_idx")
-  @@map("profiles")
+  @@map("users")
 }
 
 // 角色表
@@ -93,6 +52,7 @@ model Role {
   @@map("roles")
 }
 
+// 资源操作类型
 enum PermissionAction {
   manage
   create
@@ -105,16 +65,18 @@ enum PermissionAction {
 model Permission {
   id          String             @id(map: "permission_pk") @unique @map("id") @db.VarChar(36)
   name        String             @db.VarChar(255) // 权限名称
-  actions     PermissionAction[] // 操作，例如："create", "update", "delete", "read"
-  resource    String             @db.VarChar(255) // 资源，例如："users", "posts"
   description String             @db.VarChar(255)
+  actions     PermissionAction[] // 操作，例如："create", "update", "delete", "read"
+  resource    String             @db.VarChar(255)
+  // 关联的角色
   roles       Role[]
+  // 关联的菜单
+  menus       Menu[]
+  // 关联的菜单组
+  menu_groups MenuGroup[]
   create_at   DateTime           @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime           @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime?          @map("delete_at") @db.Timestamptz()
-  // 关联的菜单
-  menus       Menu[]
-  menu_groups MenuGroup[]
 
   @@map("permissions")
 }
@@ -139,7 +101,8 @@ model Menu {
   parent_id   String?      @map("parent_id") @db.VarChar(36)
   parent      Menu?        @relation("MenuParent", fields: [parent_id], references: [id])
   children    Menu[]       @relation("MenuParent")
-  mate        MenuMate?
+  mate_id     String       @unique @map("mate_id") @db.VarChar(36)
+  Mate        MenuMate     @relation(fields: [mate_id], references: [id])
   groups      MenuGroup[]
   permissions Permission[]
   create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
@@ -151,14 +114,12 @@ model Menu {
 
 // 菜单元数据表
 model MenuMate {
-  id        String @id @unique @map("id") @db.VarChar(36)
-  menu_id   String @unique @map("menu_id") @db.VarChar(36)
-  menu      Menu   @relation(fields: [menu_id], references: [id])
-  title     String @db.VarChar(255)
-  path      String? @unique @db.VarChar(255)
-  icon      String @db.VarChar(255)
-  component String? @db.VarChar(255)
-
+  id        String    @id @unique @map("id") @db.VarChar(36)
+  title     String    @db.VarChar(255)
+  path      String?   @unique @db.VarChar(255)
+  icon      String    @db.VarChar(255)
+  component String?   @db.VarChar(255)
+  Menu      Menu?
   create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at DateTime? @map("delete_at") @db.Timestamptz()
@@ -166,3 +127,26 @@ model MenuMate {
   @@map("menu_mates")
 }
 
+// 菜单组表
+model MenuGroup {
+  /// 菜单组ID，UUID格式
+  id          String       @id @unique @map("id") @db.VarChar(36)
+  /// 菜单组标题
+  title       String       @db.VarChar(255)
+  /// 菜单组图标
+  icon        String       @db.VarChar(255)
+  /// 菜单组描述
+  description String       @db.VarChar(255)
+  /// 关联的权限
+  permissions Permission[]
+  /// 包含的菜单项
+  menus       Menu[]
+  /// 创建时间，自动设置为当前时间
+  create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
+  update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
+  delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
+
+  @@map("menu_groups")
+}

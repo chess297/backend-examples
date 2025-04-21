@@ -29,8 +29,7 @@ async function bootstrap() {
   resolveRoute(app, configService);
   useSwagger(app);
   usePipes(app);
-  useFilters(app);
-  useInterceptors(app);
+  useFilters(app, configService);
   await app.listen(configService.get('port') ?? PORT);
 }
 
@@ -43,10 +42,6 @@ function resolveRoute(app: INestApplication, configService: ConfigService) {
   });
 }
 
-function useInterceptors(app: INestApplication) {
-  app.useGlobalInterceptors(new SuccessResponseInterceptor());
-}
-
 function usePipes(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
@@ -55,7 +50,7 @@ function usePipes(app: INestApplication) {
   );
 }
 
-function useFilters(app: INestApplication) {
+function useFilters(app: INestApplication, configService: ConfigService) {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new HttpExceptionsFilter());
   app.use(cookieParser());
@@ -64,6 +59,13 @@ function useFilters(app: INestApplication) {
     client,
     prefix: `${APP_NAME}:`,
   });
+
+  // 从配置中获取session的maxAge设置 (单位：秒)
+  const sessionMaxAge = configService.get<number>(
+    'session.maxAge',
+    7 * 24 * 60 * 60,
+  );
+
   app.use(
     session({
       store,
@@ -73,12 +75,13 @@ function useFilters(app: INestApplication) {
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: sessionMaxAge * 1000, // 转换为毫秒
       },
     }),
   );
   app.use(passport.session());
 }
+
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('NestJS Example')
@@ -88,6 +91,7 @@ function useSwagger(app: INestApplication) {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory, {
     jsonDocumentUrl: '/swagger-json',
+    // customSwaggerUiPath: '/swagger-ui',
   });
 }
 void bootstrap();

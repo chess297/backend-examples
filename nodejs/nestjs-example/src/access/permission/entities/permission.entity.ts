@@ -1,4 +1,4 @@
-import { $Enums, Permission } from '@prisma/clients/postgresql';
+import { $Enums, Permission } from '@prisma/client';
 import { IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '@/common/entity/base.entity';

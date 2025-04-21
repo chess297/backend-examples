@@ -1,10 +1,28 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { MenuGroupEntity } from '../entities/menu-group.entity';
 
-export class CreateMenuGroupDto extends MenuGroupEntity {
+export class CreateMenuGroupRequest {
   @ApiProperty()
-  @IsString({ each: true })
+  @IsString()
+  icon: string;
+
+  @ApiProperty()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsArray({ each: true })
+  @IsUUID()
   @IsOptional()
-  menu_ids: string[];
+  menus: string[];
+
+  @ApiProperty()
+  @IsArray({ each: true })
+  @IsUUID()
+  @IsOptional()
+  permissions: string[];
 }

@@ -3,7 +3,7 @@ import { IsNumber, IsOptional, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
- * 分页参数
+ * 分页查询参数
  * @description 分页参数
  */
 export class PaginationQuery {

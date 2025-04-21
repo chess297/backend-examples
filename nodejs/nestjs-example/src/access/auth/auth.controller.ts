@@ -63,11 +63,18 @@ export class AuthController {
       permissions,
       is_admin,
     };
+
     res.cookie('user_id', user.id, {
       httpOnly: false,
     });
+
+    // 返回扩展的响应体
     return {
-      success: true,
+      user_id: user.id,
+      email: user.email,
+      username: user.username,
+      is_admin,
+      permissions,
     };
   }
 

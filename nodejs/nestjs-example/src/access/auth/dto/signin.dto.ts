@@ -24,10 +24,39 @@ export class SigninRequest {
 }
 
 export class SigninResponse {
-  // @ApiProperty({
-  //   title: 'token',
-  // })
-  // access_token: string;
-  @ApiProperty()
-  success: boolean;
+  @ApiProperty({
+    title: '用户ID',
+    example: '1',
+    required: false,
+  })
+  user_id?: string;
+
+  @ApiProperty({
+    title: '用户邮箱',
+    example: 'user@example.com',
+    required: false,
+  })
+  email?: string;
+
+  @ApiProperty({
+    title: '用户名称',
+    example: 'John Doe',
+    required: false,
+  })
+  username?: string;
+
+  @ApiProperty({
+    title: '是否是管理员',
+    example: false,
+    required: false,
+  })
+  is_admin?: boolean;
+
+  @ApiProperty({
+    title: '用户权限列表',
+    example: ['users:read', 'users:write'],
+    type: [String],
+    required: false,
+  })
+  permissions?: string[];
 }

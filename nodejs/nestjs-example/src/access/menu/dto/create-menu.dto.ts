@@ -1,14 +1,7 @@
 import { IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { MenuEntity } from '../entities/menu.entity';
 
-export class CreateMenuRequest extends MenuEntity {
-  @ApiProperty({
-    description: '菜单分组ID',
-  })
-  @IsOptional()
-  declare id: string;
-
+export class CreateMenuRequest {
   @ApiProperty({
     description: '菜单名称',
   })
@@ -36,7 +29,7 @@ export class CreateMenuRequest extends MenuEntity {
   @ApiProperty({
     description: '父级菜单ID',
   })
-  declare parent_id: string;
+  parent_id: string;
 
   @ApiProperty({
     description: '菜单分组ID',

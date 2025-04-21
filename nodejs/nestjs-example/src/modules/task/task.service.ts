@@ -1,9 +1,6 @@
-import { Cache } from 'cache-manager';
-import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import {
   CreateTaskRequest,
@@ -16,10 +13,7 @@ import { Task } from './entities/task.entity';
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectRepository(Task)
-    private taskRepo: Repository<Task>,
-    @Inject(CACHE_MANAGER) private cache: Cache,
-    // @InjectRedis() private readonly redis: Redis,
+    @Inject(CACHE_MANAGER)
     private prisma: PrismaService,
     private readonly logger: Logger,
   ) {}

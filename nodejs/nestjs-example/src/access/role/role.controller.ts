@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -22,10 +23,12 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleEntity } from './entities/role.entity';
 import { RoleService } from './role.service';
 
-@UseGuards(SystemRoleGuard)
+// @UseGuards(SystemRoleGuard)
 @ApiTags('role')
 @Controller('role')
 export class RoleController {
+  private readonly logger = new Logger(RoleController.name);
+
   constructor(private readonly roleService: RoleService) {}
 
   @ApiOperation({
@@ -71,6 +74,6 @@ export class RoleController {
   })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.roleService.remove(+id);
+    return this.roleService.remove(id);
   }
 }

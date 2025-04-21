@@ -12,10 +12,14 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
+  Pagination,
+  PaginationQuery,
+} from '@/common/decorators/pagination.decorator';
+import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
-import { CreateMenuGroupDto } from './dto/create-menu-group.dto';
+import { CreateMenuGroupRequest } from './dto/create-menu-group.dto';
 import { FindMenuGroupQuery } from './dto/find-menu-group.dto';
 import { UpdateMenuGroupDto } from './dto/update-menu-group.dto';
 import { MenuGroupEntity } from './entities/menu-group.entity';
@@ -32,7 +36,7 @@ export class MenuGroupController {
   })
   @APIOkResponse(MenuGroupEntity)
   @Post()
-  create(@Body() createMenuGroupDto: CreateMenuGroupDto) {
+  create(@Body() createMenuGroupDto: CreateMenuGroupRequest) {
     return this.menuGroupService.create(createMenuGroupDto);
   }
 
@@ -42,8 +46,11 @@ export class MenuGroupController {
   })
   @APIPaginationResponse(MenuGroupEntity)
   @Get()
-  findAll(@Query() query: FindMenuGroupQuery) {
-    return this.menuGroupService.findAll(query);
+  findAll(
+    @Query() query: FindMenuGroupQuery,
+    @Pagination() pagination: PaginationQuery,
+  ) {
+    return this.menuGroupService.findAll(query, pagination);
   }
 
   @ApiOperation({

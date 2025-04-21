@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+// 成功的响应
 export class SuccessResponse<T> {
   @ApiProperty({
     example: 0,
@@ -23,6 +24,7 @@ export class SuccessResponse<T> {
   }
 }
 
+// 异常的响应
 export class BadResponse {
   @ApiProperty({
     example: 400,
@@ -37,6 +39,7 @@ export class BadResponse {
   message: string;
 }
 
+// 分页的数据体
 export class PaginationData<T> {
   @ApiProperty({
     example: 1,
@@ -56,6 +59,7 @@ export class PaginationData<T> {
   records: T[];
 }
 
+// 分页的响应
 export class PaginationResponse<T> {
   @ApiProperty({
     example: 200,

@@ -1,4 +1,5 @@
-import { Prisma } from '@prisma/clients/postgresql';
+import { Prisma } from '@prisma/client';
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -11,6 +12,7 @@ import {
   BadRequestException,
   Param,
   UseGuards,
+  Session,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
@@ -35,6 +37,7 @@ export class UserController {
 
   @ApiOperation({
     summary: '创建新用户',
+    operationId: 'createUser',
   })
   @APIOkResponse(UserEntity)
   @Post()
@@ -43,7 +46,19 @@ export class UserController {
   }
 
   @ApiOperation({
+    summary: '获取用户信息',
+    operationId: 'getUserInfo',
+  })
+  @APIOkResponse(UserEntity)
+  @Get('info')
+  getUserInfo(@Session() session: Request['session']) {
+    console.log('🚀 ~ UserController ~ getUserInfo ~ session:', session);
+    return this.userService.findOne(session.passport?.user.id ?? '');
+  }
+
+  @ApiOperation({
     summary: '查询多个用户',
+    operationId: 'queryUsers',
   })
   @APIPaginationResponse(UserEntity)
   @Get()
@@ -57,6 +72,7 @@ export class UserController {
 
   @ApiOperation({
     summary: '查询单个用户',
+    operationId: 'queryUser',
   })
   @APIOkResponse(UserEntity)
   @Get(':id')
@@ -67,6 +83,7 @@ export class UserController {
 
   @ApiOperation({
     summary: '删除单个或多个用户',
+    operationId: 'removeUser',
   })
   @ApiBody({
     type: RemoveUserRequest,
