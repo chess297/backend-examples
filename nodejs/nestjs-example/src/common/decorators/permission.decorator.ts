@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { PermissionAction } from '@prisma/client';
 import { SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Action } from '@/constants/enums/action.enum';
 
 export const PERMISSION_KEY = 'permission';
 
@@ -31,10 +31,10 @@ export const Permission = (permission: string) =>
   merge(PERMISSION_KEY, permission);
 
 export const Read = () =>
-  merge(PERMISSION_KEY, Action.Read.toLocaleLowerCase());
+  merge(PERMISSION_KEY, PermissionAction.read.toLocaleLowerCase());
 export const Create = () =>
-  merge(PERMISSION_KEY, Action.Create.toLocaleLowerCase());
+  merge(PERMISSION_KEY, PermissionAction.create.toLocaleLowerCase());
 export const Update = () =>
-  merge(PERMISSION_KEY, Action.Update.toLocaleLowerCase());
+  merge(PERMISSION_KEY, PermissionAction.update.toLocaleLowerCase());
 export const Delete = () =>
-  merge(PERMISSION_KEY, Action.Delete.toLocaleLowerCase());
+  merge(PERMISSION_KEY, PermissionAction.delete.toLocaleLowerCase());

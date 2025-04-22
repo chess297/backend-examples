@@ -3,14 +3,26 @@ import { Observable } from 'rxjs';
 import {
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
+import { PUBLIC_KEY } from '../decorators/public.decorator';
 
+@Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    // throw new Error('Method not implemented.');
+    const isPublic =
+      this.reflector.get<boolean>(PUBLIC_KEY, context.getHandler()) ||
+      this.reflector.get<boolean>(PUBLIC_KEY, context.getClass());
+    if (isPublic) {
+      return true;
+    }
     const req = context.switchToHttp().getRequest<Request>();
     if (!req.session.passport?.user) {
       throw new UnauthorizedException();
@@ -18,3 +30,5 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 }
+
+export class SessionGuard extends PassportAuthGuard('session') {}

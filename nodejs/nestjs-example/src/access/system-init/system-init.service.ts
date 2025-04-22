@@ -1,13 +1,23 @@
-import { v4 as uuid } from 'uuid';
 import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+  Menu,
+  MenuGroup,
+  Permission,
+  PermissionAction,
+  PrismaClient,
+  Role,
+  User,
+} from '@prisma/client';
+import { ITXClientDenyList } from '@prisma/client/runtime/library';
+import { v4 as uuid } from 'uuid';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { DictionaryService } from '@/modules/dictionary/dictionary.service';
-import { AdminRegisterRequest } from './dto/admin-register.dto';
+import {
+  AdminRegisterRequest,
+  AdminRegisterResponse,
+} from './dto/admin-register.dto';
+
+type TransactionPrismaClient = Omit<PrismaClient, ITXClientDenyList>;
 
 @Injectable()
 export class SystemInitService {
@@ -23,29 +33,24 @@ export class SystemInitService {
    * @returns 系统初始化码
    */
   async generateSystemCode(): Promise<string> {
-    try {
-      // 生成随机的系统码
-      const code = this.generateRandomCode();
+    // 生成随机的系统码
+    const code = this.generateRandomCode();
 
-      // 设置过期时间为24小时后
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24);
+    // 设置过期时间为24小时后
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
 
-      // 存储系统码到数据库
-      await this.prisma.systemCode.create({
-        data: {
-          id: uuid(),
-          code,
-          is_used: false,
-          expires_at: expiresAt,
-        },
-      });
+    // 存储系统码到数据库
+    await this.prisma.systemCode.create({
+      data: {
+        id: uuid(),
+        code,
+        is_used: false,
+        expires_at: expiresAt,
+      },
+    });
 
-      return code;
-    } catch (error) {
-      this.logger.error(`生成系统码失败: ${error.message}`, error.stack);
-      throw new BadRequestException('生成系统码失败');
-    }
+    return code;
   }
 
   /**
@@ -54,28 +59,23 @@ export class SystemInitService {
    * @returns 系统码是否有效
    */
   async validateSystemCode(code: string): Promise<boolean> {
-    try {
-      const systemCode = await this.prisma.systemCode.findUnique({
-        where: { code },
-      });
+    const systemCode = await this.prisma.systemCode.findUnique({
+      where: { code },
+    });
 
-      if (!systemCode) {
-        return false;
-      }
-
-      if (systemCode.is_used) {
-        return false;
-      }
-
-      if (systemCode.expires_at < new Date()) {
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      this.logger.error(`验证系统码失败: ${error.message}`, error.stack);
+    if (!systemCode) {
       return false;
     }
+
+    if (systemCode.is_used) {
+      return false;
+    }
+
+    if (systemCode.expires_at < new Date()) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -83,7 +83,9 @@ export class SystemInitService {
    * @param adminRegisterDto 管理员注册信息
    * @returns 注册结果
    */
-  async registerAdmin(adminRegisterDto: AdminRegisterRequest): Promise<any> {
+  async registerAdmin(
+    adminRegisterDto: AdminRegisterRequest,
+  ): Promise<AdminRegisterResponse> {
     const { systemCode, ...adminData } = adminRegisterDto;
 
     // 验证系统码
@@ -93,50 +95,36 @@ export class SystemInitService {
     }
 
     // 开始事务，确保所有操作都成功或都失败
-    return this.prisma.$transaction(async (prisma) => {
-      try {
-        // 1. 创建管理员用户
-        const adminUser = await this.createAdminUser(adminData, prisma);
+    return this.prisma.$transaction(async (prisma: TransactionPrismaClient) => {
+      // 1. 创建管理员用户
+      const adminUser = await this.createAdminUser(adminData, prisma);
 
-        // 2. 创建基础角色（系统管理员角色）
-        const adminRole = await this.createAdminRole(prisma);
+      // 2. 创建基础角色（系统管理员角色）
+      const adminRole = await this.createAdminRole(prisma);
 
-        // 3. 关联角色到用户
-        await this.assignRoleToUser(adminUser.id, adminRole.id, prisma);
+      // 3. 关联角色到用户
+      await this.assignRoleToUser(adminUser.id, adminRole.id, prisma);
 
-        // 4. 创建基础权限
-        const permissions = await this.createBasePermissions(prisma);
+      // 4. 创建基础权限
+      const permissions = await this.createBasePermissions(prisma);
 
-        // 5. 关联权限到角色
-        await this.assignPermissionsToRole(
-          adminRole.id,
-          permissions.map((p) => p.id),
-          prisma,
-        );
+      // 5. 关联权限到角色
+      await this.assignPermissionsToRole(
+        adminRole.id,
+        permissions.map((p) => p.id),
+        prisma,
+      );
 
-        // 6. 创建基础菜单和菜单组
-        const { menuGroups, menus } =
-          await this.createBaseMenuStructure(prisma);
+      // 6. 创建基础菜单和菜单组
+      const { menuGroups, menus } = await this.createBaseMenuStructure(prisma);
 
-        // 7. 创建系统字典
-        await this.createSystemDictionaries(prisma, menuGroups);
+      // 7. 创建系统字典
+      await this.createSystemDictionaries(prisma, menuGroups);
 
-        // 8. 标记系统码为已使用
-        await this.markSystemCodeAsUsed(systemCode, prisma);
+      // 8. 标记系统码为已使用
+      await this.markSystemCodeAsUsed(systemCode, prisma);
 
-        return {
-          success: true,
-          message: '系统初始化成功',
-          admin: {
-            id: adminUser.id,
-            username: adminUser.username,
-            email: adminUser.email,
-          },
-        };
-      } catch (error) {
-        this.logger.error(`系统初始化失败: ${error.message}`, error.stack);
-        throw new BadRequestException(`系统初始化失败: ${error.message}`);
-      }
+      return new AdminRegisterResponse();
     });
   }
 
@@ -145,8 +133,8 @@ export class SystemInitService {
    */
   private async createAdminUser(
     adminData: Omit<AdminRegisterRequest, 'systemCode'>,
-    prisma: any,
-  ): Promise<any> {
+    prisma: TransactionPrismaClient,
+  ): Promise<User> {
     const { username, email, password, phone, country_code, address } =
       adminData;
 
@@ -169,7 +157,6 @@ export class SystemInitService {
       data: {
         ...adminData,
         id: uuid(),
-
         password: hashedPassword,
         is_active: true,
       },
@@ -179,7 +166,9 @@ export class SystemInitService {
   /**
    * 创建管理员角色
    */
-  private async createAdminRole(prisma: any): Promise<any> {
+  private async createAdminRole(
+    prisma: TransactionPrismaClient,
+  ): Promise<Role> {
     return prisma.role.create({
       data: {
         id: uuid(),
@@ -195,7 +184,7 @@ export class SystemInitService {
   private async assignRoleToUser(
     userId: string,
     roleId: string,
-    prisma: any,
+    prisma: TransactionPrismaClient,
   ): Promise<void> {
     await prisma.user.update({
       where: { id: userId },
@@ -210,46 +199,48 @@ export class SystemInitService {
   /**
    * 创建基础权限
    */
-  private async createBasePermissions(prisma: any): Promise<any[]> {
+  private async createBasePermissions(
+    prisma: TransactionPrismaClient,
+  ): Promise<Permission[]> {
     const permissions = [
       {
         id: uuid(),
         name: 'user-manage',
         description: '用户管理',
         resource: 'user',
-        actions: ['manage', 'create', 'read', 'update', 'delete'],
+        actions: [PermissionAction.manage],
       },
       {
         id: uuid(),
         name: 'role-manage',
         description: '角色管理',
         resource: 'role',
-        actions: ['manage', 'create', 'read', 'update', 'delete'],
+        actions: [PermissionAction.manage],
       },
       {
         id: uuid(),
         name: 'permission-manage',
         description: '权限管理',
         resource: 'permission',
-        actions: ['manage', 'create', 'read', 'update', 'delete'],
+        actions: [PermissionAction.manage],
       },
       {
         id: uuid(),
         name: 'menu-manage',
         description: '菜单管理',
         resource: 'menu',
-        actions: ['manage', 'create', 'read', 'update', 'delete'],
+        actions: [PermissionAction.manage],
       },
       {
         id: uuid(),
         name: 'menu-group-manage',
         description: '菜单组管理',
         resource: 'menu-group',
-        actions: ['manage', 'create', 'read', 'update', 'delete'],
+        actions: [PermissionAction.manage],
       },
     ];
 
-    const createdPermissions = [];
+    const createdPermissions: Permission[] = [];
 
     for (const permission of permissions) {
       const created = await prisma.permission.create({
@@ -267,7 +258,7 @@ export class SystemInitService {
   private async assignPermissionsToRole(
     roleId: string,
     permissionIds: string[],
-    prisma: any,
+    prisma: TransactionPrismaClient,
   ): Promise<void> {
     await prisma.role.update({
       where: { id: roleId },
@@ -283,8 +274,8 @@ export class SystemInitService {
    * 创建基础菜单和菜单组
    */
   private async createBaseMenuStructure(
-    prisma: any,
-  ): Promise<{ menuGroups: any[]; menus: any[] }> {
+    prisma: TransactionPrismaClient,
+  ): Promise<{ menuGroups: MenuGroup[]; menus: Menu[] }> {
     // 创建菜单组
     const systemMenuGroup = await prisma.menuGroup.create({
       data: {
@@ -306,13 +297,13 @@ export class SystemInitService {
       {
         title: '角色管理',
         path: '/system/role',
-        icon: 'team',
+        icon: 'users',
         component: 'system/role/index',
       },
       {
         title: '权限管理',
         path: '/system/permission',
-        icon: 'safety',
+        icon: 'shield-user',
         component: 'system/permission/index',
       },
       {
@@ -324,12 +315,12 @@ export class SystemInitService {
       {
         title: '菜单组管理',
         path: '/system/menu-group',
-        icon: 'appstore',
+        icon: 'book-text',
         component: 'system/menu-group/index',
       },
     ];
 
-    const menus = [];
+    const menus: Menu[] = [];
 
     // 创建菜单及其元数据
     for (const item of menuItems) {
@@ -370,43 +361,37 @@ export class SystemInitService {
    * @param menuGroups 已创建的菜单组列表
    */
   private async createSystemDictionaries(
-    prisma: any,
-    menuGroups: any[],
+    prisma: TransactionPrismaClient,
+    menuGroups: MenuGroup[],
   ): Promise<void> {
-    try {
-      // 创建菜单分组字典
-      const menuGroupDict = await prisma.dictionary.create({
-        data: {
-          id: uuid(),
-          code: 'MENU_GROUPS',
-          name: '菜单分组',
-          description: '系统菜单分组列表，用于前端菜单分组展示',
-          items: {
-            create: menuGroups.map((group, index) => ({
-              id: uuid(),
-              value: group.id,
-              label: group.title,
-              sort: index,
-              extra: {
-                icon: group.icon,
-                description: group.description,
-              },
-            })),
-          },
+    // 创建菜单分组字典
+    const menuGroupDict = await prisma.dictionary.create({
+      data: {
+        id: uuid(),
+        code: 'MENU_GROUPS',
+        name: '菜单分组',
+        description: '系统菜单分组列表，用于前端菜单分组展示',
+        items: {
+          create: menuGroups.map((group, index) => ({
+            id: uuid(),
+            value: group.id,
+            label: group.title,
+            sort: index,
+          })),
         },
-      });
+      },
+    });
 
-      this.logger.log(`菜单分组字典创建成功，ID: ${menuGroupDict.id}`);
-    } catch (error) {
-      this.logger.error(`创建系统字典失败: ${error.message}`, error.stack);
-      throw error;
-    }
+    this.logger.log(`菜单分组字典创建成功，ID: ${menuGroupDict.id}`);
   }
 
   /**
    * 标记系统码为已使用
    */
-  private async markSystemCodeAsUsed(code: string, prisma: any): Promise<void> {
+  private async markSystemCodeAsUsed(
+    code: string,
+    prisma: TransactionPrismaClient,
+  ): Promise<void> {
     await prisma.systemCode.update({
       where: { code },
       data: {
@@ -442,19 +427,11 @@ export class SystemInitService {
    * 检查系统是否已初始化
    */
   async isSystemInitialized(): Promise<boolean> {
-    try {
-      // 检查是否有管理员角色
-      const adminRole = await this.prisma.role.findFirst({
-        where: { name: 'system-admin' },
-      });
+    // 检查是否有管理员角色
+    const adminRole = await this.prisma.role.findFirst({
+      where: { name: 'system-admin' },
+    });
 
-      return !!adminRole;
-    } catch (error) {
-      this.logger.error(
-        `检查系统初始化状态失败: ${error.message}`,
-        error.stack,
-      );
-      return false;
-    }
+    return !!adminRole;
   }
 }

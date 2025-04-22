@@ -20,9 +20,11 @@ model User {
   password     String    @db.VarChar(255)
   /// 是否激活，默认值为true
   is_active    Boolean   @default(true)
-  /// 关联的用户资料
+  /// 用户手机
   phone        String?    @map("phone") @db.VarChar(20)
+  /// 国家号
   country_code String?    @map("country_code") @db.VarChar(5)
+  /// 地址
   address      String?    @db.VarChar(255)
   /// 用户创建的任务
   tasks        Task[]
@@ -40,6 +42,7 @@ model User {
 
 // 角色表
 model Role {
+  /// 角色ID，UUID格式
   id          String       @id @db.VarChar(36)
   name        String       @unique @db.VarChar(255)
   description String       @db.VarChar(255)

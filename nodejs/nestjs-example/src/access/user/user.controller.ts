@@ -15,16 +15,19 @@ import {
   Session,
   Req,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permission } from '@/common/decorators/permission.decorator';
 import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
+import { AuthGuard, SessionGuard } from '@/common/guards/auth.guard';
 import { PermissionGuard } from '@/common/guards/permission.guard';
-import { CreateUserRequest } from './dto/create-user.dto';
+import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
+import { UserQuery } from './dto/query-user.dto';
 import { RemoveUserRequest } from './dto/remove-user.request';
+import { UpdateUserRequest } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -50,18 +53,19 @@ export class UserController {
     summary: '查询多个用户',
     operationId: 'queryUsers',
   })
-  @APIPaginationResponse(UserEntity)
+  @APIPaginationResponse(UserResponse)
   @Get()
-  @APIPaginationResponse(UserEntity)
-  findAll() {
+  @APIPaginationResponse(UserResponse)
+  findAll(@Query() query: UserQuery) {
     return this.userService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @ApiOperation({
     summary: '获取用户信息',
     operationId: 'getUserInfo',
   })
-  @APIOkResponse(UserEntity)
+  @APIOkResponse(UserResponse)
   @Get('info')
   getUserInfo(@Req() req: Request) {
     return this.userService.findOne(req.session.passport?.user.id ?? '');
@@ -69,13 +73,25 @@ export class UserController {
 
   @ApiOperation({
     summary: '查询单个用户',
-    operationId: 'queryUser',
+    operationId: 'getUser',
   })
-  @APIOkResponse(UserEntity)
+  @APIOkResponse(UserResponse)
   @Get(':id')
-  @APIOkResponse(UserEntity)
   findOn(@Param('id') id: string) {
     return this.userService.findOne(id);
+  }
+
+  @ApiOperation({
+    summary: '查询单个用户',
+    operationId: 'getUser',
+  })
+  @APIOkResponse(UserResponse)
+  @Patch(':id')
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserRequest: UpdateUserRequest,
+  ) {
+    return this.userService.update(id, updateUserRequest);
   }
 
   @ApiOperation({

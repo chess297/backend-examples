@@ -1,39 +1,27 @@
 import { Exclude } from 'class-transformer';
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsArray, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserEntity } from '../entities/user.entity';
 
-export class CreateUserRequest {
-  @ApiProperty({
-    example: 'user',
-  })
-  username: string;
-
-  @ApiProperty({
-    example: 'user@example.com',
-  })
-  email: string;
-
-  @ApiProperty({
-    example: '123456',
-  })
-  password: string;
-
+export class CreateUserRequest extends UserEntity {
   @ApiProperty({
     title: '用户角色id列表',
+    type: [String],
   })
-  @IsUUID()
+  @IsArray()
+  @IsUUID('4', { each: true })
   @IsOptional()
-  role?: string | undefined;
+  roleIds?: string[];
+
+  @ApiProperty()
+  declare password: string;
 }
 
-export class GetUserResponse extends CreateUserRequest {
-  constructor(partial: Partial<GetUserResponse>) {
+export class UserResponse extends UserEntity {
+  constructor(partial: Partial<UserResponse>) {
     super();
     Object.assign(this, partial);
   }
-
-  @Exclude()
-  declare delete_at: Date | null;
 
   @Exclude()
   declare password: string;

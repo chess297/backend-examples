@@ -8,13 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SystemAdmin } from '@/common/decorators/role.decorator';
+import { Public } from '@/common/decorators/public.decorator';
 import { APIOkResponse } from '@/common/decorators/swagger.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
 import { AdminRegisterRequest } from './dto/admin-register.dto';
 import { SystemCodeEntity } from './entities/system-code.entity';
 import { SystemInitService } from './system-init.service';
 
+@Public()
 @ApiTags('system-init')
 @Controller('system-init')
 export class SystemInitController {

@@ -1,14 +1,10 @@
-// import * as Joi from 'joi';
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { __IS_DEV__ } from '@/constants';
 
 const CWD = process.cwd();
 
-const YAML_CONFIG_FILENAME = !__IS_DEV__
-  ? 'configs/config.yaml'
-  : 'configs/config.dev.yaml';
+const YAML_CONFIG_FILENAME = 'configs/config.yaml';
 
 let config: Config;
 export interface Config {
@@ -17,7 +13,8 @@ export interface Config {
   log_on: boolean;
   redis_url: string;
 }
-export default () => {
+
+export const getConfig = () => {
   config = yaml.load(
     readFileSync(join(CWD, YAML_CONFIG_FILENAME), 'utf8'),
   ) as Config;

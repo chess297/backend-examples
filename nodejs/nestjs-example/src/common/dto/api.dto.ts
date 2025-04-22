@@ -51,12 +51,6 @@ export class PaginationData<T> {
     title: '每页显示条数',
   })
   total: number;
-
-  @ApiProperty({
-    title: '数据列表',
-    isArray: true,
-  })
-  records: T[];
 }
 
 // 分页的响应

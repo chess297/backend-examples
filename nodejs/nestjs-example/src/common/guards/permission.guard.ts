@@ -1,3 +1,4 @@
+import { PermissionAction } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import {
@@ -8,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '@/common/decorators/permission.decorator';
-import { Action } from '@/constants/enums/action.enum';
 
 declare module 'express' {
   interface Request {
@@ -46,7 +46,7 @@ export class PermissionGuard implements CanActivate {
           });
         } else {
           permissions.push(
-            `${permission}:${Action.Manage.toLocaleLowerCase()}`,
+            `${permission}:${PermissionAction.manage.toLocaleLowerCase()}`,
           );
         }
       });

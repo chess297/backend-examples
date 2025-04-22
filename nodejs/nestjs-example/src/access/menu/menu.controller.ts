@@ -21,7 +21,6 @@ import {
 import { CreateMenuRequest } from './dto/create-menu.dto';
 import { FindMenuQuery, MenuResponse } from './dto/find-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { MenuEntity } from './entities/menu.entity';
 import { MenuService } from './menu.service';
 
 @ApiTags('menu')

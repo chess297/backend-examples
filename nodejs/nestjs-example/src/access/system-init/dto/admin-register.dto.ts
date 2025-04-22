@@ -68,3 +68,5 @@ export class AdminRegisterRequest {
   @IsOptional()
   address: string;
 }
+
+export class AdminRegisterResponse {}

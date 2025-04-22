@@ -15,8 +15,6 @@ import { SystemInitService } from '@/access/system-init/system-init.service';
  */
 @Injectable()
 export class SystemInitGuard implements CanActivate {
-  private readonly logger = new Logger(SystemInitGuard.name);
-
   constructor(
     private readonly reflector: Reflector,
     private readonly systemInitService: SystemInitService,
@@ -33,32 +31,27 @@ export class SystemInitGuard implements CanActivate {
     if (
       path === '/health' ||
       path.startsWith('/api/v1/system-init') ||
-      path.startsWith('/api/v1/menu')
+      path.startsWith('/api/v1/menu') ||
+      path.startsWith('/api/v1/dictionary')
     ) {
       return true;
     }
 
-    try {
-      // 检查系统是否已初始化
-      const isInitialized = await this.systemInitService.isSystemInitialized();
+    // 检查系统是否已初始化
+    const isInitialized = await this.systemInitService.isSystemInitialized();
 
-      if (isInitialized) {
-        // 系统已初始化，允许访问
-        return true;
-      } else {
-        // 系统未初始化，返回特定状态码和消息
-        response.status(503).json({
-          statusCode: 503, // 使用服务不可用状态码
-          initialized: false,
-          message: 'System not initialized',
-          redirectTo: '/auth/system-init', // 前端需要处理这个字段进行跳转
-        });
-        return false;
-      }
-    } catch (error) {
-      this.logger.error(`检查系统初始化状态时出错: ${error.message}`);
-      // 发生错误时，默认允许访问
+    if (isInitialized) {
+      // 系统已初始化，允许访问
       return true;
+    } else {
+      // 系统未初始化，返回特定状态码和消息
+      response.status(503).json({
+        statusCode: 503, // 使用服务不可用状态码
+        initialized: false,
+        message: 'System not initialized',
+        redirectTo: '/auth/system-init', // 前端需要处理这个字段进行跳转
+      });
+      return false;
     }
   }
 }
