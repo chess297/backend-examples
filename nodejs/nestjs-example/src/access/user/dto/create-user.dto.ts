@@ -12,6 +12,8 @@ import { UserEntity } from '../entities/user.entity';
 
 export class CreateUserRequest {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   declare password: string;
 
   @ApiProperty()
@@ -56,7 +58,7 @@ export class CreateUserRequest {
   @IsArray()
   @IsUUID('4', { each: true })
   @IsOptional()
-  roleIds?: string[];
+  role_ids?: string[];
 }
 
 export class UserResponse extends UserEntity {

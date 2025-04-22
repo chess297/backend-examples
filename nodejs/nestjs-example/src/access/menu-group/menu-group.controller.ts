@@ -20,8 +20,8 @@ import {
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
 import { CreateMenuGroupRequest } from './dto/create-menu-group.dto';
-import { FindMenuGroupQuery } from './dto/find-menu-group.dto';
-import { UpdateMenuGroupDto } from './dto/update-menu-group.dto';
+import { MenuGroupQuery } from './dto/find-menu-group.dto';
+import { UpdateMenuGroupRequest } from './dto/update-menu-group.dto';
 import { MenuGroupEntity } from './entities/menu-group.entity';
 import { MenuGroupService } from './menu-group.service';
 
@@ -47,7 +47,7 @@ export class MenuGroupController {
   @APIPaginationResponse(MenuGroupEntity)
   @Get()
   findAll(
-    @Query() query: FindMenuGroupQuery,
+    @Query() query: MenuGroupQuery,
     @Pagination() pagination: PaginationQuery,
   ) {
     return this.menuGroupService.findAll(query, pagination);
@@ -75,7 +75,7 @@ export class MenuGroupController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateMenuGroupDto: UpdateMenuGroupDto,
+    @Body() updateMenuGroupDto: UpdateMenuGroupRequest,
   ) {
     return this.menuGroupService.update(id, updateMenuGroupDto);
   }

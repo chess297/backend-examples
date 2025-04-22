@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -8,7 +7,6 @@ import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
 import { UserQuery } from './dto/query-user.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -16,18 +14,20 @@ export class UserService {
   async create(createUserDto: CreateUserRequest): Promise<UserResponse> {
     // 处理密码
     const salt = await bcrypt.genSalt();
+    console.log('🚀 ~ UserService ~ create ~ salt:', salt, createUserDto);
     const password = await bcrypt.hash(createUserDto.password, salt);
-    // 处理邮箱
+    const { role_ids, ...data } = createUserDto;
 
     const user = await this.prisma.user.create({
       data: {
-        username: createUserDto.username,
-        password: password,
+        ...data,
+        password,
         id: uuid(),
-        email: createUserDto.email,
-        address: '',
-        phone: '',
-        country_code: '+86',
+        roles: {
+          connect: role_ids?.map((roleId) => ({
+            id: roleId,
+          })),
+        },
       },
     });
     return new UserResponse(user);
@@ -101,7 +101,7 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserRequest,
   ): Promise<UserResponse> {
-    const { roleIds, ...data } = updateUserDto;
+    const { role_ids, ...data } = updateUserDto;
     const user = await this.prisma.user.update({
       where: {
         id,
@@ -110,7 +110,7 @@ export class UserService {
         ...data,
         update_at: new Date(),
         roles: {
-          connect: roleIds?.map((roleId) => ({
+          connect: role_ids?.map((roleId) => ({
             id: roleId,
           })),
         },

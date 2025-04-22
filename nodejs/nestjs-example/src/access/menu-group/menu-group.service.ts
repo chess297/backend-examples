@@ -8,8 +8,8 @@ import {
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { DictionaryService } from '@/modules/dictionary/dictionary.service';
 import { CreateMenuGroupRequest } from './dto/create-menu-group.dto';
-import { FindMenuGroupQuery } from './dto/find-menu-group.dto';
-import { UpdateMenuGroupDto } from './dto/update-menu-group.dto';
+import { MenuGroupQuery } from './dto/find-menu-group.dto';
+import { UpdateMenuGroupRequest } from './dto/update-menu-group.dto';
 
 @Injectable()
 export class MenuGroupService {
@@ -68,7 +68,7 @@ export class MenuGroupService {
     }
   }
 
-  async findAll(query: FindMenuGroupQuery, pagination: PaginationQuery) {
+  async findAll(query: MenuGroupQuery, pagination: PaginationQuery) {
     try {
       const { page = 1, limit = 10, title, ...filters } = query;
 
@@ -165,7 +165,7 @@ export class MenuGroupService {
     }
   }
 
-  async update(id: string, updateMenuGroupDto: UpdateMenuGroupDto) {
+  async update(id: string, updateMenuGroupDto: UpdateMenuGroupRequest) {
     try {
       // Verify group exists
       await this.findOne(id);

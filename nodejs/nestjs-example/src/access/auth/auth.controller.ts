@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Controller, Post, Body, Req, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '@/common/decorators/public.decorator';
 import {
   APIBadRequestResponse,
   APIOkResponse,
@@ -23,10 +24,11 @@ export class AuthController {
     summary: '注册',
     operationId: 'signup',
   })
-  @Post('signup')
   @ApiOkResponse({
     type: SignupResponse,
   })
+  @Public()
+  @Post('signup')
   signup(@Body() body: SignupRequest) {
     return this.authService.signup(body);
   }
@@ -35,9 +37,10 @@ export class AuthController {
     summary: '登录',
     operationId: 'signin',
   })
-  @Post('signin')
   @APIOkResponse(SigninResponse)
   @APIBadRequestResponse()
+  @Public()
+  @Post('signin')
   async signin(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
