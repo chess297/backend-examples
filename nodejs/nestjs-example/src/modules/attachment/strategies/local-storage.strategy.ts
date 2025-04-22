@@ -13,10 +13,7 @@ export class LocalStorageStrategy implements StorageStrategy {
 
   constructor(private configService: ConfigService) {
     this.uploadDir = this.configService.get<string>('upload_dir', 'uploads');
-    this.baseUrl = this.configService.get<string>(
-      'BASE_URL',
-      'http://localhost:3000',
-    );
+    this.baseUrl = 'http://localhost:3001';
 
     // 确保上传目录存在
     if (!fs.existsSync(this.uploadDir)) {
@@ -64,6 +61,6 @@ export class LocalStorageStrategy implements StorageStrategy {
   }
 
   getFileUrl(filePath: string): string {
-    return `${this.baseUrl}/static/${filePath}`;
+    return `${this.baseUrl}/uploads/${filePath}`;
   }
 }
