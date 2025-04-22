@@ -5,10 +5,6 @@ import { BaseEntity } from '@/common/entity/base.entity';
 import { DictionaryItemEntity } from './dictionary-item.entity';
 
 export class DictionaryEntity extends BaseEntity implements Dictionary {
-  @ApiProperty({ description: '字典ID' })
-  @IsUUID()
-  id: string;
-
   @ApiProperty({ description: '字典代码' })
   @IsString()
   @IsNotEmpty()

@@ -11,51 +11,22 @@ export class MenuService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createMenuDto: CreateMenuRequest): Promise<MenuResponse> {
     const id = uuid();
-    const mateId = uuid();
 
     const { groups, parent_id, ...data } = createMenuDto;
 
     const menu = await this.prisma.menu.create({
       data: {
+        ...data,
         id,
         groups: {
           connect: groups.map((item) => ({
             id: item,
           })),
         },
-        parent: {
-          connect: {
-            id: parent_id,
-          },
-        },
-        Mate: {
-          create: {
-            id: mateId,
-            title: data.title,
-            icon: data.icon,
-            path: data.path,
-            component: data.component,
-          },
-        },
-      },
-      include: {
-        Mate: {
-          select: {
-            title: true,
-            icon: true,
-            path: true,
-            component: true,
-          },
-        },
+        parent_id,
       },
     });
-    return {
-      id: menu.id,
-      title: menu.Mate.title,
-      path: menu.Mate.path ?? '',
-      icon: menu.Mate.icon,
-      component: menu.Mate.component ?? '',
-    };
+    return menu;
   }
 
   async findAll(
@@ -66,30 +37,10 @@ export class MenuService {
       skip: pagination.skip,
       take: pagination.take,
       where,
-      include: {
-        Mate: {
-          select: {
-            title: true,
-            path: true,
-            icon: true,
-            component: true,
-          },
-        },
-      },
     });
 
     // 扁平化菜单数据，将 Mate 中的数据直接映射到菜单对象
-    const records = menus.map((menu) => ({
-      id: menu.id,
-      parent_id: menu.parent_id,
-      title: menu.Mate.title,
-      path: menu.Mate.path || '',
-      icon: menu.Mate.icon,
-      component: menu.Mate.component || '',
-      mate_id: menu.mate_id,
-      create_at: menu.create_at,
-      update_at: menu.update_at,
-    }));
+    const records = menus;
 
     const total = await this.prisma.menu.count();
     return {
@@ -104,18 +55,9 @@ export class MenuService {
         id,
       },
       include: {
-        Mate: true,
         groups: true,
-        parent: {
-          include: {
-            Mate: true,
-          },
-        },
-        children: {
-          include: {
-            Mate: true,
-          },
-        },
+        parent: true,
+        children: true,
       },
     });
 
@@ -124,34 +66,7 @@ export class MenuService {
     }
 
     // 扁平化菜单数据
-    return {
-      id: menu.id,
-      parent_id: menu.parent_id,
-      mate_id: menu.mate_id,
-      title: menu.Mate.title,
-      path: menu.Mate.path ?? '',
-      icon: menu.Mate.icon,
-      component: menu.Mate.component ?? '',
-      groups: menu.groups,
-      parent: menu.parent
-        ? {
-            id: menu.parent.id,
-            title: menu.parent.Mate.title,
-            path: menu.parent.Mate.path ?? '',
-            icon: menu.parent.Mate.icon,
-            component: menu.parent.Mate.component ?? '',
-          }
-        : null,
-      children: menu.children.map((child) => ({
-        id: child.id,
-        title: child.Mate.title,
-        path: child.Mate.path ?? '',
-        icon: child.Mate.icon,
-        component: child.Mate.component ?? '',
-      })),
-      create_at: menu.create_at,
-      update_at: menu.update_at,
-    };
+    return menu;
   }
 
   update(id: string, updateMenuDto: UpdateMenuDto) {

@@ -6,6 +6,7 @@ import { PaginationData } from '@/common/dto/api.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
 import { UserQuery } from './dto/query-user.dto';
+import { UpdateAvatarResponse } from './dto/update-avatar.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 
 @Injectable()
@@ -141,5 +142,41 @@ export class UserService {
       });
     }
     return null;
+  }
+
+  /**
+   * 更新用户头像
+   * @param id 用户ID
+   * @param avatarUrl 头像URL
+   * @returns 更新后的用户信息
+   */
+  async updateAvatar(
+    id: string,
+    avatarUrl: string,
+  ): Promise<UpdateAvatarResponse> {
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        avatar_url: avatarUrl,
+        update_at: new Date(),
+      },
+      select: {
+        id: true,
+        username: true,
+        avatar_url: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    return {
+      id: user.id,
+      username: user.username,
+      avatar_url: user.avatar_url || '',
+    };
   }
 }

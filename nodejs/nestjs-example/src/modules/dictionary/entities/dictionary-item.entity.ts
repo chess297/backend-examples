@@ -11,10 +11,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '@/common/entity/base.entity';
 
 export class DictionaryItemEntity extends BaseEntity implements DictionaryItem {
-  @ApiProperty({ description: '字典项ID' })
-  @IsUUID()
-  id: string;
-
   @ApiProperty({ description: '字典ID' })
   @IsUUID()
   dictionary_id: string;

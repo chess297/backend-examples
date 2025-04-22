@@ -39,11 +39,7 @@ export class MenuGroupService {
           },
         },
         include: {
-          menus: {
-            include: {
-              Mate: true,
-            },
-          },
+          menus: true,
           permissions: true,
         },
       });
@@ -73,17 +69,11 @@ export class MenuGroupService {
       const { page = 1, limit = 10, title, ...filters } = query;
 
       const records = await this.prisma.menuGroup.findMany({
-        where: {
-          title,
-        },
+        where: filters,
         take: pagination.take,
         skip: pagination.skip,
         include: {
-          menus: {
-            include: {
-              Mate: true,
-            },
-          },
+          menus: true,
           permissions: true,
           // Include parent and child relationships
         },
@@ -117,11 +107,7 @@ export class MenuGroupService {
         where: { id },
         include: {
           permissions: true,
-          menus: {
-            include: {
-              Mate: true,
-            },
-          },
+          menus: true,
         },
       });
 
@@ -147,12 +133,6 @@ export class MenuGroupService {
           return null;
         }
       }
-      group.menus = group.menus.map((menu) => {
-        return {
-          ...menu.Mate,
-          ...menu,
-        };
-      });
       return group;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

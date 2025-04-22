@@ -8,5 +8,5 @@ export class DictionaryResponseDto extends DictionaryEntity {
     type: [DictionaryItemEntity],
     required: false,
   })
-  items?: DictionaryItemEntity[];
+  declare items?: DictionaryItemEntity[];
 }

@@ -7,5 +7,5 @@ export class DictionaryByCodeResponseDto extends DictionaryEntity {
     description: '字典项列表',
     type: [DictionaryItemEntity],
   })
-  items: DictionaryItemEntity[];
+  declare items: DictionaryItemEntity[];
 }

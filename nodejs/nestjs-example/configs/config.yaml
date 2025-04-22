@@ -10,3 +10,4 @@ jwt:
   expire: 7d
 app_name: nestjs-example
 port: 3001
+upload_dir: uploads

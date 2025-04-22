@@ -16,8 +16,16 @@ import {
   Req,
   Query,
   Patch,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Pagination,
   PaginationQuery,
@@ -28,9 +36,14 @@ import {
 } from '@/common/decorators/swagger.decorator';
 import { AuthGuard, SessionGuard } from '@/common/guards/auth.guard';
 import { PermissionGuard } from '@/common/guards/permission.guard';
+import { AttachmentService } from '@/modules/attachment/attachment.service';
 import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
 import { UserQuery } from './dto/query-user.dto';
 import { RemoveUserRequest } from './dto/remove-user.request';
+import {
+  UpdateAvatarRequest,
+  UpdateAvatarResponse,
+} from './dto/update-avatar.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserService } from './user.service';
@@ -41,7 +54,10 @@ import { UserService } from './user.service';
 @UseGuards(PermissionGuard)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly attachmentService: AttachmentService,
+  ) {}
 
   @ApiOperation({
     summary: '创建新用户',
@@ -125,5 +141,29 @@ export class UserController {
       }
       throw new BadRequestException('删除用户失败');
     }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('avatar')
+  @ApiOperation({ summary: '上传用户头像', operationId: 'uploadAvatar' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @APIOkResponse(UpdateAvatarResponse)
+  @ApiBody({ type: UpdateAvatarRequest })
+  async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<UpdateAvatarResponse> {
+    // 获取当前登录用户ID
+    const userId = req.session.passport?.user.id;
+    if (!userId) {
+      throw new BadRequestException('用户未登录');
+    }
+
+    // 上传文件到附件服务
+    const attachment = await this.attachmentService.uploadFile(file);
+
+    // 更新用户头像URL
+    return this.userService.updateAvatar(userId, attachment.url);
   }
 }

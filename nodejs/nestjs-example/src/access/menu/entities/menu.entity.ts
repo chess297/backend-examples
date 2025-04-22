@@ -1,10 +1,13 @@
 import { Permission, Menu } from '@prisma/client';
 import { IsArray, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { MenuMateEntity } from '@/access/menu-mate/entities/menu-mate.entity';
 import { BaseEntity } from '@/common/entity/base.entity';
 
 export class MenuEntity extends BaseEntity implements Menu {
+  icon: string;
+  title: string;
+  path: string | null;
+  component: string | null;
   @IsUUID()
   mate_id: string;
   @IsUUID()
@@ -31,10 +34,4 @@ export class MenuEntity extends BaseEntity implements Menu {
   })
   @IsOptional()
   permissions?: Permission;
-
-  @ApiProperty({
-    description: '菜单元信息',
-    type: () => MenuMateEntity,
-  })
-  mate: MenuMateEntity;
 }

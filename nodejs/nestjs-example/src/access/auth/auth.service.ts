@@ -31,7 +31,13 @@ export class AuthService {
   }
 
   signup(dto: SignupRequest) {
-    return this.userService.create(dto);
+    return this.userService.create({
+      ...dto,
+      phone: '',
+      address: '',
+      country_code: '',
+      is_active: true,
+    });
   }
   // 登出
   signout() {

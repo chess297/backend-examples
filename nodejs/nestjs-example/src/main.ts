@@ -1,11 +1,13 @@
 import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
 import { RedisStore } from 'connect-redis';
 import cookieParser from 'cookie-parser';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
+import express from 'express';
 import session from 'express-session';
 import Redis from 'ioredis';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import passport from 'passport';
+import path from 'path';
 import {
   INestApplication,
   ValidationPipe,
@@ -14,7 +16,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SuccessResponseInterceptor } from '@/common/interceptors/success.interceptor';
 import { AllExceptionsFilter } from '@/filters/all-exception.filter';
 import { HttpExceptionsFilter } from '@/filters/http-exception.filter';
 import { AppModule } from './app.module';
@@ -24,7 +25,7 @@ const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
   dayjs.locale('zh-cn');
   const app = await NestFactory.create(AppModule, {
-    logger: false,
+    // logger: false,
   });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   const configService = app.get(ConfigService);
@@ -32,6 +33,7 @@ async function bootstrap() {
   useSwagger(app);
   usePipes(app);
   useFilters(app, configService);
+  useStatic(app, configService);
   await app.listen(configService.get('port') ?? PORT);
 }
 
@@ -84,6 +86,13 @@ function useFilters(app: INestApplication, configService: ConfigService) {
   app.use(passport.session());
 }
 
+// 添加静态文件服务
+function useStatic(app: INestApplication, configService: ConfigService) {
+  const uploadDir = configService.get<string>('upload_dir', 'uploads');
+  const uploadPath = path.join(process.cwd(), uploadDir);
+  app.use('/uploads', express.static(uploadPath, {}));
+}
+
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('NestJS Example')
@@ -93,7 +102,6 @@ function useSwagger(app: INestApplication) {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory, {
     jsonDocumentUrl: '/swagger-json',
-    // customSwaggerUiPath: '/swagger-ui',
   });
 }
 void bootstrap();

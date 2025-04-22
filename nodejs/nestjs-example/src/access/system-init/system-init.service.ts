@@ -7,7 +7,8 @@ import {
   Role,
   User,
 } from '@prisma/client';
-import { ITXClientDenyList } from '@prisma/client/runtime/library';
+import * as bcrypt from 'bcrypt';
+import { ITXClientDenyList } from 'prisma/clients/postgresql/runtime/library';
 import { v4 as uuid } from 'uuid';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
@@ -150,7 +151,6 @@ export class SystemInitService {
     }
 
     // 创建新用户
-    const bcrypt = await import('bcrypt');
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return prisma.user.create({
@@ -159,6 +159,7 @@ export class SystemInitService {
         id: uuid(),
         password: hashedPassword,
         is_active: true,
+        avatar_url: null,
       },
     });
   }
@@ -325,24 +326,13 @@ export class SystemInitService {
     // 创建菜单及其元数据
     for (const item of menuItems) {
       // 创建元数据
-      const menuMate = await prisma.menuMate.create({
+      const menu = await prisma.menu.create({
         data: {
           id: uuid(),
           title: item.title,
           path: item.path,
           icon: item.icon,
           component: item.component,
-        },
-      });
-
-      // 创建菜单
-      const menu = await prisma.menu.create({
-        data: {
-          id: uuid(),
-          mate_id: menuMate.id,
-          groups: {
-            connect: { id: systemMenuGroup.id },
-          },
         },
       });
 

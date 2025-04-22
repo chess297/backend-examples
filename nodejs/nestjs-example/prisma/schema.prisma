@@ -26,6 +26,8 @@ model User {
   country_code String?   @map("country_code") @db.VarChar(5)
   /// 地址
   address      String?   @db.VarChar(255)
+  /// 头像URL
+  avatar_url   String?   @map("avatar_url") @db.VarChar(255)
   /// 用户创建的任务
   tasks        Task[]
   /// 用户拥有的角色
@@ -105,10 +107,12 @@ model Menu {
   parent_id   String?      @map("parent_id") @db.VarChar(36)
   parent      Menu?        @relation("MenuParent", fields: [parent_id], references: [id])
   children    Menu[]       @relation("MenuParent")
-  mate_id     String       @unique @map("mate_id") @db.VarChar(36)
-  Mate        MenuMate     @relation(fields: [mate_id], references: [id])
   groups      MenuGroup[]
   permissions Permission[]
+  title     String    @db.VarChar(255)
+  path      String?   @unique @db.VarChar(255)
+  icon      String    @db.VarChar(255)
+  component String?   @db.VarChar(255)
   create_at   DateTime     @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
   update_at   DateTime     @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
   delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
@@ -116,20 +120,6 @@ model Menu {
   @@map("menus")
 }
 
-// 菜单元数据表
-model MenuMate {
-  id        String    @id @unique @map("id") @db.VarChar(36)
-  title     String    @db.VarChar(255)
-  path      String?   @unique @db.VarChar(255)
-  icon      String    @db.VarChar(255)
-  component String?   @db.VarChar(255)
-  Menu      Menu?
-  create_at DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
-  update_at DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
-  delete_at DateTime? @map("delete_at") @db.Timestamptz()
-
-  @@map("menu_mates")
-}
 
 // 菜单组表
 model MenuGroup {
@@ -221,4 +211,36 @@ model DictionaryItem {
   delete_at     DateTime?  @map("delete_at") @db.Timestamptz()
 
   @@map("dictionary_items")
+}
+
+// 附件存储类型
+enum StorageType {
+  LOCAL
+  CLOUD
+}
+
+// 附件表
+model Attachment {
+  /// 附件ID，UUID格式
+  id           String      @id @unique @map("id") @db.VarChar(36)
+  /// 原始文件名
+  originalName String      @map("original_name") @db.VarChar(255)
+  /// 文件MIME类型
+  mimeType     String      @map("mime_type") @db.VarChar(100)
+  /// 文件大小（字节）
+  size         Int
+  /// 文件路径
+  path         String      @db.VarChar(255)
+  /// 文件访问URL
+  url          String      @db.VarChar(255)
+  /// 存储类型
+  storageType  StorageType @default(LOCAL) @map("storage_type")
+  /// 创建时间
+  create_at    DateTime    @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间
+  update_at    DateTime    @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
+  delete_at    DateTime?   @map("delete_at") @db.Timestamptz()
+
+  @@map("attachments")
 }

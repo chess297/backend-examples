@@ -56,4 +56,13 @@ export class UserEntity extends BaseEntity implements User {
   @IsString()
   @IsOptional()
   address: string | null;
+
+  @ApiProperty({
+    description: '用户头像URL',
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  avatar_url: string | null;
 }

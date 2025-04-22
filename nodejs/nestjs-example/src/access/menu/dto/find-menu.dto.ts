@@ -29,7 +29,7 @@ export class MenuResponse {
   @ApiProperty({
     description: '菜单路径',
   })
-  path: string;
+  path: string | null;
 
   @ApiProperty({
     description: '菜单图标',
@@ -39,39 +39,39 @@ export class MenuResponse {
   @ApiProperty({
     description: '菜单组件',
   })
-  component: string;
+  component: string | null;
 
-  @ApiProperty({
-    description: '菜单分组',
-    required: false,
-    type: 'array',
-  })
-  groups?: any[];
+  // @ApiProperty({
+  //   description: '菜单分组',
+  //   required: false,
+  //   type: 'array',
+  // })
+  // groups?: any[];
 
-  @ApiProperty({
-    description: '父菜单',
-    required: false,
-  })
-  parent?: {
-    id: string;
-    title: string;
-    path: string;
-    icon: string;
-    component: string;
-  } | null;
+  // @ApiProperty({
+  //   description: '父菜单',
+  //   required: false,
+  // })
+  // parent: {
+  //   id: string;
+  //   title: string;
+  //   path: string | null;
+  //   icon: string;
+  //   component: string | null;
+  // } | null;
 
-  @ApiProperty({
-    description: '子菜单列表',
-    required: false,
-    type: 'array',
-  })
-  children?: {
-    id: string;
-    title: string;
-    path: string;
-    icon: string;
-    component: string;
-  }[];
+  // @ApiProperty({
+  //   description: '子菜单列表',
+  //   required: false,
+  //   type: 'array',
+  // })
+  // children?: {
+  //   id: string;
+  //   title: string;
+  //   path: string;
+  //   icon: string;
+  //   component: string;
+  // }[];
 
   @ApiProperty({
     description: '创建时间',
