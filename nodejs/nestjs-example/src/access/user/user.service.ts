@@ -101,7 +101,7 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserRequest,
   ): Promise<UserResponse> {
-    const { roleIds, roles, ...data } = updateUserDto;
+    const { roleIds, ...data } = updateUserDto;
     const user = await this.prisma.user.update({
       where: {
         id,
