@@ -9,9 +9,9 @@ import { RoleService } from './role.service';
 export class RoleModule {
   private readonly logger = new Logger(RoleModule.name);
   constructor(private readonly roleService: RoleService) {
-    this.__init__().catch((e) => {
-      this.logger.error(e);
-    });
+    // this.__init__().catch((e) => {
+    //   this.logger.error(e);
+    // });
   }
 
   private async __init__() {

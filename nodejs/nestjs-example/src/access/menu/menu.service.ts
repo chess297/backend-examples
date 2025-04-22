@@ -1,4 +1,3 @@
-import { title } from 'process';
 import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { PaginationQuery } from '@/common/decorators/pagination.decorator';
@@ -63,7 +62,7 @@ export class MenuService {
     { page, limit, ...where }: FindMenuQuery,
     pagination: PaginationQuery,
   ) {
-    const records = await this.prisma.menu.findMany({
+    const menus = await this.prisma.menu.findMany({
       skip: pagination.skip,
       take: pagination.take,
       where,
@@ -78,6 +77,20 @@ export class MenuService {
         },
       },
     });
+
+    // 扁平化菜单数据，将 Mate 中的数据直接映射到菜单对象
+    const records = menus.map((menu) => ({
+      id: menu.id,
+      parent_id: menu.parent_id,
+      title: menu.Mate.title,
+      path: menu.Mate.path || '',
+      icon: menu.Mate.icon,
+      component: menu.Mate.component || '',
+      mate_id: menu.mate_id,
+      create_at: menu.create_at,
+      update_at: menu.update_at,
+    }));
+
     const total = await this.prisma.menu.count();
     return {
       records,
@@ -92,17 +105,52 @@ export class MenuService {
       },
       include: {
         Mate: true,
+        groups: true,
+        parent: {
+          include: {
+            Mate: true,
+          },
+        },
+        children: {
+          include: {
+            Mate: true,
+          },
+        },
       },
     });
+
     if (!menu) {
       throw new Error('Menu not found');
     }
+
+    // 扁平化菜单数据
     return {
       id: menu.id,
+      parent_id: menu.parent_id,
+      mate_id: menu.mate_id,
       title: menu.Mate.title,
-      path: menu?.Mate.path ?? '',
+      path: menu.Mate.path ?? '',
       icon: menu.Mate.icon,
       component: menu.Mate.component ?? '',
+      groups: menu.groups,
+      parent: menu.parent
+        ? {
+            id: menu.parent.id,
+            title: menu.parent.Mate.title,
+            path: menu.parent.Mate.path ?? '',
+            icon: menu.parent.Mate.icon,
+            component: menu.parent.Mate.component ?? '',
+          }
+        : null,
+      children: menu.children.map((child) => ({
+        id: child.id,
+        title: child.Mate.title,
+        path: child.Mate.path ?? '',
+        icon: child.Mate.icon,
+        component: child.Mate.component ?? '',
+      })),
+      create_at: menu.create_at,
+      update_at: menu.update_at,
     };
   }
 

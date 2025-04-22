@@ -21,9 +21,9 @@ model User {
   /// 是否激活，默认值为true
   is_active    Boolean   @default(true)
   /// 关联的用户资料
-  phone        String    @map("phone") @db.VarChar(20)
-  country_code String    @map("country_code") @db.VarChar(5)
-  address      String    @db.VarChar(255)
+  phone        String?    @map("phone") @db.VarChar(20)
+  country_code String?    @map("country_code") @db.VarChar(5)
+  address      String?    @db.VarChar(255)
   /// 用户创建的任务
   tasks        Task[]
   /// 用户拥有的角色
@@ -149,4 +149,24 @@ model MenuGroup {
   delete_at   DateTime?    @map("delete_at") @db.Timestamptz()
 
   @@map("menu_groups")
+}
+
+// 系统初始化码表
+model SystemCode {
+  /// 系统码ID，UUID格式
+  id         String    @id @unique @map("id") @db.VarChar(36)
+  /// 系统码
+  code       String    @unique @db.VarChar(255)
+  /// 是否已使用
+  is_used    Boolean   @default(false)
+  /// 过期时间
+  expires_at DateTime  @db.Timestamptz()
+  /// 创建时间
+  create_at  DateTime  @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间
+  update_at  DateTime  @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间
+  delete_at  DateTime? @map("delete_at") @db.Timestamptz()
+
+  @@map("system_codes")
 }
