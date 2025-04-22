@@ -10,7 +10,10 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/common/decorators/public.decorator';
 import { APIOkResponse } from '@/common/decorators/swagger.decorator';
-import { AdminRegisterRequest } from './dto/admin-register.dto';
+import {
+  AdminRegisterRequest,
+  CheckSystemInitResponse,
+} from './dto/admin-register.dto';
 import { SystemCodeEntity } from './entities/system-code.entity';
 import { SystemInitService } from './system-init.service';
 
@@ -25,6 +28,7 @@ export class SystemInitController {
     description: '检查系统是否已初始化，如果已初始化返回true，否则返回false',
     operationId: 'checkSystemInit',
   })
+  @APIOkResponse(CheckSystemInitResponse)
   @Get('check')
   async checkSystemInit(): Promise<{ initialized: boolean }> {
     const initialized = await this.systemInitService.isSystemInitialized();

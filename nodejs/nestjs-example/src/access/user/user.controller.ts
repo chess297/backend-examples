@@ -19,6 +19,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
+  Pagination,
+  PaginationQuery,
+} from '@/common/decorators/pagination.decorator';
+import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
@@ -56,8 +60,11 @@ export class UserController {
   @APIPaginationResponse(UserResponse)
   @Get()
   @APIPaginationResponse(UserResponse)
-  findAll(@Query() query: UserQuery) {
-    return this.userService.findAll();
+  findAll(
+    @Query() query: UserQuery,
+    @Pagination() pagination: PaginationQuery,
+  ) {
+    return this.userService.findAll(query, pagination);
   }
 
   @UseGuards(AuthGuard)

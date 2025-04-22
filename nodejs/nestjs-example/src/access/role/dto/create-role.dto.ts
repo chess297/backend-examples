@@ -1,35 +1,53 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IRole } from '../interface/role.interface';
+import { RoleEntity } from '../entities/role.entity';
 
-export class CreateRoleRequest implements Omit<IRole, 'id' | 'permissions'> {
+export class CreateRoleRequest {
   @ApiProperty({
     description: '角色名称',
   })
   @IsString()
   name: string;
 
-  @ApiProperty({
-    description: '角色描述',
-  })
+  @ApiProperty()
   @IsString()
   description: string;
 
   @ApiProperty({
-    description: '权限ID列表',
-    isArray: true,
-    type: String,
+    description: '是否激活',
   })
+  @IsBoolean()
+  is_active: boolean;
+
+  @ApiProperty({
+    description: '权限ID列表',
+    type: [String],
+  })
+  @IsArray({ each: true })
+  @IsString({ each: true })
   @IsOptional()
-  @IsArray()
-  permissions?: string[];
+  permission_ids?: string[];
 
   @ApiProperty({
     description: '用户ID列表',
-    isArray: true,
-    type: String,
+    type: [String],
   })
+  @IsArray({ each: true })
+  @IsString({ each: true })
   @IsOptional()
-  @IsArray()
-  users?: string[];
+  user_ids?: string[];
+}
+
+export class RoleResponse extends RoleEntity {
+  constructor(role: Partial<CreateRoleResponse>) {
+    super();
+    Object.assign(this, role);
+  }
+}
+
+export class CreateRoleResponse extends RoleResponse {
+  constructor(role: Partial<CreateRoleResponse>) {
+    super(role);
+    Object.assign(this, role);
+  }
 }

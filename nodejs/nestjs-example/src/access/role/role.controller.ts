@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Query,
   Logger,
 } from '@nestjs/common';
@@ -17,24 +16,24 @@ import {
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
 import { SystemRoleGuard } from '@/common/guards/role.guard';
-import { CreateRoleRequest } from './dto/create-role.dto';
+import {
+  CreateRoleRequest,
+  CreateRoleResponse,
+  RoleResponse,
+} from './dto/create-role.dto';
 import { FindManyRoleQuery } from './dto/find.role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { RoleEntity } from './entities/role.entity';
+import { UpdateRoleRequest } from './dto/update-role.dto';
 import { RoleService } from './role.service';
 
-// @UseGuards(SystemRoleGuard)
 @ApiTags('role')
 @Controller('role')
 export class RoleController {
-  private readonly logger = new Logger(RoleController.name);
-
   constructor(private readonly roleService: RoleService) {}
 
   @ApiOperation({
     summary: '创建角色',
   })
-  @APIOkResponse(RoleEntity)
+  @APIOkResponse(CreateRoleResponse)
   @APIBadRequestResponse()
   @Post()
   create(@Body() createRoleDto: CreateRoleRequest) {
@@ -44,7 +43,7 @@ export class RoleController {
   @ApiOperation({
     summary: '查询所有角色',
   })
-  @APIPaginationResponse(RoleEntity)
+  @APIPaginationResponse(RoleResponse)
   @APIBadRequestResponse()
   @Get()
   findAll(@Query() query: FindManyRoleQuery) {
@@ -54,7 +53,7 @@ export class RoleController {
   @ApiOperation({
     summary: '根据id查询角色',
   })
-  @APIOkResponse(RoleEntity)
+  @APIOkResponse(RoleResponse)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roleService.findOne(id);
@@ -63,9 +62,9 @@ export class RoleController {
   @ApiOperation({
     summary: '修改角色',
   })
-  @APIOkResponse(RoleEntity)
+  @APIOkResponse(RoleResponse)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleRequest) {
     return this.roleService.update(id, updateRoleDto);
   }
 

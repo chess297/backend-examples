@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -70,3 +71,11 @@ export class AdminRegisterRequest {
 }
 
 export class AdminRegisterResponse {}
+
+export class CheckSystemInitResponse {
+  @ApiProperty({
+    description: '系统初始化状态',
+  })
+  @IsBoolean()
+  initialized: boolean;
+}

@@ -41,11 +41,11 @@ export class BadResponse {
 
 // 分页的数据体
 export class PaginationData<T> {
-  @ApiProperty({
-    example: 1,
-    title: '当前页码',
-  })
-  current: number;
+  // @ApiProperty({
+  //   example: 1,
+  //   title: '当前页码',
+  // })
+  // current: number;
   @ApiProperty({
     example: 10,
     title: '每页显示条数',

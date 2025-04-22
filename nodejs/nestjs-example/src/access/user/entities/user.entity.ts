@@ -12,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { RoleEntity } from '@/access/role/entities/role.entity';
 import { BaseEntity } from '@/common/entity/base.entity';
 
-export abstract class UserEntity extends BaseEntity implements User {
+export class UserEntity extends BaseEntity implements User {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

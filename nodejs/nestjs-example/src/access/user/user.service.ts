@@ -2,8 +2,11 @@ import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { PaginationQuery } from '@/common/decorators/pagination.decorator';
+import { PaginationData } from '@/common/dto/api.dto';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
+import { UserQuery } from './dto/query-user.dto';
 import { UpdateUserRequest } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 
@@ -30,9 +33,15 @@ export class UserService {
     return new UserResponse(user);
   }
 
-  async findAll() {
+  async findAll(
+    query: UserQuery,
+    pagination: PaginationQuery,
+  ): Promise<PaginationData<UserResponse> & { records: UserResponse[] }> {
+    const { skip, take } = pagination;
     const records = await this.prisma.user
       .findMany({
+        skip,
+        take,
         where: {
           delete_at: null,
         },

@@ -1,18 +1,22 @@
 import { v4 as uuid } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
-import { CreateRoleRequest } from './dto/create-role.dto';
+import {
+  CreateRoleRequest,
+  CreateRoleResponse,
+  RoleResponse,
+} from './dto/create-role.dto';
 import { FindManyRoleQuery } from './dto/find.role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleRequest } from './dto/update-role.dto';
 
 @Injectable()
 export class RoleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createRoleDto: CreateRoleRequest) {
+  async create(createRoleDto: CreateRoleRequest): Promise<CreateRoleResponse> {
     const id = uuid();
-    const { users, permissions, ...rest } = createRoleDto;
-    return this.prisma.role.create({
+    const { user_ids, permission_ids, ...rest } = createRoleDto;
+    const role = await this.prisma.role.create({
       omit: {
         delete_at: true,
       },
@@ -20,13 +24,14 @@ export class RoleService {
         ...rest,
         id,
         users: {
-          connect: users?.map((item) => ({ id: item })),
+          connect: user_ids?.map((item) => ({ id: item })),
         },
         permissions: {
-          connect: permissions?.map((item) => ({ id: item })),
+          connect: permission_ids?.map((item) => ({ id: item })),
         },
       },
     });
+    return new CreateRoleResponse(role);
   }
 
   async findAll(query: FindManyRoleQuery) {
@@ -56,7 +61,7 @@ export class RoleService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<RoleResponse> {
     const role = await this.prisma.role.findUnique({
       omit: {
         delete_at: true,
@@ -80,11 +85,11 @@ export class RoleService {
       throw new NotFoundException(`Role with ID ${id} not found`);
     }
 
-    return role;
+    return new RoleResponse(role);
   }
 
-  findOneByName(name: string) {
-    return this.prisma.role.findUnique({
+  async findOneByName(name: string): Promise<RoleResponse> {
+    const role = await this.prisma.role.findUnique({
       omit: {
         delete_at: true,
       },
@@ -92,10 +97,14 @@ export class RoleService {
         name,
       },
     });
+    if (!role) {
+      throw new NotFoundException(`Role with name ${name} not found`);
+    }
+    return new RoleResponse(role);
   }
 
-  async update(id: string, updateRoleDto: UpdateRoleDto) {
-    const { users, permissions, ...data } = updateRoleDto;
+  async update(id: string, updateRoleDto: UpdateRoleRequest) {
+    const { user_ids, permission_ids, ...data } = updateRoleDto;
 
     // First update basic role information
     await this.prisma.role.update({
@@ -109,7 +118,7 @@ export class RoleService {
     });
 
     // If users need to be updated
-    if (users && users.length > 0) {
+    if (user_ids && user_ids.length > 0) {
       // First disconnect all existing users
       await this.prisma.role.update({
         where: { id },
@@ -125,14 +134,14 @@ export class RoleService {
         where: { id },
         data: {
           users: {
-            connect: users.map((userId) => ({ id: userId })),
+            connect: user_ids.map((userId) => ({ id: userId })),
           },
         },
       });
     }
 
     // If permissions need to be updated
-    if (permissions && permissions.length > 0) {
+    if (permission_ids && permission_ids.length > 0) {
       // First disconnect all existing permissions
       await this.prisma.role.update({
         where: { id },
@@ -148,7 +157,7 @@ export class RoleService {
         where: { id },
         data: {
           permissions: {
-            connect: permissions.map((permId) => ({ id: permId })),
+            connect: permission_ids.map((permId) => ({ id: permId })),
           },
         },
       });
