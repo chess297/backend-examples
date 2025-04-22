@@ -23,7 +23,9 @@ import { APP_NAME } from './constants';
 const PORT = process.env.PORT ?? 3000;
 async function bootstrap() {
   dayjs.locale('zh-cn');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+  });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   const configService = app.get(ConfigService);
   resolveRoute(app, configService);

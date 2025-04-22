@@ -9,3 +9,4 @@ jwt:
   secret: 'rcP1A:PNU+:Xai!uCu8N5?rHsfL2A:XJqn%-+m*4?G4wN+0*QiwTjG>bLX)TMdBc*eM9k4s=0#VWd2eo+jx.2:'
   expire: 7d
 app_name: nestjs-example
+port: 8001

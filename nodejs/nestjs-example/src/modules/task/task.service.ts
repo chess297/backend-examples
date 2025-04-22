@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
 import {
   CreateTaskRequest,
@@ -15,7 +15,6 @@ export class TaskService {
   constructor(
     @Inject(CACHE_MANAGER)
     private prisma: PrismaService,
-    private readonly logger: Logger,
   ) {}
 
   async create(createTaskDto: CreateTaskRequest) {
