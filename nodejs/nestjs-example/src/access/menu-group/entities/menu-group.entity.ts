@@ -1,7 +1,7 @@
 import { MenuGroup } from '@prisma/client';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { MenuEntity } from '@/access/menu/entities/menu.entity';
+import { MenuResponse } from '@/access/menu/dto/find-menu.dto';
 import { BaseEntity } from '@/common/entity/base.entity';
 
 export class MenuGroupEntity extends BaseEntity implements MenuGroup {
@@ -23,7 +23,7 @@ export class MenuGroupEntity extends BaseEntity implements MenuGroup {
   parent_id: string | null;
 
   @ApiProperty({
-    type: [MenuEntity],
+    type: [MenuResponse],
   })
-  menus?: MenuEntity[];
+  menus?: MenuResponse[];
 }

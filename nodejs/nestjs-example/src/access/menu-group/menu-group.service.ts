@@ -6,6 +6,7 @@ import {
   PaginationQuery,
 } from '@/common/decorators/pagination.decorator';
 import { PrismaService } from '@/database/prisma/prisma.service';
+import { DictionaryService } from '@/modules/dictionary/dictionary.service';
 import { CreateMenuGroupRequest } from './dto/create-menu-group.dto';
 import { FindMenuGroupQuery } from './dto/find-menu-group.dto';
 import { UpdateMenuGroupDto } from './dto/update-menu-group.dto';
@@ -14,14 +15,17 @@ import { UpdateMenuGroupDto } from './dto/update-menu-group.dto';
 export class MenuGroupService {
   private readonly logger = new Logger(MenuGroupService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly dictionaryService: DictionaryService,
+  ) {}
 
   async create(createMenuGroupDto: CreateMenuGroupRequest) {
     try {
       const id = uuid();
       const { menus, permissions, ...rest } = createMenuGroupDto;
 
-      return await this.prisma.menuGroup.create({
+      const result = await this.prisma.menuGroup.create({
         data: {
           ...rest,
           id,
@@ -43,6 +47,16 @@ export class MenuGroupService {
           permissions: true,
         },
       });
+
+      // 同步更新菜单分组字典
+      await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
+        this.logger.error(
+          `创建菜单组后同步字典失败: ${error.message}`,
+          error.stack,
+        );
+      });
+
+      return result;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         this.logger.error(
@@ -133,7 +147,12 @@ export class MenuGroupService {
           return null;
         }
       }
-
+      group.menus = group.menus.map((menu) => {
+        return {
+          ...menu.Mate,
+          ...menu,
+        };
+      });
       return group;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -173,6 +192,14 @@ export class MenuGroupService {
         },
       });
 
+      // 同步更新菜单分组字典
+      await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
+        this.logger.error(
+          `更新菜单组后同步字典失败: ${error.message}`,
+          error.stack,
+        );
+      });
+
       // Return updated group
       return this.findOne(id);
     } catch (error) {
@@ -193,16 +220,40 @@ export class MenuGroupService {
 
       // Check if soft delete is supported
       if (await this.hasSoftDelete()) {
-        return this.prisma.menuGroup.update({
+        const result = await this.prisma.menuGroup.update({
           where: { id },
           data: {
             delete_at: new Date(),
           },
         });
+
+        // 同步更新菜单分组字典
+        await this.dictionaryService
+          .syncMenuGroupDictionary()
+          .catch((error) => {
+            this.logger.error(
+              `删除菜单组后同步字典失败: ${error.message}`,
+              error.stack,
+            );
+          });
+
+        return result;
       } else {
-        return this.prisma.menuGroup.delete({
+        const result = await this.prisma.menuGroup.delete({
           where: { id },
         });
+
+        // 同步更新菜单分组字典
+        await this.dictionaryService
+          .syncMenuGroupDictionary()
+          .catch((error) => {
+            this.logger.error(
+              `删除菜单组后同步字典失败: ${error.message}`,
+              error.stack,
+            );
+          });
+
+        return result;
       }
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

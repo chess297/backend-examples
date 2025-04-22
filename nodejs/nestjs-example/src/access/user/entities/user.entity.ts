@@ -29,7 +29,10 @@ export class UserEntity {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: '用户角色',
+    type: [RoleEntity],
+  })
   @IsArray()
   @IsOptional()
   roles?: RoleEntity[];
@@ -38,7 +41,9 @@ export class UserEntity {
   @IsBoolean()
   is_active: boolean;
 
+  @ApiProperty()
   create_at: Date;
+  @ApiProperty()
   update_at: Date;
   delete_at: Date | null;
 }

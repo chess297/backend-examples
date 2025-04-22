@@ -7,7 +7,6 @@ import { LoggerModule } from '@/common/logger/logger.module';
 import { ServicesModule } from '@/common/services/services.module';
 import config from '@/config';
 import { DatabaseModule } from '@/database/database.module';
-import { SystemInitModule } from '@/system-init/system-init.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FeaturesModule } from './modules/features.module';
@@ -25,7 +24,6 @@ import { FeaturesModule } from './modules/features.module';
     GuardsModule, // 新增守卫模块
     AccessModule,
     FeaturesModule,
-    SystemInitModule, // 添加系统初始化模块
   ],
   controllers: [AppController],
   providers: [AppService],

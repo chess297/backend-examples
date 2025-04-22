@@ -6,13 +6,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@/database/prisma/prisma.service';
+import { DictionaryService } from '@/modules/dictionary/dictionary.service';
 import { AdminRegisterRequest } from './dto/admin-register.dto';
 
 @Injectable()
 export class SystemInitService {
   private readonly logger = new Logger(SystemInitService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly dictionaryService: DictionaryService,
+  ) {}
 
   /**
    * 生成系统初始化码
@@ -114,7 +118,10 @@ export class SystemInitService {
         const { menuGroups, menus } =
           await this.createBaseMenuStructure(prisma);
 
-        // 7. 标记系统码为已使用
+        // 7. 创建系统字典
+        await this.createSystemDictionaries(prisma, menuGroups);
+
+        // 8. 标记系统码为已使用
         await this.markSystemCodeAsUsed(systemCode, prisma);
 
         return {
@@ -355,6 +362,45 @@ export class SystemInitService {
       menuGroups: [systemMenuGroup],
       menus,
     };
+  }
+
+  /**
+   * 创建系统字典
+   * @param prisma Prisma事务客户端
+   * @param menuGroups 已创建的菜单组列表
+   */
+  private async createSystemDictionaries(
+    prisma: any,
+    menuGroups: any[],
+  ): Promise<void> {
+    try {
+      // 创建菜单分组字典
+      const menuGroupDict = await prisma.dictionary.create({
+        data: {
+          id: uuid(),
+          code: 'MENU_GROUPS',
+          name: '菜单分组',
+          description: '系统菜单分组列表，用于前端菜单分组展示',
+          items: {
+            create: menuGroups.map((group, index) => ({
+              id: uuid(),
+              value: group.id,
+              label: group.title,
+              sort: index,
+              extra: {
+                icon: group.icon,
+                description: group.description,
+              },
+            })),
+          },
+        },
+      });
+
+      this.logger.log(`菜单分组字典创建成功，ID: ${menuGroupDict.id}`);
+    } catch (error) {
+      this.logger.error(`创建系统字典失败: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 
   /**

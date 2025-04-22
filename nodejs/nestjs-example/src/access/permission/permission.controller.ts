@@ -54,7 +54,7 @@ export class PermissionController {
     operationId: 'findManyPermission',
   })
   @APIPaginationResponse(PermissionEntity)
-  @Get()
+  @Get('list')
   findAll(@Query() query: FindPermissionQuery) {
     this.logger.debug(
       `Finding all permissions with query: ${JSON.stringify(query)}`,

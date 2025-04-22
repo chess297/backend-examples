@@ -14,6 +14,7 @@ import {
   UseGuards,
   Session,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
@@ -51,10 +52,7 @@ export class UserController {
   })
   @APIPaginationResponse(UserEntity)
   @Get()
-  @ApiOkResponse({
-    isArray: true,
-    type: UserEntity,
-  })
+  @APIPaginationResponse(UserEntity)
   findAll() {
     return this.userService.findAll();
   }

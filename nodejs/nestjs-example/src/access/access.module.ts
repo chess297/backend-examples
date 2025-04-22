@@ -5,6 +5,7 @@ import { MenuMateModule } from './menu-mate/menu-mate.module';
 import { MenuModule } from './menu/menu.module';
 import { PermissionModule } from './permission/permission.module';
 import { RoleModule } from './role/role.module';
+import { SystemInitModule } from './system-init/system-init.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     MenuModule,
     MenuMateModule,
     MenuGroupModule,
+    SystemInitModule, // 添加系统初始化模块
   ],
 })
 export class AccessModule {}

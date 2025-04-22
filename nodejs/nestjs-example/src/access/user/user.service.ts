@@ -51,6 +51,9 @@ export class UserService {
         where: {
           delete_at: null,
         },
+        include: {
+          roles: true,
+        },
         omit: {
           delete_at: true,
           password: true,

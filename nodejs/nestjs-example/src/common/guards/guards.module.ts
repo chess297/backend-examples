@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { SystemInitModule } from '@/system-init/system-init.module';
+import { SystemInitModule } from '@/access/system-init/system-init.module';
 import { SystemInitGuard } from './system-init.guard';
 
 @Module({

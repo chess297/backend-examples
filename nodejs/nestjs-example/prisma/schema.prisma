@@ -170,3 +170,51 @@ model SystemCode {
 
   @@map("system_codes")
 }
+
+// 字典表
+model Dictionary {
+  /// 字典ID，UUID格式
+  id          String          @id @unique @map("id") @db.VarChar(36)
+  /// 字典代码，用于程序中引用
+  code        String          @unique @db.VarChar(100)
+  /// 字典名称
+  name        String          @db.VarChar(100)
+  /// 字典描述
+  description String?         @db.VarChar(255)
+  /// 字典项
+  items       DictionaryItem[]
+  /// 创建时间，自动设置为当前时间
+  create_at   DateTime        @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
+  update_at   DateTime        @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
+  delete_at   DateTime?       @map("delete_at") @db.Timestamptz()
+
+  @@map("dictionaries")
+}
+
+// 字典项表
+model DictionaryItem {
+  /// 字典项ID，UUID格式
+  id           String     @id @unique @map("id") @db.VarChar(36)
+  /// 所属字典ID
+  dictionary_id String     @map("dictionary_id") @db.VarChar(36)
+  /// 关联的字典
+  dictionary    Dictionary @relation(fields: [dictionary_id], references: [id])
+  /// 字典项值
+  value        String     @db.VarChar(100)
+  /// 字典项标签
+  label        String     @db.VarChar(100)
+  /// 排序号
+  sort         Int        @default(0)
+  /// 额外数据，JSON格式，可存储任何额外信息
+  extra        Json?      @db.JsonB
+  /// 创建时间，自动设置为当前时间
+  create_at    DateTime   @default(dbgenerated("NOW()")) @map("create_at") @db.Timestamptz()
+  /// 更新时间，自动设置为当前时间
+  update_at    DateTime   @default(dbgenerated("NOW()")) @map("update_at") @db.Timestamptz()
+  /// 删除时间，软删除标记
+  delete_at    DateTime?  @map("delete_at") @db.Timestamptz()
+
+  @@map("dictionary_items")
+}

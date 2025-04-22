@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { SystemInitService } from '@/system-init/system-init.service';
+import { SystemInitService } from '@/access/system-init/system-init.service';
 
 /**
  * 系统初始化守卫
