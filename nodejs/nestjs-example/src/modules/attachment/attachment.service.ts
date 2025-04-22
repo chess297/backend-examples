@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { LocalStorageStrategy } from './strategies/local-storage.strategy';
+import { MinioStorageStrategy } from './strategies/minio-storage.strategy';
 import { StorageStrategy } from './strategies/storage.strategy';
 
 @Injectable()
@@ -17,9 +18,7 @@ export class AttachmentService {
     // 初始化存储策略
     this.strategies = {
       [StorageType.LOCAL]: new LocalStorageStrategy(configService),
-      [StorageType.CLOUD]: new LocalStorageStrategy(configService),
-      // 如果未来添加云存储策略，可以在这里添加：
-      // [StorageType.CLOUD]: new CloudStorageStrategy(configService),
+      [StorageType.CLOUD]: new MinioStorageStrategy(configService),
     };
   }
 
@@ -30,16 +29,20 @@ export class AttachmentService {
    */
   async uploadFile(
     file: Express.Multer.File,
-    storageType: StorageType = StorageType.LOCAL,
+    storageType: StorageType = StorageType.CLOUD,
   ) {
     const strategy = this.strategies[storageType];
     const attachmentData = await strategy.upload(file);
+    if (!attachmentData || !attachmentData.path) {
+      throw new NotFoundException(`文件上传失败`);
+    }
 
     // 保存附件记录到数据库
     return this.prisma.attachment.create({
       data: {
         ...attachmentData,
-        path: file.path,
+        path:
+          storageType === StorageType.LOCAL ? file.path : attachmentData.path,
         storageType,
         delete_at: null,
         originalName: file.originalname,

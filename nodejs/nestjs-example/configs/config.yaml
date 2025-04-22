@@ -11,3 +11,10 @@ jwt:
 app_name: nestjs-example
 port: 3001
 upload_dir: uploads
+minio:
+  endpoint: localhost
+  port: 9000
+  access_key: io8Aqq9qqEy0sJeR7rI2
+  secret_key: mZwwZhejrw36ZjFnKsfuHgs3BT9oHTaoym35zqWS
+  use_ssl: false
+  bucket_name: nestjs-example
