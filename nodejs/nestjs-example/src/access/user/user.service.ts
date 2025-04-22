@@ -72,6 +72,7 @@ export class UserService {
   }
 
   async findOne(id: string) {
+    console.log('🚀 ~ UserService ~ findOne ~ id:', id);
     const user = await this.prisma.user.findUnique({
       omit: {
         delete_at: true,

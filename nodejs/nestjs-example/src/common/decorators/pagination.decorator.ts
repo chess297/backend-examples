@@ -8,7 +8,6 @@ export type PaginationQuery = {
 
 export const Pagination = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    console.log('🚀 ~ Pagination ~ data:', data);
     const request = ctx.switchToHttp().getRequest<Request>();
     const { page, limit } = request.query;
     const pageNum = Number(page) || 1;

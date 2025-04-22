@@ -13,6 +13,7 @@ import {
   Param,
   UseGuards,
   Session,
+  Req,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permission } from '@/common/decorators/permission.decorator';
@@ -29,7 +30,6 @@ import { UserService } from './user.service';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
 @Controller('user')
-@Permission('user')
 @UseGuards(PermissionGuard)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
@@ -46,17 +46,6 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '获取用户信息',
-    operationId: 'getUserInfo',
-  })
-  @APIOkResponse(UserEntity)
-  @Get('info')
-  getUserInfo(@Session() session: Request['session']) {
-    console.log('🚀 ~ UserController ~ getUserInfo ~ session:', session);
-    return this.userService.findOne(session.passport?.user.id ?? '');
-  }
-
-  @ApiOperation({
     summary: '查询多个用户',
     operationId: 'queryUsers',
   })
@@ -68,6 +57,16 @@ export class UserController {
   })
   findAll() {
     return this.userService.findAll();
+  }
+
+  @ApiOperation({
+    summary: '获取用户信息',
+    operationId: 'getUserInfo',
+  })
+  @APIOkResponse(UserEntity)
+  @Get('info')
+  getUserInfo(@Req() req: Request) {
+    return this.userService.findOne(req.session.passport?.user.id ?? '');
   }
 
   @ApiOperation({
