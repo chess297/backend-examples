@@ -94,6 +94,23 @@ export class UserController {
     return this.userService.findOne(req.session.passport?.user.id ?? '');
   }
 
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: '获取用户信息',
+    operationId: 'updateUserInfo',
+  })
+  @APIOkResponse(UserResponse)
+  @Patch('info')
+  updateUserInfo(
+    @Req() req: Request,
+    @Body() updateUserRequest: UpdateUserRequest,
+  ) {
+    return this.userService.update(
+      req.session.passport?.user.id ?? '',
+      updateUserRequest,
+    );
+  }
+
   @ApiOperation({
     summary: '查询单个用户',
     operationId: 'getUser',
@@ -106,7 +123,7 @@ export class UserController {
 
   @ApiOperation({
     summary: '查询单个用户',
-    operationId: 'getUser',
+    operationId: 'updateUserWithId',
   })
   @APIOkResponse(UserResponse)
   @Patch(':id')

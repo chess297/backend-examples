@@ -4,6 +4,7 @@ import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PresignedUrlResponseDto } from '../dto/presigned-url-response.dto';
 import { StorageStrategy } from './storage.strategy';
 
 @Injectable()
@@ -125,6 +126,56 @@ export class MinioStorageStrategy implements StorageStrategy {
       }
       throw error;
     }
+  }
+
+  /**
+   * 生成预签名上传 URL
+   * @param filename 原始文件名
+   * @param contentType 文件类型
+   * @param expiryInSeconds 过期时间（秒）
+   */
+  async generatePresignedUrl(
+    filename: string,
+    contentType: string,
+    expiryInSeconds: number = 300,
+  ): Promise<PresignedUrlResponseDto> {
+    try {
+      // 生成唯一的文件名作为 key
+      const ext = path.extname(filename);
+      const fileKey = `${uuid()}${ext}`;
+
+      // 设置策略
+      const policy = this.client.newPostPolicy();
+      policy.setBucket(this.bucketName);
+      policy.setKey(fileKey);
+      policy.setExpires(new Date(Date.now() + expiryInSeconds * 1000));
+      policy.setContentType(contentType);
+
+      // 生成预签名 URL
+      const presignedData = await this.client.presignedPostPolicy(policy);
+
+      const protocol = this.useSSL ? 'https' : 'http';
+      const baseUrl = `${protocol}://${this.endpoint}:${this.port}`;
+
+      return {
+        url: presignedData.postURL,
+        formData: presignedData.formData,
+        key: fileKey,
+        expiresIn: expiryInSeconds,
+      };
+    } catch (error) {
+      this.logger.error(`生成预签名 URL 失败: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * 获取对象的公共访问 URL
+   * @param key 对象的 key
+   */
+  getPublicUrl(key: string): string {
+    const protocol = this.useSSL ? 'https' : 'http';
+    return `${protocol}://${this.endpoint}:${this.port}/${this.bucketName}/${key}`;
   }
 
   /**

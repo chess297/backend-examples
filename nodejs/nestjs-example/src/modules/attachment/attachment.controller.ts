@@ -14,12 +14,17 @@ import {
   Redirect,
   Logger,
   ParseEnumPipe,
+  Body,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { APIOkResponse } from '@/common/decorators/swagger.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { AttachmentService } from './attachment.service';
+import { CompleteUploadDto } from './dto/complete-upload.dto';
+import { PresignedUrlRequestDto } from './dto/presigned-url-request.dto';
+import { PresignedUrlResponseDto } from './dto/presigned-url-response.dto';
 import { UploadResponseDto } from './dto/upload-response.dto';
 
 @ApiTags('附件')
@@ -53,6 +58,52 @@ export class AttachmentController {
     const attachment = await this.attachmentService.uploadFile(
       file,
       storageType,
+    );
+
+    return {
+      id: attachment.id,
+      originalName: attachment.originalName,
+      mimeType: attachment.mimeType,
+      size: attachment.size,
+      url: attachment.url,
+      storageType: attachment.storageType,
+    };
+  }
+
+  /**
+   * 获取预签名上传 URL，用于前端直传
+   */
+  @Post('presigned-url')
+  @ApiOperation({
+    summary: '获取预签名上传 URL（前端直传）',
+    operationId: 'getUploadUrl',
+  })
+  @APIOkResponse(PresignedUrlResponseDto)
+  async getPresignedUrl(
+    @Body() presignedUrlDto: PresignedUrlRequestDto,
+  ): Promise<PresignedUrlResponseDto> {
+    this.logger.log(`获取预签名上传 URL: ${presignedUrlDto.filename}`);
+    return this.attachmentService.getPresignedUploadUrl(
+      presignedUrlDto.filename,
+      presignedUrlDto.contentType,
+      presignedUrlDto.expiry,
+    );
+  }
+
+  /**
+   * 完成预签名上传，将文件信息记录到数据库
+   */
+  @Post('complete-upload')
+  @ApiOperation({ summary: '完成预签名上传（前端直传完成后调用）' })
+  async completeUpload(
+    @Body() completeUploadDto: CompleteUploadDto,
+  ): Promise<UploadResponseDto> {
+    this.logger.log(`完成预签名上传: ${completeUploadDto.key}`);
+    const attachment = await this.attachmentService.completePresignedUpload(
+      completeUploadDto.key,
+      completeUploadDto.originalName,
+      completeUploadDto.contentType,
+      completeUploadDto.size,
     );
 
     return {

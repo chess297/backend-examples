@@ -52,6 +52,13 @@ export class CreateUserRequest {
   address: string | null;
 
   @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  avatar_url: string | null;
+
+  @ApiProperty({
     title: '用户角色id列表',
     type: [String],
   })

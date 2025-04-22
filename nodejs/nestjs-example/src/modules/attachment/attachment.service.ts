@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma/prisma.service';
+import { PresignedUrlResponseDto } from './dto/presigned-url-response.dto';
 import { LocalStorageStrategy } from './strategies/local-storage.strategy';
 import { MinioStorageStrategy } from './strategies/minio-storage.strategy';
 import { StorageStrategy } from './strategies/storage.strategy';
@@ -10,15 +11,17 @@ import { StorageStrategy } from './strategies/storage.strategy';
 @Injectable()
 export class AttachmentService {
   private strategies: Record<StorageType, StorageStrategy>;
+  private minioStrategy: MinioStorageStrategy;
 
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {
     // 初始化存储策略
+    this.minioStrategy = new MinioStorageStrategy(configService);
     this.strategies = {
       [StorageType.LOCAL]: new LocalStorageStrategy(configService),
-      [StorageType.CLOUD]: new MinioStorageStrategy(configService),
+      [StorageType.CLOUD]: this.minioStrategy,
     };
   }
 
@@ -89,5 +92,53 @@ export class AttachmentService {
     }
 
     return attachment;
+  }
+
+  /**
+   * 获取预签名上传 URL
+   * @param filename 文件名
+   * @param contentType 内容类型
+   * @param expiry 过期时间（秒）
+   * @returns 预签名 URL 和表单数据
+   */
+  async getPresignedUploadUrl(
+    filename: string,
+    contentType: string,
+    expiry: number = 300,
+  ): Promise<PresignedUrlResponseDto> {
+    return this.minioStrategy.generatePresignedUrl(
+      filename,
+      contentType,
+      expiry,
+    );
+  }
+
+  /**
+   * 完成预签名上传，将文件信息记录到数据库
+   * @param key 文件 key
+   * @param originalName 原始文件名
+   * @param contentType 内容类型
+   * @param size 文件大小
+   */
+  async completePresignedUpload(
+    key: string,
+    originalName: string,
+    contentType: string,
+    size: number,
+  ) {
+    const url = this.minioStrategy.getPublicUrl(key);
+
+    return this.prisma.attachment.create({
+      data: {
+        id: uuid(),
+        originalName,
+        mimeType: contentType,
+        size,
+        path: key,
+        url,
+        storageType: StorageType.CLOUD,
+        delete_at: null,
+      },
+    });
   }
 }
