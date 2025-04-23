@@ -45,12 +45,12 @@ export class MenuGroupService {
       });
 
       // 同步更新菜单分组字典
-      await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
-        this.logger.error(
-          `创建菜单组后同步字典失败: ${error.message}`,
-          error.stack,
-        );
-      });
+      // await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
+      //   this.logger.error(
+      //     `创建菜单组后同步字典失败: ${error.message}`,
+      //     error.stack,
+      //   );
+      // });
 
       return result;
     } catch (error) {
@@ -101,7 +101,7 @@ export class MenuGroupService {
     }
   }
 
-  async findOne(id: string, is_admin?: boolean, userpermissions?: string[]) {
+  async findOne(id: string, is_admin?: boolean, permissions?: string[]) {
     try {
       const group = await this.prisma.menuGroup.findUnique({
         where: { id },
@@ -115,24 +115,24 @@ export class MenuGroupService {
         throw new NotFoundException(`Menu group with ID ${id} not found`);
       }
 
-      // Permission check - if the user is not admin and the group has permissions
-      if (group?.permissions?.length && !is_admin) {
-        const hasPermission = userpermissions?.some((permission) => {
-          return group?.permissions?.some((groupPermission) => {
-            const actionPermission = groupPermission.actions.reduce(
-              (acc, cur) => {
-                return [...acc, `${groupPermission.resource}:${cur}`];
-              },
-              [],
-            );
-            return actionPermission.includes(permission);
-          });
-        });
+      // // Permission check - if the user is not admin and the group has permissions
+      // if (group?.permissions?.length && !is_admin) {
+      //   const hasPermission = userpermissions?.some((permission) => {
+      //     return group?.permissions?.some((groupPermission) => {
+      //       const actionPermission = groupPermission.actions.reduce(
+      //         (acc, cur) => {
+      //           return [...acc, `${groupPermission.resource}:${cur}`];
+      //         },
+      //         [],
+      //       );
+      //       return actionPermission.includes(permission);
+      //     });
+      //   });
 
-        if (!hasPermission) {
-          return null;
-        }
-      }
+      //   if (!hasPermission) {
+      //     return null;
+      //   }
+      // }
       return group;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -173,12 +173,12 @@ export class MenuGroupService {
       });
 
       // 同步更新菜单分组字典
-      await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
-        this.logger.error(
-          `更新菜单组后同步字典失败: ${error.message}`,
-          error.stack,
-        );
-      });
+      // await this.dictionaryService.syncMenuGroupDictionary().catch((error) => {
+      //   this.logger.error(
+      //     `更新菜单组后同步字典失败: ${error.message}`,
+      //     error.stack,
+      //   );
+      // });
 
       // Return updated group
       return this.findOne(id);
@@ -208,14 +208,14 @@ export class MenuGroupService {
         });
 
         // 同步更新菜单分组字典
-        await this.dictionaryService
-          .syncMenuGroupDictionary()
-          .catch((error) => {
-            this.logger.error(
-              `删除菜单组后同步字典失败: ${error.message}`,
-              error.stack,
-            );
-          });
+        // await this.dictionaryService
+        //   .syncMenuGroupDictionary()
+        //   .catch((error) => {
+        //     this.logger.error(
+        //       `删除菜单组后同步字典失败: ${error.message}`,
+        //       error.stack,
+        //     );
+        //   });
 
         return result;
       } else {
@@ -224,14 +224,14 @@ export class MenuGroupService {
         });
 
         // 同步更新菜单分组字典
-        await this.dictionaryService
-          .syncMenuGroupDictionary()
-          .catch((error) => {
-            this.logger.error(
-              `删除菜单组后同步字典失败: ${error.message}`,
-              error.stack,
-            );
-          });
+        // await this.dictionaryService
+        //   .syncMenuGroupDictionary()
+        //   .catch((error) => {
+        //     this.logger.error(
+        //       `删除菜单组后同步字典失败: ${error.message}`,
+        //       error.stack,
+        //     );
+        //   });
 
         return result;
       }

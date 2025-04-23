@@ -1,3 +1,4 @@
+import { PrismaQuery } from '@casl/prisma';
 import { v4 as uuid } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
@@ -33,24 +34,36 @@ export class TaskService {
 
     return task;
   }
-  async findAll(query: FindTaskQuery): Promise<FindTaskResponse> {
+
+  // 添加权限过滤条件参数
+  async findAll(
+    query: FindTaskQuery,
+    accessibleWhere?: PrismaQuery,
+  ): Promise<FindTaskResponse> {
     const { page = 0, limit = 10, creator, ...where } = query;
     // prisma
     const skip = +page * +limit;
     const take = +limit;
+
+    // 合并基本查询条件和权限条件
+    const baseWhere = { ...where, creator_id: creator };
+    const finalWhere = accessibleWhere
+      ? { AND: [baseWhere, accessibleWhere] }
+      : baseWhere;
+
     const records = await this.prisma.task.findMany({
       skip,
       take,
-      where: { ...where, creator_id: creator },
+      where: finalWhere,
     });
-    // mysql
-    // const records = await this.taskRepo.find();
-    // await new Promise((resolve) => {
-    //   setTimeout(resolve, 3000);
-    // });
+
+    const total = await this.prisma.task.count({
+      where: finalWhere,
+    });
+
     return new FindTaskResponse({
       records,
-      total: records.length,
+      total,
     });
   }
 
@@ -100,12 +113,18 @@ export class TaskService {
     });
   }
 
-  async findUserTasks(creator_id: string) {
+  // 添加权限过滤条件参数
+  async findUserTasks(creator_id: string, accessibleWhere?: PrismaQuery) {
+    // 合并基本查询条件和权限条件
+    const baseWhere = { creator_id };
+    const finalWhere = accessibleWhere
+      ? { AND: [baseWhere, accessibleWhere] }
+      : baseWhere;
+
     const records = await this.prisma.task.findMany({
-      where: {
-        creator_id,
-      },
+      where: finalWhere,
     });
+
     return new FindTaskResponse({
       records,
       total: records.length,

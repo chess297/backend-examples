@@ -1,9 +1,4 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
 import * as bcrypt from 'bcrypt';
-import { Cache } from 'cache-manager';
-import Redis from 'ioredis';
-// import { JwtPayload } from '@/common/guards/auth.guard';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   BadRequestException,
   Inject,
@@ -15,19 +10,18 @@ import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SigninRequest } from './dto/signin.dto';
 import { SignupRequest } from './dto/signup.dto';
+import { SessionSerializer } from './session/session.serializer';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
   constructor(
-    private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    @Inject(CACHE_MANAGER) private cache: Cache,
-    @InjectRedis() private readonly redis: Redis,
+    private readonly sessionSerializer: SessionSerializer,
   ) {}
 
-  signin(dto: SigninRequest) {
-    return this.verifyUser(dto.email, dto.password);
+  async signin(dto: SigninRequest) {
+    const user = await this.verifyUser(dto.email, dto.password);
+    return this.sessionSerializer.serializeUser(user);
   }
 
   signup(dto: SignupRequest) {
@@ -37,11 +31,8 @@ export class AuthService {
       address: '',
       country_code: '',
       is_active: true,
+      avatar_url: null,
     });
-  }
-  // 登出
-  signout() {
-    return 'sign out';
   }
 
   async verifyUser(

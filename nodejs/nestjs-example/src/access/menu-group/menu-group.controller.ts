@@ -62,8 +62,8 @@ export class MenuGroupController {
   findOne(@Param('id') id: string, @Req() req: Request) {
     return this.menuGroupService.findOne(
       id,
-      req.session.passport?.is_admin,
-      req.session.passport?.permissions,
+      req.session?.user?.is_admin,
+      req.session?.user?.permissions,
     );
   }
 

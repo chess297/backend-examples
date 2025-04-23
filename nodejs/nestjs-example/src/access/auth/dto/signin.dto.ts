@@ -29,7 +29,7 @@ export class SigninResponse {
     example: '1',
     required: false,
   })
-  user_id?: string;
+  id?: string;
 
   @ApiProperty({
     title: '用户邮箱',
@@ -54,7 +54,6 @@ export class SigninResponse {
 
   @ApiProperty({
     title: '用户权限列表',
-    example: ['users:read', 'users:write'],
     type: [String],
     required: false,
   })

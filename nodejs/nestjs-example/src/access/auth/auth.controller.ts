@@ -11,14 +11,12 @@ import { PrismaService } from '@/database/prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { SigninRequest, SigninResponse } from './dto/signin.dto';
 import { SignupRequest, SignupResponse } from './dto/signup.dto';
+import { SessionSerializer } from './session/session.serializer';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({
     summary: '注册',
@@ -46,39 +44,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: SigninRequest,
   ) {
-    const user = await this.authService.verifyUser(body.email, body.password);
-    const permissions: string[] =
-      user.roles?.reduce((acc, role) => {
-        if (role.permissions?.length === 0) {
-          return acc;
-        }
-        const permission =
-          role.permissions?.reduce((a, b) => {
-            const strArr = b.actions.map((item) => `${b.resource}:${item}`);
-            return [...a, ...strArr];
-          }, []) ?? [];
-        return [...acc, ...permission];
-      }, []) ?? [];
-    const is_admin = !!user.roles?.some((role) => role.name === 'system-admin');
-    delete user.roles;
-    req.session.passport = {
-      user: user,
-      permissions,
-      is_admin,
-    };
-
-    res.cookie('user_id', user.id, {
-      httpOnly: false,
-    });
-
-    // 返回扩展的响应体
-    return {
-      user_id: user.id,
-      email: user.email,
-      username: user.username,
-      is_admin,
-      permissions,
-    };
+    const user = await this.authService.signin(body);
+    res.cookie(`user_id`, user.id);
+    req.session.user = user;
+    return user;
   }
 
   @ApiOperation({
@@ -87,7 +56,7 @@ export class AuthController {
   })
   @Post('signout')
   signout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    this._destroySession(req, res);
+    this.destroySession(req, res);
     return {
       success: true,
     };
@@ -99,14 +68,13 @@ export class AuthController {
   })
   @Post('logout')
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    req.session.destroy((err) => console.log(err));
-    this._destroySession(req, res);
+    this.destroySession(req, res);
     return {
       success: true,
     };
   }
 
-  _destroySession(req: Request, res: Response) {
+  private destroySession(req: Request, res: Response) {
     req.session.destroy((err) => console.log(err));
     res.clearCookie('user_id');
     res.clearCookie(APP_NAME);

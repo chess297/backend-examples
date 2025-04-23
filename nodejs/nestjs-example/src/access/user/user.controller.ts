@@ -26,6 +26,11 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { CanCreate } from '@/common/casl/policies/ability.policies';
+import {
+  CheckCreate,
+  CheckPolicies,
+} from '@/common/decorators/check-policies.decorator';
 import {
   Pagination,
   PaginationQuery,
@@ -34,8 +39,8 @@ import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
-import { AuthGuard, SessionGuard } from '@/common/guards/auth.guard';
-import { PermissionGuard } from '@/common/guards/permission.guard';
+import { AuthGuard } from '@/common/guards/auth.guard';
+import { PoliciesGuard } from '@/common/guards/policies.guard';
 import { AttachmentService } from '@/modules/attachment/attachment.service';
 import { CreateUserRequest, UserResponse } from './dto/create-user.dto';
 import { UserQuery } from './dto/query-user.dto';
@@ -51,7 +56,7 @@ import { UserService } from './user.service';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
 @Controller('user')
-@UseGuards(PermissionGuard)
+@UseGuards(PoliciesGuard)
 export class UserController {
   private readonly logger = new Logger(UserController.name);
   constructor(
@@ -64,6 +69,7 @@ export class UserController {
     operationId: 'createUser',
   })
   @APIOkResponse(UserEntity)
+  @CheckCreate('User')
   @Post()
   create(@Body() createUserDto: CreateUserRequest) {
     return this.userService.create(createUserDto);
@@ -91,7 +97,7 @@ export class UserController {
   @APIOkResponse(UserResponse)
   @Get('info')
   getUserInfo(@Req() req: Request) {
-    return this.userService.findOne(req.session.passport?.user.id ?? '');
+    return this.userService.findOne(req.session?.user?.id ?? '');
   }
 
   @UseGuards(AuthGuard)
@@ -106,7 +112,7 @@ export class UserController {
     @Body() updateUserRequest: UpdateUserRequest,
   ) {
     return this.userService.update(
-      req.session.passport?.user.id ?? '',
+      req.session?.user?.id ?? '',
       updateUserRequest,
     );
   }
@@ -141,26 +147,24 @@ export class UserController {
   @ApiBody({
     type: RemoveUserRequest,
   })
+  @ApiBody({ type: RemoveUserRequest, required: false })
   @Delete(':id')
   async remove(
+    @Session() session: Request['session'],
     @Param('id') id: string,
-    @Body() removeUserRequest: RemoveUserRequest,
+    @Body() removeUserRequest?: RemoveUserRequest,
   ) {
-    try {
-      if (id || removeUserRequest.id) {
-        await this.userService.remove(id || removeUserRequest.id);
-      } else {
-        await this.userService.removeMany(removeUserRequest.ids);
+    const _id = id || removeUserRequest?.id;
+    if (_id) {
+      if (session.user?.id === _id) {
+        throw new BadRequestException('不能删除当前登录用户');
       }
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new BadRequestException('删除用户失败：' + error.code);
-      }
-      throw new BadRequestException('删除用户失败');
+      await this.userService.remove(_id);
+    } else if (removeUserRequest?.ids) {
+      await this.userService.removeMany(removeUserRequest?.ids);
     }
   }
 
-  @UseGuards(AuthGuard)
   @Post('avatar')
   @ApiOperation({ summary: '上传用户头像', operationId: 'uploadAvatar' })
   @ApiConsumes('multipart/form-data')
@@ -172,7 +176,7 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UpdateAvatarResponse> {
     // 获取当前登录用户ID
-    const userId = req.session.passport?.user.id;
+    const userId = req.session?.user?.id;
     if (!userId) {
       throw new BadRequestException('用户未登录');
     }

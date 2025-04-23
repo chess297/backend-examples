@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 import { PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
@@ -24,11 +23,9 @@ export class AuthGuard implements CanActivate {
       return true;
     }
     const req = context.switchToHttp().getRequest<Request>();
-    if (!req.session.passport?.user) {
+    if (!req.session.user) {
       throw new UnauthorizedException();
     }
     return true;
   }
 }
-
-export class SessionGuard extends PassportAuthGuard('session') {}

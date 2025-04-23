@@ -126,42 +126,43 @@ export class SessionCacheService {
    * 查找用户的所有会话ID
    */
   private async findUserSessionIds(userId: string): Promise<string[]> {
-    try {
-      // 获取所有会话keys
-      const sessionKeys = await this.redis.keys(`${this.sessionPrefix}*`);
-      const sessionIds: string[] = [];
+    return Promise.resolve([]); // TODO: 实现查找用户会话ID的逻辑
+    // try {
+    //   // 获取所有会话keys
+    //   const sessionKeys = await this.redis.keys(`${this.sessionPrefix}*`);
+    //   const sessionIds: string[] = [];
 
-      for (const key of sessionKeys) {
-        const sessionData = await this.redis.get(key);
-        if (!sessionData) continue;
+    //   for (const key of sessionKeys) {
+    //     const sessionData = await this.redis.get(key);
+    //     if (!sessionData) continue;
 
-        try {
-          // 解析会话数据 (express-session 在Redis中存储为JSON字符串)
-          const sessionDataParsed = JSON.parse(sessionData) as {
-            passport?: { user?: { id?: string } };
-          };
-          const session: { passport?: { user?: { id?: string } } } =
-            sessionDataParsed;
+    //     try {
+    //       // 解析会话数据 (express-session 在Redis中存储为JSON字符串)
+    //       const sessionDataParsed = JSON.parse(sessionData) as {
+    //         passport?: { user?: { id?: string } };
+    //       };
+    //       const session: { passport?: { user?: { id?: string } } } =
+    //         sessionDataParsed;
 
-          // 检查session中是否有passport对象且包含指定用户
-          if (session?.passport?.user?.id === userId) {
-            // 提取会话ID
-            sessionIds.push(key);
-          }
-        } catch (e) {
-          if (e instanceof Error) {
-            this.logger.warn(`解析会话数据失败: ${e.message}`);
-          } else {
-            this.logger.warn(`解析会话数据失败: 未知错误`);
-          }
-        }
-      }
+    //       // 检查session中是否有passport对象且包含指定用户
+    //       if (session?.passport?.user?.id === userId) {
+    //         // 提取会话ID
+    //         sessionIds.push(key);
+    //       }
+    //     } catch (e) {
+    //       if (e instanceof Error) {
+    //         this.logger.warn(`解析会话数据失败: ${e.message}`);
+    //       } else {
+    //         this.logger.warn(`解析会话数据失败: 未知错误`);
+    //       }
+    //     }
+    //   }
 
-      return sessionIds;
-    } catch (error) {
-      this.logger.error(`查找用户会话ID失败:`, error);
-      return [];
-    }
+    //   return sessionIds;
+    // } catch (error) {
+    //   this.logger.error(`查找用户会话ID失败:`, error);
+    //   return [];
+    // }
   }
 
   /**

@@ -19,7 +19,7 @@ export class RemoveUserRequest {
     return !o.ids;
   })
   // ids 也不存在时出发id不为空的检测
-  @IsNotEmpty()
+  @IsOptional()
   id: string;
 
   @IsArray({ each: true })

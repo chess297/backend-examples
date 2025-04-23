@@ -12,7 +12,6 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SystemAdmin } from '@/common/decorators/role.decorator';
 import { APIOkResponse } from '@/common/decorators/swagger.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
 import { DictionaryService } from './dictionary.service';
 import { CreateDictionaryDto } from './dto/create-dictionary.dto';
 import { DictionaryByCodeResponseDto } from './dto/dictionary-by-code.response.dto';
@@ -30,7 +29,6 @@ export class DictionaryController {
   @ApiOperation({ summary: '创建字典' })
   @ApiBearerAuth()
   @SystemAdmin()
-  @UseGuards(AuthGuard)
   @APIOkResponse(DictionaryResponseDto)
   create(@Body() createDictionaryDto: CreateDictionaryDto) {
     return this.dictionaryService.create(createDictionaryDto);
@@ -61,7 +59,6 @@ export class DictionaryController {
   @ApiOperation({ summary: '更新字典' })
   @ApiBearerAuth()
   @SystemAdmin()
-  @UseGuards(AuthGuard)
   @APIOkResponse(DictionaryResponseDto)
   update(
     @Param('id') id: string,
@@ -74,7 +71,6 @@ export class DictionaryController {
   @ApiOperation({ summary: '删除字典' })
   @ApiBearerAuth()
   @SystemAdmin()
-  @UseGuards(AuthGuard)
   @APIOkResponse(Boolean)
   remove(@Param('id') id: string) {
     return this.dictionaryService.remove(id);

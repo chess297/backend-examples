@@ -77,13 +77,14 @@ function useFilters(app: INestApplication, configService: ConfigService) {
       name: APP_NAME,
       resave: false,
       saveUninitialized: false,
+      rolling: true, // 每次请求都更新session的过期时间
       cookie: {
         httpOnly: true,
         maxAge: sessionMaxAge * 1000, // 转换为毫秒
       },
     }),
   );
-  app.use(passport.session());
+  // app.use(passport.session());
 }
 
 // 添加静态文件服务

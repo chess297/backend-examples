@@ -18,8 +18,6 @@ import {
   APIOkResponse,
   APIPaginationResponse,
 } from '@/common/decorators/swagger.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
-import { PermissionGuard } from '@/common/guards/permission.guard';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { FindPermissionQuery } from './dto/find-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -28,7 +26,6 @@ import { PermissionService } from './permission.service';
 
 @ApiTags('permission')
 @Controller('permission')
-@UseGuards(AuthGuard, PermissionGuard)
 export class PermissionController {
   private readonly logger = new Logger(PermissionController.name);
 
@@ -82,9 +79,7 @@ export class PermissionController {
   @APIOkResponse(PermissionEntity)
   @Get()
   getUserPermission(@Req() req: Request) {
-    const userId = req.session.passport?.user.id ?? '';
-    this.logger.debug(`Getting permissions for user: ${userId}`);
-    return this.permissionService.findByUserId(userId);
+    return this.permissionService.findByUserId(req.session?.user?.id ?? '');
   }
 
   @ApiOperation({
