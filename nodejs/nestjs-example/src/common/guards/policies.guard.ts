@@ -35,9 +35,15 @@ export class PoliciesGuard implements CanActivate {
           CHECK_POLICIES_KEY,
           context.getHandler(),
         ) || [];
+      const policyClassHandlers =
+        this.reflector.get<PolicyHandler[]>(
+          CHECK_POLICIES_KEY,
+          context.getClass(),
+        ) || [];
+      const allPolicyHandlers = [...policyHandlers, ...policyClassHandlers];
 
       // 如果没有定义策略，默认允许访问
-      if (policyHandlers.length === 0) {
+      if (allPolicyHandlers.length === 0) {
         return true;
       }
 
@@ -56,7 +62,7 @@ export class PoliciesGuard implements CanActivate {
       const ability = this.caslAbilityFactory.createForUser(caslUser);
 
       // 检查所有策略
-      return policyHandlers.every((handler) =>
+      return allPolicyHandlers.every((handler) =>
         this.checkPolicy(ability, handler),
       );
     } catch (error: unknown) {
