@@ -51,12 +51,14 @@ export class CaslHelperService {
     const permissions: CaslUser['permissions'] = [];
 
     // 如果存在权限映射，转换为 CASL 格式
-    if (sessionUser.permissions && sessionUser.permissions instanceof Map) {
-      sessionUser.permissions.forEach((actions, resource) => {
-        permissions.push({
-          resource,
-          actions,
-        });
+    if (sessionUser.permissions) {
+      Object.entries(sessionUser.permissions).forEach(([resource, actions]) => {
+        if (Array.isArray(actions)) {
+          permissions.push({
+            resource,
+            actions,
+          });
+        }
       });
     }
 
