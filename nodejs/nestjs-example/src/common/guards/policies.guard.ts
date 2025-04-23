@@ -76,8 +76,9 @@ export class PoliciesGuard implements CanActivate {
     const permissions: CaslUser['permissions'] = [];
 
     // 如果存在权限映射，转换为 CASL 格式
-    if (sessionUser.permissions && sessionUser.permissions instanceof Map) {
-      sessionUser.permissions.forEach((actions, resource) => {
+    if (sessionUser.permissions) {
+      Object.keys(sessionUser.permissions).forEach((resource) => {
+        const actions = sessionUser.permissions?.[resource] ?? [];
         permissions.push({
           resource,
           actions,

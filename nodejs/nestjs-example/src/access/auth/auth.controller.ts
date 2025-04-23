@@ -7,11 +7,9 @@ import {
   APIOkResponse,
 } from '@/common/decorators/swagger.decorator';
 import { APP_NAME } from '@/constants';
-import { PrismaService } from '@/database/prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { SigninRequest, SigninResponse } from './dto/signin.dto';
 import { SignupRequest, SignupResponse } from './dto/signup.dto';
-import { SessionSerializer } from './session/session.serializer';
 
 @ApiTags('auth')
 @Controller('auth')

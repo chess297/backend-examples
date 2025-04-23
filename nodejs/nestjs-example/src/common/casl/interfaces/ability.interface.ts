@@ -68,6 +68,6 @@ export interface CaslUser {
 export interface SessionUser {
   id: string;
   is_admin?: boolean;
-  permissions?: Map<string, PermissionAction[]>;
+  permissions?: Record<string, PermissionAction[]>;
   [key: string]: any;
 }

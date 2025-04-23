@@ -29,6 +29,7 @@ import {
 import { CanCreate } from '@/common/casl/policies/ability.policies';
 import {
   CheckCreate,
+  CheckDelete,
   CheckPolicies,
 } from '@/common/decorators/check-policies.decorator';
 import {
@@ -148,6 +149,7 @@ export class UserController {
     type: RemoveUserRequest,
   })
   @ApiBody({ type: RemoveUserRequest, required: false })
+  @CheckDelete('User')
   @Delete(':id')
   async remove(
     @Session() session: Request['session'],
